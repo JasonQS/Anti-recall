@@ -1,0 +1,320 @@
+package com.qiansheng.messagecapture;
+
+import android.content.Context;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
+
+import static com.qiansheng.messagecapture.MainActivity.File_Withdraw;
+
+public class XFile extends AppCompatActivity {
+
+    private static final String TAG = "X-File";
+
+    private Context mContext;
+
+    XFile(Context context) {
+        this.mContext = context;
+    }
+
+    public static class Search {
+        private final String TAG = "X-Search";
+        private String mPath;
+        private RandomAccessFile rf;
+        private int seek;
+        private int length;
+        private boolean flag;               //判断之前是否输出过next line 因为seek被多加了12
+
+        Search(String path) {
+            mPath = path;
+            try {
+                rf = new RandomAccessFile(mPath, "r");
+                seekEnd();
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "search : file not found");
+                e.printStackTrace();
+            }
+        }
+
+        String nextLine() {
+            String line;
+            int c;
+            try {
+                rf.seek(seek);
+                while (true) {
+                    if (seek < 0) {
+                        Log.e(TAG, "File Read Over");
+                        return null;
+                    }
+
+                    c = rf.read();
+                    if (c == '\n') {
+                        line = rf.readLine();
+                        seek -= 12;
+                        rf.seek(seek);
+                        if (line != null) {
+                            String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                            length = s.length();
+                            Log.v(TAG, "seek: " + (seek + 12));
+                            Log.d(TAG, "Next Line : " + s);
+                            flag = true;
+                            return s;
+                        }
+
+                    } else if (seek == 0) {
+                        line = (char) c + rf.readLine();
+                        String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                        Log.w(TAG, "The Last Line " + s);
+                        seek--;
+                        return s;
+                    } else {
+                        seek--;
+                        rf.seek(seek);
+                    }
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        String preLine() {
+
+            //如果之前有read next line的话seek会多加
+            if (flag) {
+                flag = false;
+                seek += (13 + length);           //自己加上的12加上1的'/n'
+            } else seek += length;
+
+            try {
+                String line = " ";
+                while (line.length() < 12) {
+                    seek++;
+                    rf.seek(seek);
+                    line = rf.readLine();
+                    if (line == null)
+                        return null;
+                    if (seek > rf.length())
+                        return null;
+                }
+
+                String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                Log.v(TAG, "seek : " + seek);
+                Log.i(TAG, "pre Line : " + s);
+                length = s.length();
+
+                return s;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        void seekEnd() {
+            try {
+                seek = (int) (rf.length() - 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        void closeFile() {
+            try {
+                if (rf != null)
+                    rf.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public static class RemoveLine {
+        private final String TAG = "X-Remove-Line";
+
+        private Context mContext;
+        private int removeLine;
+        private String mFileName;
+
+        RemoveLine(String fileName, Context context) {
+            this.mContext = context;
+            this.mFileName = MainActivity.File_Dir + fileName;
+            int num = 0;
+            try {
+                LineNumberReader lnr = new LineNumberReader(new FileReader(mFileName));
+                lnr.skip(Long.MAX_VALUE);
+                lnr.close();
+                num = lnr.getLineNumber();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            removeLine = num - 1;
+            Log.i(TAG, "total " + num + " Line");
+        }
+
+        RemoveLine(String fileName, int removeLine, Context context) {
+            this.mContext = context;
+            this.mFileName = fileName;
+            this.removeLine = removeLine;
+        }
+
+        void remove() {
+            // 边读内容边写到临时文件，如果行号是要删除的就不写
+            try {
+                File file = new File(mFileName);
+                File temp = new File(file + "temp");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        new FileInputStream(file)));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(temp)));
+                String str;
+                int index = 0;
+                while (null != (str = reader.readLine())) {
+                    if (index != removeLine) {
+                        writer.write(str + "\r\n");
+                        Log.v(TAG, mFileName + " : " + str);
+                    } else {
+                        Log.w(TAG, "Remove : " + str);
+                        XToast.makeText(mContext, str).show();
+                    }
+                    index++;
+                }
+                reader.close();
+                writer.close();
+                file.delete();      // 删除原文件
+                temp.renameTo(file);// 临时文件改名成原文件名称
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void writeFile(String content, String fileName) {
+        Log.e(TAG, "WRite " + content + " to " + fileName + "\n ");
+
+        if (Debug.DebugEnabled)
+            new XNotification(mContext).show(content + " / " + fileName);
+
+        if (content == null || fileName == null)
+            return;
+
+        StringBuilder builder = new StringBuilder(content);
+        int i;
+        while ((i = builder.indexOf("\n")) > 0) {
+            builder.replace(i, i + 1, " ");
+        }
+
+        content = builder.toString();
+
+        try {
+            FileOutputStream fos = mContext.openFileOutput(fileName, Context.MODE_APPEND);
+            OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+            osw.write(content + "\n");
+            osw.flush();
+            fos.flush();
+            osw.close();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String readFile(String fileName) {
+        String s = null;
+        try {
+            FileInputStream fis = mContext.openFileInput(fileName);
+            InputStreamReader isr = new InputStreamReader(fis, "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            s = br.readLine();
+            isr.close();
+            fis.close();
+//            Log.i(TAG, "Read " + fileName + " : " + s + "\n");
+        } catch (Exception e) {
+            Log.e(TAG, "Can Not Read File: File is null");
+        }
+        return s;
+    }
+
+    public void refresh() {
+        Log.i(TAG, "Refresh...");
+
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    FileInputStream fis = mContext.openFileInput(File_Withdraw);
+                    InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+                    BufferedReader br = new BufferedReader(isr);
+                    XListAdapter.MsgList.clear();
+                    XListAdapter.TimeList.clear();
+                    XListAdapter.NameList.clear();
+                    String line;
+                    String content;
+                    String time;
+                    String name;
+                    while ((line = br.readLine()) != null) {
+                        int i = line.lastIndexOf('#');
+                        if (i < 1)
+                            continue;
+                        Log.v(TAG, line);
+
+                        content = line.substring(0, i - 11);
+                        time = line.substring(i - 11, i);
+                        name = line.substring(i + 1);
+                        XListAdapter.MsgList.add(0, content);
+                        XListAdapter.TimeList.add(0, time);
+                        XListAdapter.NameList.add(0, name);
+
+                    }
+                    br.close();
+                    isr.close();
+                    fis.close();
+                } catch (IOException e) {
+                    Log.w(TAG, "File not found");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    public boolean ifShowCheckedNotice() {
+        int i;
+        try {
+            FileInputStream fis = mContext.openFileInput("showCheck");
+            i = fis.read();
+            fis.close();
+        } catch (IOException e) {
+            return true;
+        }
+        return i != 1;
+    }
+
+    public void setNotShowCheckedNotice() {
+
+        try {
+            FileOutputStream fos = mContext.openFileOutput("showCheck", MODE_PRIVATE);
+            fos.write(1);
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
