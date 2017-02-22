@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017.
+  ~ qsboy.com 版权所有
+  -->
+
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true">
+
+    <alpha
+        android:duration="@android:integer/config_longAnimTime"
+        android:fromAlpha="0"
+        android:interpolator="@android:interpolator/decelerate_quad"
+        android:toAlpha="1.0" />
+
+    <scale
+        android:duration="350"
+        android:fromXScale="0"
+        android:fromYScale="0"
+        android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+        android:pivotX="100%"
+        android:pivotY="0%"
+        android:toXScale="1.0"
+        android:toYScale="1.0" />
+
+    <translate
+        android:duration="@android:integer/config_shortAnimTime"
+        android:fromYDelta="100"
+        android:toYDelta="0" />
+
+</set>

@@ -1,0 +1,155 @@
+<!--
+  ~ Copyright (c) 2017.
+  ~ qsboy.com 版权所有
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_help"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:theme="@style/help"
+    tools:context="com.qiansheng.messagecapture.FHelp">
+
+    <include layout="@layout/domain"/>
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:src="@mipmap/icon" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:text="帮助"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#aaa" />
+
+        <TableRow android:paddingBottom="0dp">
+
+            <LinearLayout android:layout_column="0">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="step1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_column="2"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp">
+
+                <TextView
+                    android:layout_width="210dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/step1" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp">
+
+            <LinearLayout android:layout_column="0">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="如图" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_column="2">
+
+                <ImageView
+                    android:layout_width="216dp"
+                    android:layout_height="55dp"
+                    android:padding="0dp"
+                    android:src="@drawable/image_notification" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow android:paddingTop="0dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:text="@string/step1_1" />
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#aaa" />
+
+        <TableRow android:paddingBottom="0dp">
+
+            <LinearLayout android:layout_column="0">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="step2" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_column="2">
+
+                <TextView
+                    android:layout_width="216dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/step2" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow android:paddingTop="0dp">
+
+            <LinearLayout android:layout_column="0">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="如图" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_column="2"
+                android:paddingTop="0dp">
+
+                <ImageView
+                    android:layout_width="216dp"
+                    android:layout_height="81dp"
+                    android:padding="0dp"
+                    android:src="@drawable/image_setting" />
+            </LinearLayout>
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#aaa" />
+
+
+    </TableLayout>
+
+</RelativeLayout>

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2017.
+ * qsboy.com 版权所有
+ */
+
 package com.qiansheng.messagecapture;
 
 
@@ -26,7 +31,6 @@ import android.widget.Button;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -216,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         int diff = now - last;
         Log.i(TAG, "dif " + diff + " day");
 
-        return (diff >= 1);      //一天
+        return (diff >= 0);      //一天
         // TODO: 2017/1/21 加入检测周活跃量
     }
 
@@ -234,6 +238,10 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * 之前的版本加了"清除数据"的按钮,后来去掉了
+     */
+/*
     private void showConfirmClear() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("确定要清除数据吗");
@@ -282,5 +290,6 @@ public class MainActivity extends AppCompatActivity {
             file.delete();
         }
     }
+*/
 
 }

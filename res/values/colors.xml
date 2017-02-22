@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017.
+  ~ qsboy.com 版权所有
+  -->
+
+<resources>
+
+    <color name="colorTextLight">#eee</color>
+
+    <color name="colorName">#DDDDDD</color>
+
+    <color name="colorMenu">#c3e0e6</color>
+    <color name="colorBtnOn">#add9ca</color>
+    <color name="colorBtnOff">#c3e0e6</color>
+
+    <color name="transparent">#00000000</color>
+
+</resources>

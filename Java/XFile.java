@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2017.
+ * qsboy.com 版权所有
+ */
+
 package com.qiansheng.messagecapture;
 
 import android.content.Context;
@@ -49,6 +54,13 @@ public class XFile extends AppCompatActivity {
             }
         }
 
+        /**
+         * 虽然名字是叫nextLine
+         * 但是因为是从底部开始找的
+         * 所以实际是向上一行
+         *
+         * @return line
+         */
         String nextLine() {
             String line;
             int c;
@@ -90,6 +102,11 @@ public class XFile extends AppCompatActivity {
             }
         }
 
+        /**
+         * 向后一行
+         *
+         * @return line
+         */
         String preLine() {
 
             //如果之前有read next line的话seek会多加
@@ -122,6 +139,9 @@ public class XFile extends AppCompatActivity {
             return null;
         }
 
+        /**
+         * 指针调到文件末尾
+         */
         void seekEnd() {
             try {
                 seek = (int) (rf.length() - 1);
@@ -142,11 +162,15 @@ public class XFile extends AppCompatActivity {
 
     }
 
+    /**
+     * 删除一行
+     * 不传行号就是默认删除最后一行
+     */
     public static class RemoveLine {
         private final String TAG = "X-Remove-Line";
 
         private Context mContext;
-        private int removeLine;
+        private int lineNumber;
         private String mFileName;
 
         RemoveLine(String fileName, Context context) {
@@ -161,14 +185,14 @@ public class XFile extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            removeLine = num - 1;
+            lineNumber = num - 1;
             Log.i(TAG, "total " + num + " Line");
         }
 
-        RemoveLine(String fileName, int removeLine, Context context) {
+        RemoveLine(String fileName, int lineNumber, Context context) {
             this.mContext = context;
             this.mFileName = fileName;
-            this.removeLine = removeLine;
+            this.lineNumber = lineNumber;
         }
 
         void remove() {
@@ -183,7 +207,7 @@ public class XFile extends AppCompatActivity {
                 String str;
                 int index = 0;
                 while (null != (str = reader.readLine())) {
-                    if (index != removeLine) {
+                    if (index != lineNumber) {
                         writer.write(str + "\r\n");
                         Log.v(TAG, mFileName + " : " + str);
                     } else {
@@ -202,15 +226,20 @@ public class XFile extends AppCompatActivity {
         }
     }
 
+    /**
+     * 把传入的content加上换行写入filename
+     */
     public void writeFile(String content, String fileName) {
         Log.e(TAG, "WRite " + content + " to " + fileName + "\n ");
 
+        //在调试模式打开时把要写入的文件推送到通知栏
         if (Debug.DebugEnabled)
             new XNotification(mContext).show(content + " / " + fileName);
 
         if (content == null || fileName == null)
             return;
 
+        //把换行号换成空格,不然会打乱文件格式
         StringBuilder builder = new StringBuilder(content);
         int i;
         while ((i = builder.indexOf("\n")) > 0) {
@@ -232,6 +261,10 @@ public class XFile extends AppCompatActivity {
         }
     }
 
+    /**
+     * 从文件读一行 没什么通用性
+     * 这里用作记录些永久数据,比如开关的打开情况
+     */
     public String readFile(String fileName) {
         String s = null;
         try {
@@ -248,6 +281,30 @@ public class XFile extends AppCompatActivity {
         return s;
     }
 
+    /**
+     * 打印整个文件到控制台
+     * 因为手机没有root,只好这么衰
+     */
+    public void printFile(String fileName) {
+        try {
+            InputStreamReader read = new InputStreamReader(
+                    new FileInputStream(fileName), "utf-8");// 考虑到编码格式
+            BufferedReader bufferedReader = new BufferedReader(read);
+            String lineTxt;
+            while ((lineTxt = bufferedReader.readLine()) != null) {
+                System.out.println(lineTxt);
+            }
+            bufferedReader.close();
+            read.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 刷新UI配置
+     */
     public void refresh() {
         Log.i(TAG, "Refresh...");
 
@@ -294,7 +351,32 @@ public class XFile extends AppCompatActivity {
         });
     }
 
-    public boolean ifShowCheckedNotice() {
+    boolean isDebug() {
+        int i;
+        try {
+            FileInputStream fis = mContext.openFileInput("debug");
+            i = fis.read();
+            fis.close();
+        } catch (IOException e) {
+            return false;
+        }
+        return i == 1;
+    }
+
+    void setDebug(boolean flag) {
+        try {
+            FileOutputStream fos = mContext.openFileOutput("debug", MODE_PRIVATE);
+            if (flag)
+                fos.write(1);
+            else
+                fos.write(0);
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isShowCheckedNotice() {
         int i;
         try {
             FileInputStream fis = mContext.openFileInput("showCheck");

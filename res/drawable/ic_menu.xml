@@ -1,0 +1,22 @@
+<!--
+  ~ Copyright (c) 2017.
+  ~ qsboy.com 版权所有
+  -->
+
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:alpha="0.40"
+    android:viewportHeight="100.0"
+    android:viewportWidth="100.0">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M75,30H25c-2.7,0 -5,-2.2 -5,-5v0c0,-2.7 2.2,-5 5,-5h50c2.7,0 5,2.2 5,5v0C80,27.8 77.8,30 75,30z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M75,55H25c-2.7,0 -5,-2.2 -5,-5v0c0,-2.8 2.2,-5 5,-5h50c2.7,0 5,2.2 5,5v0C80,52.8 77.8,55 75,55z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M75,80H25c-2.7,0 -5,-2.3 -5,-5v0c0,-2.7 2.2,-5 5,-5h50c2.7,0 5,2.3 5,5v0C80,77.8 77.8,80 75,80z" />
+</vector>

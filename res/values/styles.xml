@@ -1,0 +1,51 @@
+<!--
+  ~ Copyright (c) 2017.
+  ~ qsboy.com 版权所有
+  -->
+
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="menu" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:gravity">center</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#333</item>
+        <item name="android:background">@color/colorMenu</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="help" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#333</item>
+        <item name="android:background">@color/colorMenu</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="about_me" parent="menu">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
+    <style name="Animation_Toast" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/toast_enter</item>
+        <item name="android:windowExitAnimation">@anim/toast_exit</item>
+    </style>
+
+    <style name="Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:background">#333</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+</resources>

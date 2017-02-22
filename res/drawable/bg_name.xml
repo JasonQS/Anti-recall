@@ -1,0 +1,61 @@
+<!--
+  ~ Copyright (c) 2017.
+  ~ qsboy.com 版权所有
+  -->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="1dp">
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="1dp"
+                android:left="1dp"
+                android:right="1dp" />
+            <corners android:radius="10dp" />
+            <solid android:color="#08000000" />
+        </shape>
+    </item>
+
+    <item android:top="1dp">
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="1dp"
+                android:left="1dp"
+                android:right="1dp" />
+            <corners android:radius="10dp" />
+            <solid android:color="#10000000" />
+        </shape>
+    </item>
+
+    <item android:top="1dp">
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="1dp"
+                android:left="1dp"
+                android:right="1dp" />
+            <corners android:radius="10dp" />
+            <solid android:color="#18000000" />
+        </shape>
+    </item>
+
+    <item android:top="1dp">
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="1dp"
+                android:left="1dp"
+                android:right="1dp" />
+            <corners android:radius="10dp" />
+            <solid android:color="#20000000" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:endColor="#c0cad1"
+                android:startColor="#CCCCCC" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</layer-list>
+
