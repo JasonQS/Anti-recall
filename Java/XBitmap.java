@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2017.
+ * qsboy.com 版权所有
+ */
+
 package com.qiansheng.messagecapture;
 
 import android.graphics.Bitmap;
@@ -44,7 +49,7 @@ class XBitmap {
      * @param file 文件名
      * @return 图片
      */
-    static Bitmap getBitmap(File file) {
+    private static Bitmap getBitmap(File file) {
         try {
             FileInputStream fis = new FileInputStream(file);
             return BitmapFactory.decodeStream(fis);
@@ -57,8 +62,13 @@ class XBitmap {
 
     /**
      * 在QQ缓存中找到创建时间为time的文件
+     * 图片我是到QQ的图片缓存目录
+     * 拉一张与撤回消息同时期创建的文件
+     * 但如果这张图片曾经发过, QQ就不会新生成文件只会在QQ内部文件夹生成链
+     * 所以我就找不到了
      *
      * @param time 图片的创建时间
+     * @return 是否找到了图片
      */
     static boolean getImageFileInQQ(final long time) {
 
@@ -130,7 +140,7 @@ class XBitmap {
      * @param fileName 原文件名
      * @param time     新文件名
      */
-    static void saveBitmap(File fileName, long time) {
+    private static void saveBitmap(File fileName, long time) {
 
         String dest = File_Image_Saved + String.valueOf(time);
         try (FileChannel inputChannel = new FileInputStream(fileName).getChannel();
