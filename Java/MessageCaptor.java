@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2017.
- * qsboy.com 版权所有
- */
-
 package com.qiansheng.messagecapture;
 
 import android.accessibilityservice.AccessibilityService;
@@ -26,18 +21,6 @@ import static com.qiansheng.messagecapture.Debug.ServerOnConnected;
 import static com.qiansheng.messagecapture.MainActivity.File_Withdraw;
 import static com.qiansheng.messagecapture.XBitmap.getImageFileInQQ;
 
-/**
- * 防撤回神器 主要代码
- * 使用了安卓的 辅助功能类 AccessibilityService
- * 所有的高权限的处理都在这里完成
- * 这个类本是Google设计为盲人或者视觉障碍服务的,使他们也能用手机
- * (国外对残疾人的关爱真是很到位)
- * 在经过一系列配置之后,我就能通过这个类来获取屏幕,以及通知栏信息了
- * 我把截获的信息按名称保存到文件中,再在有撤回的时候回去查找
- * 主要技术点:
- * Search类里的系列方法, 我底下的注释已经很详细了
- *
- */
 public class MessageCaptor extends AccessibilityService {
 
     final String TAG = "MessageCaptor";
@@ -82,64 +65,221 @@ public class MessageCaptor extends AccessibilityService {
         AccessibilityNodeInfo nodeInfo = event.getSource();
         is_wx = event.getPackageName().equals("com.tencent.mm");
 
+//        Log.w(TAG, "event : " + eventType);
+
         switch (eventType) {
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-                //在屏幕切换时,如果用户是第一次使用app,则推送一条表示成功的通知
-                if (xFile.isShowCheckedNotice())
+                if (xFile.ifShowCheckedNotice()) {
                     new XNotification(this).printSuccess();
+                }
                 break;
 
             case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
-                //顶部通知栏状态改变
-                getNotification(event);
+                Log.i(TAG, "Notification Changed");
+                List<CharSequence> texts = event.getText();
+                if (texts.isEmpty()) break;
+                for (CharSequence text : texts) {
+                    String content = text.toString();
+                    Log.w(TAG, "Notification Text:" + content);
+                    if (!content.equals("null"))
+                        if (!content.equals("你的帐号在电脑登录"))
+                            getNotification(content);
+                }
                 break;
             case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
                 if (nodeInfo == null)
                     return;
-
-                //只需在改变类型为文字时执行添加操作
-                //大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
                 int types = event.getContentChangeTypes();
-                if (types != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+
+//                Log.w(TAG, "type : " + types);
+
+                if (types != 2)                     //text_change_type
                     break;
                 CharSequence cs = nodeInfo.getText();
                 if (cs == null)
                     break;
-
                 Log.w(TAG, "Text Changed : " + cs);
 
                 //判断是不是QQ聊天时其他人发的消息
-                if (isOtherConversation(cs))
-                    break;
+                String string = cs.toString();
+                int len = cs.length();
+                int index1 = string.indexOf(":");
+                if (index1 > 0) {
+                    if (len - index1 == 3)          //是时间
+                        break;
+                    String name = string.substring(0, index1);
+                    Log.i(TAG, "name: " + name);
+                    //如果在联系人列表里出现过的,那么就是在其他人的聊天界面
+                    if (QQ_NameList.contains(name)) {
+                        String content = string.substring(index1);
+                        xFile.writeFile(content, name);
+                        break;
+                    } else {
+                        //判断是不是群消息
+                        int index2 = string.indexOf("-");
+                        if (index2 > 0) {
+                            name = string.substring(0, index2);
+                            Log.i(TAG, "name: " + name);
+                            if (QQ_NameList.contains(name)) {
+                                String content = string.substring(index1);
+                                xFile.writeFile(content, name);
+                                break;
+                            }
+                        }
+                    }
+                }
 
-                //添加新消息至本地文件
                 addNewMessage = new AddNewMessage();
                 mHandler.post(addNewMessage);
 
                 break;
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                //点击事件
                 if (nodeInfo == null)
-                    break;
+                    return;
                 if (nodeInfo.getText() == null)
                     break;
                 //只有点击了"撤回一条消息"才会继续执行
-                if (!nodeInfo.getText().toString().contains(TEXT_WITHDRAW))
+                if (!nodeInfo.getText().toString().contains(TEXT_WITHDRAW)) {
+//                    getNodes(getRootInActiveWindow());
                     break;
-
+                }
                 String name = getName();
 
-                //处理点击事件,单击双击等
-                onClick(event, name);
+                ClickTime3 = ClickTime2;
+                ClickTime2 = ClickTime;
+                ClickTime = event.getEventTime();
+                if ((ClickTime - ClickTime3) < 600) {
+                    //三击
+                    if (doubleClick != null)
+                        mHandler.removeCallbacks(doubleClick);
+                    if (singleClick != null)
+                        mHandler.removeCallbacks(singleClick);
+                    trebleClick = new TrebleClick(name);
+                    mHandler.post(trebleClick);
+                } else if ((ClickTime - ClickTime2) < 300) {
+                    //双击
+                    if (singleClick != null)
+                        mHandler.removeCallbacks(singleClick);
+                    doubleClick = new DoubleClick(name);
+                    mHandler.postDelayed(doubleClick, 300);
+                    ClickTime2 = ClickTime;
+                } else {
+                    //单击
+                    singleClick = new SingleClick(name);
+                    mHandler.postDelayed(singleClick, 300);
+                }
 
                 break;
+        }
+    }
+
+    /**
+     * 判断撤回消息列表里是否存在当前的聊天对象 如果有,就直接输出
+     * 如果没有,就查找
+     */
+    class SingleClick implements Runnable {
+
+        String name;
+
+        SingleClick(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+            Log.w(TAG, "Single Click");
+            if (WD_NameList.contains(name)) {
+                String text = WD_MsgList.get(WD_NameList.indexOf(name));
+                Log.w(TAG, "text : " + text);
+                XToast.makeText(getApplicationContext(), text).show();
+            } else {
+                new Search(name);
+            }
+        }
+    }
+
+    /**
+     * 直接查找
+     */
+    class DoubleClick implements Runnable {
+
+        String name;
+
+        DoubleClick(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+            Log.e(TAG, "Double Click");
+            new Search(name);
 
         }
     }
 
     /**
-     * 查找的主函数
+     * 删除当前联系人加入的最后一行消息
+     * 在滚屏和切换窗口时会多加消息
+     * 主要是调试用
      */
+    class TrebleClick implements Runnable {
+
+        String name;
+
+        TrebleClick(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+
+            Log.e(TAG, "TREBLE CLICKED");
+
+            new XFile.RemoveLine(name, getApplicationContext()).remove();
+
+        }
+    }
+
+    /**
+     * 往本地加内容
+     */
+    class AddNewMessage implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+
+                List<String> list = new Search().getScreen();
+                if (list.size() < 1) {
+                    Log.d(TAG, "Screen List is Empty, return");
+                    return;
+                }
+                String item = list.get(list.size() - 1);
+
+                Log.w(TAG, "MESSAGE IS " + item);
+                //判断是不是刚刚加过的 这边偷懒了没有去文件里查找确认
+                //微信会在滚屏时加入大量历史消息
+                if (item.equals(tempMessage)) {
+                    Log.d(TAG, "Equal to Last Msg, return");
+                    return;
+                }
+                //给消息加上时间戳
+                Date date = new Date();
+                String string = item + sdf.format(date);
+                tempMessage = item;
+                String name = getName();
+                if (!QQ_NameList.contains(name)) {
+                    QQ_NameList.add(name);
+                    Log.w(TAG, "add new name");
+                }
+                xFile.writeFile(string, name);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     class Search {
 
         Date start = new Date();
@@ -153,25 +293,19 @@ public class MessageCaptor extends AccessibilityService {
         int childCount;
         String contentScreen;
 
-        /**
-         * 自己的文件类
-         * 有输出前后一行等方法
-         */
-        XFile.Search search;
-
         //search的变量
         List<String> aroundSting;
+        XFile.Search search;
         String line;
         String content;
-        String target;                  //撤回前后的内容
-        int size;                       //要找的数量
-        int num = 0;                    //连续撤回的数量
-        boolean flag = false;           //是正着扫还是反着扫
+        String target;
+        int size;                                                   //要找的数量
+        int num = 0;
+        boolean flag = false;
 
         List<String> screenList = new ArrayList<>();
         List<String> listMsg = new ArrayList<>();
 
-        //给getScreen调用的无参构造方法
         Search() {
         }
 
@@ -189,17 +323,12 @@ public class MessageCaptor extends AccessibilityService {
             size = aroundSting.size();
             Log.d(TAG, "size: " + size);
 
-            /**
-             * 从列表右边开始扫 就是先找撤回消息的前一句再根据这个找下一句
-             */
+            //从列表右边开始扫 就是先找撤回消息的前一句再根据这个找下一句
             for (int i = size - 1; i >= 0; i--)
                 scan(i);
 
-            /**
-             * 如果有没找到就换个方向扫 就是先找撤回消息的后一句再根据这个找前一句
-             */
+            //如果有没找到就换个方向扫 就是先找撤回消息的后一句再根据这个找前一句
             if (listMsg.size() == 0 || num > 0) {
-                search.seekEnd();
                 num = 0;
                 flag = true;
                 Log.e(TAG, "scan from bottom");
@@ -209,10 +338,7 @@ public class MessageCaptor extends AccessibilityService {
                     scan(i);
             }
 
-            /**
-             * 如果还没找到,就从最近写入的地方读一条出来
-             * 最多从最近添加的两条里面找
-             */
+            //如果还没找到,就从最近写入的地方读一条出来
             if (listMsg.size() == 0 || num > 0) {
                 Log.w(TAG, "still not found");
                 search.seekEnd();
@@ -230,9 +356,7 @@ public class MessageCaptor extends AccessibilityService {
                 }
             }
 
-            /**
-             * 最后集中写入文件
-             */
+            //最后集中写入文件
             if (listMsg.size() > 0) {
                 List<String> addedList = new ArrayList<>();
                 WD_MsgList = XListAdapter.MsgList;
@@ -277,13 +401,13 @@ public class MessageCaptor extends AccessibilityService {
                 Log.i(TAG, "num:" + num);
                 while (true) {
                     line = search.nextLine();                       //往下找
-                    if (line == null)                               //找完了 没找到
+                    if (line == null) {                             //找完了 没找到
+                        if (!flag) {                                //如果是从右往左扫的
+                            flag = true;                            //待会儿换个方向在扫一次
+                        }
                         return;
+                    }
                     content = getContent(line);                     //提取一行中的内容
-
-                    if (content == null)
-                        continue;
-
                     if (target.equals(content)) {                   //匹配到了list里的内容
                         Log.w(TAG, "search: FOUND " + target);
                         if (flag)                                   //如果找的是后一句
@@ -347,7 +471,7 @@ public class MessageCaptor extends AccessibilityService {
                 boolean b = getImageFileInQQ(time);
                 if (b)
                     line = "#image" + time + getTime_String(line);
-                else line = "由于该图片曾经发过 所以无法找到...哭" + getTime_String(line);
+                else line = "由于该图片曾经发过\n所以无法找到...哭" + getTime_String(line);
             }
 
             listMsg.add(line);
@@ -361,6 +485,7 @@ public class MessageCaptor extends AccessibilityService {
          * 所以不能直接用nodeInfo.findAccessibilityNodeInfosByViewId(resourceID);
          * 所以我的解决方法是通过解析布局,通过根布局慢慢getChild
          * id好改,布局就不好改了
+         * <p>
          * 找出来的内容只有对方发送的(可以加上自己发送的但没必要)
          *
          * @return ScreenList
@@ -379,8 +504,11 @@ public class MessageCaptor extends AccessibilityService {
                     } catch (Exception ignored) {
                     }
                     if (screenList.size() == 0) {
-                        n1 = nodeInfo.getChild(8).getChild(0).getChild(4);
-                        getScreenList_wx(screenList, n1);
+                        try {
+                            n1 = nodeInfo.getChild(8).getChild(0).getChild(4);
+                            getScreenList_wx(screenList, n1);
+                        } catch (Exception ignored) {
+                        }
                     }
                 } else {
                     try {
@@ -389,8 +517,11 @@ public class MessageCaptor extends AccessibilityService {
                     } catch (Exception ignored) {
                     }
                     if (screenList.size() == 0) {
-                        n1 = nodeInfo.getChild(4);
-                        getScreenList_qq(screenList, n1);
+                        try {
+                            n1 = nodeInfo.getChild(4);
+                            getScreenList_qq(screenList, n1);
+                        } catch (Exception ignored) {
+                        }
                     }
 //                //通过ID查找消息,但测试出来有时候会找不全
 //                String resourceID = "com.tencent.mobileqq:id/chat_item_content_layout";
@@ -416,7 +547,7 @@ public class MessageCaptor extends AccessibilityService {
         }
 
         /**
-         * 先找到"某某撤回一条消息"然后把这之 前 的内容抓下来存入List
+         * 先找到"某某撤回一条消息"然后把这之前的内容抓下来存入List
          *
          * @return Item before withdraw
          */
@@ -426,32 +557,35 @@ public class MessageCaptor extends AccessibilityService {
 
             List<String> preSting = new ArrayList<>();
 
-            try {
-                if (is_wx) {
+            if (is_wx) {
+                try {
+                    n1 = nodeInfo.getChild(0).getChild(0).getChild(4);
+                    getPreString_wx(preSting, n1);
+                } catch (Exception ignored) {
+                }
+                if (preSting.size() == 0) {
                     try {
-                        n1 = nodeInfo.getChild(0).getChild(0).getChild(4);
-                        getPreString_wx(preSting, n1);
-                    } catch (Exception ignored) {
-                    }
-                    if (preSting.size() == 0) {
                         n1 = nodeInfo.getChild(8).getChild(0).getChild(4);
                         getPreString_wx(preSting, n1);
+                    } catch (Exception ignored) {
                     }
+                }
 
-                } else {
-                    // QQ
+            } else {
+                // QQ
+                try {
+                    n1 = nodeInfo.getChild(5);
+                    getPreString_qq(preSting, n1);
+                } catch (Exception ignored) {
+                }
+
+                if (preSting.size() == 0) {
                     try {
-                        n1 = nodeInfo.getChild(5);
+                        n1 = nodeInfo.getChild(4);
                         getPreString_qq(preSting, n1);
                     } catch (Exception ignored) {
                     }
-
-                    if (preSting.size() == 0) {
-                        n1 = nodeInfo.getChild(4);
-                        getPreString_qq(preSting, n1);
-                    }
                 }
-            } catch (Exception ignored) {
             }
 
             if (preSting.size() == 0)
@@ -467,7 +601,7 @@ public class MessageCaptor extends AccessibilityService {
         }
 
         /**
-         * 先找到"某某撤回一条消息"然后把这之 后 的内容抓下来存入List
+         * 先找到"某某撤回一条消息"然后把这之前的内容抓下来存入List
          * 用于 撤回的前一句找不到的情况
          *
          * @return Item after withdraw
@@ -478,32 +612,35 @@ public class MessageCaptor extends AccessibilityService {
 
             List<String> aftSting = new ArrayList<>();
 
-            try {
-                if (is_wx) {
+            if (is_wx) {
+                try {
+                    n1 = nodeInfo.getChild(0).getChild(0).getChild(4);
+                    getAftString_wx(aftSting, n1);
+                } catch (Exception ignored) {
+                }
+                if (aftSting.size() == 0) {
                     try {
-                        n1 = nodeInfo.getChild(0).getChild(0).getChild(4);
-                        getAftString_wx(aftSting, n1);
-                    } catch (Exception ignored) {
-                    }
-                    if (aftSting.size() == 0) {
                         n1 = nodeInfo.getChild(8).getChild(0).getChild(4);
                         getAftString_wx(aftSting, n1);
+                    } catch (Exception ignored) {
                     }
+                }
 
-                } else {
-                    // QQ
+            } else {
+                // QQ
+                try {
+                    n1 = nodeInfo.getChild(5);
+                    getAftString_qq(aftSting, n1);
+                } catch (Exception ignored) {
+                }
+
+                if (aftSting.size() == 0) {
                     try {
-                        n1 = nodeInfo.getChild(5);
+                        n1 = nodeInfo.getChild(4);
                         getAftString_qq(aftSting, n1);
                     } catch (Exception ignored) {
                     }
-
-                    if (aftSting.size() == 0) {
-                        n1 = nodeInfo.getChild(4);
-                        getAftString_qq(aftSting, n1);
-                    }
                 }
-            } catch (Exception ignored) {
             }
 
             if (aftSting.size() == 0)
@@ -643,193 +780,14 @@ public class MessageCaptor extends AccessibilityService {
     }
 
     /**
-     * 处理点击事件 单击多击
-     * 我这边两次点击时间差为300毫秒
-     */
-    private void onClick(AccessibilityEvent event, String name) {
-        ClickTime3 = ClickTime2;
-        ClickTime2 = ClickTime;
-        ClickTime = event.getEventTime();
-        if ((ClickTime - ClickTime3) < 600) {
-            //三击 先取消双击单击的post
-            if (doubleClick != null)
-                mHandler.removeCallbacks(doubleClick);
-            if (singleClick != null)
-                mHandler.removeCallbacks(singleClick);
-            trebleClick = new TrebleClick(name);
-            mHandler.post(trebleClick);
-            //防止连按四下多次执行三击操作
-            ClickTime3 = 0;
-        } else if ((ClickTime - ClickTime2) < 300) {
-            //双击 先取消单击的post
-            if (singleClick != null)
-                mHandler.removeCallbacks(singleClick);
-            doubleClick = new DoubleClick(name);
-            mHandler.postDelayed(doubleClick, 300);
-        } else {
-            //单击
-            singleClick = new SingleClick(name);
-            mHandler.postDelayed(singleClick, 300);
-        }
-    }
-    /**
-     * 单击
-     * 判断撤回消息列表里是否存在当前的聊天对象 如果有,就直接输出
-     * 如果没有,就查找
-     */
-
-    class SingleClick implements Runnable {
-
-        String name;
-
-        SingleClick(String name) {
-            this.name = name;
-        }
-        @Override
-        public void run() {
-            Log.w(TAG, "Single Click");
-            if (WD_NameList.contains(name)) {
-                String text = WD_MsgList.get(WD_NameList.indexOf(name));
-                Log.w(TAG, "text : " + text);
-                XToast.makeText(getApplicationContext(), text).show();
-            } else {
-                new Search(name);
-            }
-        }
-
-    }
-    /**
-     * 双击
-     * 直接查找
-     */
-
-    class DoubleClick implements Runnable {
-
-        String name;
-
-        DoubleClick(String name) {
-            this.name = name;
-        }
-        @Override
-        public void run() {
-            Log.e(TAG, "Double Click");
-            new Search(name);
-
-        }
-
-    }
-    /**
-     * 三击
-     * 删除当前联系人加入的最后一行消息
-     * 在滚屏和切换窗口时会多加消息
-     * 主要是调试用
-     */
-
-    class TrebleClick implements Runnable {
-
-        String name;
-
-        TrebleClick(String name) {
-            this.name = name;
-        }
-        @Override
-        public void run() {
-
-            Log.e(TAG, "TREBLE CLICKED");
-
-            new XFile.RemoveLine(name, getApplicationContext()).remove();
-
-        }
-
-    }
-    /**
-     * 往本地写内容
-     */
-
-    class AddNewMessage implements Runnable {
-        @Override
-        public void run() {
-            try {
-
-                List<String> list = new Search().getScreen();
-                if (list.size() < 1) {
-                    Log.d(TAG, "Screen List is Empty, return");
-                    return;
-                }
-                String item = list.get(list.size() - 1);
-
-                Log.w(TAG, "MESSAGE IS " + item);
-                //判断是不是刚刚加过的 这边偷懒了没有去文件里查找确认
-                //微信会在滚屏时加入大量历史消息
-                if (item.equals(tempMessage)) {
-                    Log.d(TAG, "Equal to Last Msg, return");
-                    return;
-                }
-                //给消息加上时间戳
-                Date date = new Date();
-                String line = item + sdf.format(date);
-                tempMessage = item;
-                String name = getName();
-                if (!QQ_NameList.contains(name)) {
-                    QQ_NameList.add(name);
-                    Log.w(TAG, "add new name");
-                }
-                xFile.writeFile(line, name);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    /**
-     * 判断是否是在其他人的聊天界面收到了消息
+     * 把已经存下来的名字拉到一个Set里
      * 为了在 QQ-不是当前联系人-发来消息 时检查是否出现过这个人
+     * 因为微信不一样,只要是不在当前聊天窗口发来的消息都会给Notification
      * QQ比较重,会在当前屏幕生成一个内部的弹窗
-     * 这种消息我截下来和普通消息一样,只是内容是这样的形式:
+     * 这种消息我截下来和普通消息一样,只是内容里会有一个
      * "Name" + ' : ' + "Message"
      * 我根据这里是否存在冒号
      * 然后判断Name是否在NameList中来区分 QQ-普通消息和别人发的消息
-     * 但微信不一样,只要是不在当前聊天窗口发来的消息都会给Notification
-     */
-    private boolean isOtherConversation(CharSequence cs) {
-        String string = cs.toString();
-        int len = cs.length();
-        int index1 = string.indexOf(":");
-        if (index1 > 0) {
-            if (len - index1 == 3)          //是时间
-                return true;
-            String name = string.substring(0, index1);
-            Log.i(TAG, "name: " + name);
-            //如果在联系人列表里出现过的,那么就是在其他人的聊天界面
-            if (QQ_NameList.contains(name)) {
-                String content = string.substring(index1 + 1);
-                Date date = new Date();
-                String line = content + sdf.format(date);
-                xFile.writeFile(line, name);
-                return true;
-            } else {
-                //判断是不是群消息
-                int index2 = string.indexOf("-");
-                if (index2 > 0) {
-                    name = string.substring(0, index2);
-                    Log.i(TAG, "name: " + name);
-                    if (QQ_NameList.contains(name)) {
-                        String content = string.substring(index1 + 1);
-                        Date date = new Date();
-                        String line = content + sdf.format(date);
-                        xFile.writeFile(line, name);
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 把已经存下来的名字拉到一个Set里
      *
      * @return Known Name List
      */
@@ -844,47 +802,6 @@ public class MessageCaptor extends AccessibilityService {
         }
 
         return nameList;
-
-    }
-
-    /**
-     * 把通知栏里截获的消息处理并写入本地
-     */
-    void getNotification(AccessibilityEvent event) {
-        Log.i(TAG, "Notification Changed");
-        List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0)
-            return;
-        for (CharSequence text : texts) {
-            if (text == null)
-                return;
-            String string = text.toString();
-            Log.w(TAG, "Notification Text:" + string);
-            if (string.equals("你的帐号在电脑登录"))
-                return;
-
-            String content;
-            String name;
-            String time;
-
-            int i = string.indexOf(':');
-            if (i < 1) {
-                Log.d(TAG, "Notification does not contains ':'");
-                return;
-            }
-            name = string.substring(0, i);
-            content = string.substring(i + 2);
-            //是QQ群消息
-            if (name.charAt(i - 1) == ')' && name.contains("(")) {
-                content = string.substring(i + 1);
-                name = name.substring(name.indexOf('(') + 1, name.indexOf(')'));
-            }
-            time = sdf.format(new Date());
-            Log.w(TAG, "name : " + name + "    content : " + content + "    time : " + time);
-            String line = content + time;
-            tempMessage = content;
-            xFile.writeFile(line, name);
-        }
 
     }
 
@@ -921,6 +838,44 @@ public class MessageCaptor extends AccessibilityService {
             Log.e(TAG, "Get Name ERROR !");
             return null;
         }
+    }
+
+    /**
+     * 把通知栏里截获的消息处理并写入本地
+     *
+     * @param text notification
+     */
+    void getNotification(String text) {
+        try {
+
+            Log.i(TAG, "GET TEXT IN NOTIFICATION");
+            if (text == null)
+                return;
+            String content;
+            String name;
+            String time;
+
+            int i = text.indexOf(':');
+            if (i < 1) {
+                Log.d(TAG, "Notification does not contains ':'");
+                return;
+            }
+            name = text.substring(0, i);
+            content = text.substring(i + 2);
+            //是QQ群消息
+            if (name.charAt(i - 1) == ')' && name.contains("(")) {
+                content = text.substring(i + 1);
+                name = name.substring(name.indexOf('(') + 1, name.indexOf(')'));
+            }
+            time = sdf.format(new Date());
+            Log.w(TAG, "name : " + name + "    content : " + content + "    time : " + time);
+            String string = content + time;
+            tempMessage = content;
+            xFile.writeFile(string, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -980,6 +935,7 @@ public class MessageCaptor extends AccessibilityService {
     /**
      * 调试工具
      * 用于输出屏幕的node信息
+     * (别问我为什么不用递归)
      */
     class GetNodes {
 
@@ -1010,27 +966,27 @@ public class MessageCaptor extends AccessibilityService {
             AccessibilityNodeInfo n0 = getRootInActiveWindow();
 
             try {
-                Log.v(TAG, "\nv0                            " + print(n0));
+                Log.v(TAG, "\nv0                           " + print(n0));
                 int v1 = n0.getChildCount();
                 for (int i1 = 0; i1 < v1; i1++) {
                     AccessibilityNodeInfo n1 = n0.getChild(i1);
-                    Log.v(TAG, "\n    v1: " + i1 + "                     " + print(n1));
+                    Log.v(TAG, "\n    v1: " + i1 + "                    " + print(n1));
                     int v2 = n1.getChildCount();
                     for (int i2 = 0; i2 < v2; i2++) {
                         AccessibilityNodeInfo n2 = n1.getChild(i2);
-                        Log.v(TAG, "\n        v2: " + i2 + "                 " + print(n2));
+                        Log.v(TAG, "\n        v2: " + i2 + "                " + print(n2));
                         int v3 = n2.getChildCount();
                         for (int i3 = 0; i3 < v3; i3++) {
                             AccessibilityNodeInfo n3 = n2.getChild(i3);
-                            Log.v(TAG, "\n            v3: " + i3 + "             " + print(n3));
+                            Log.v(TAG, "\n            v3: " + i3 + "            " + print(n3));
                             int v4 = n3.getChildCount();
                             for (int i4 = 0; i4 < v4; i4++) {
                                 AccessibilityNodeInfo n4 = n3.getChild(i4);
-                                Log.v(TAG, "\n                v4: " + i4 + "         " + print(n4));
+                                Log.v(TAG, "\n                v4: " + i4 + "        " + print(n4));
                                 int v5 = n4.getChildCount();
                                 for (int i5 = 0; i5 < v5; i5++) {
                                     AccessibilityNodeInfo n5 = n4.getChild(i5);
-                                    Log.v(TAG, "\n                    v5: " + i5 + "     " + print(n5));
+                                    Log.v(TAG, "\n                    v5: " + i5 + "    " + print(n5));
                                     int v6 = n5.getChildCount();
                                     for (int i6 = 0; i6 < v6; i6++) {
                                         AccessibilityNodeInfo n6 = n5.getChild(i6);
