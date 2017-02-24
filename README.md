@@ -3,8 +3,7 @@
 <br>
 ### 效果预览:
  ![效果预览][1]
-  [1]: http://www.qsboy.com/MessageCaptor/demo.gif
-  
+  [1]: https://github.com/JasonQS/Anti-recall/blob/master/demo.gif
   <br>
 ### 4.0版本主要更新:
   * 能显示QQ撤回的图片
