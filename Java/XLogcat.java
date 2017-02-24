@@ -70,7 +70,7 @@ class XLogcat {
         private Process logcatProcess;
         private BufferedReader mReader = null;
         private boolean mRunning = true;
-        String cmds = null;
+        String cmd = null;
         private String mPID;
         private FileOutputStream out = null;
         SimpleDateFormat sdf;
@@ -80,7 +80,7 @@ class XLogcat {
             mPID = pid;
             try {
                 out = new FileOutputStream(new File(dir, "MC-"
-                        + sdf.format(new Date()) + ".log"),true);
+                        + sdf.format(new Date()) + ".log"), true);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -93,11 +93,8 @@ class XLogcat {
              *
              * */
 
-//             cmds = "logcat *:e *:v | grep \"(" + mPID + ")\"";
-             cmds = "logcat  | grep \"(" + mPID + ")\"";//打印所有日志信息
-//            cmds = "logcat  | grep \"(" + ")\"";//打印所有日志信息
-//             cmds = "logcat -s way";//打印标签过滤信息
-//            cmds = "logcat *:e *:i | grep \"(" + mPID + ")\"";
+//            cmd = "logcat -s | grep \"(" + mPID + ")\"";
+            cmd = "logcat -s";
 
         }
 
@@ -109,7 +106,7 @@ class XLogcat {
         public void run() {
             sdf = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
             try {
-                logcatProcess = Runtime.getRuntime().exec(cmds);
+                logcatProcess = Runtime.getRuntime().exec(cmd);
                 mReader = new BufferedReader(new InputStreamReader(
                         logcatProcess.getInputStream()), 1024);
                 String line;

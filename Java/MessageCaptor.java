@@ -13,6 +13,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import static com.qiansheng.messagecapture.XBitmap.getImageFileInQQ;
  * 我把截获的信息按名称保存到文件中,再在有撤回的时候回去查找
  * 主要技术点:
  * Search类里的系列方法, 我底下的注释已经很详细了
- *
  */
 public class MessageCaptor extends AccessibilityService {
 
@@ -155,7 +155,7 @@ public class MessageCaptor extends AccessibilityService {
 
         /**
          * 自己的文件类
-         * 有输出前后一行等方法
+         * 有 输出前后一行 等方法
          */
         XFile.Search search;
 
@@ -180,10 +180,19 @@ public class MessageCaptor extends AccessibilityService {
 
             if (name == null) {
                 Log.e(TAG, "name is null !");
+                XToast.makeText(getApplicationContext(),
+                        "无法获取联系人名字,\n请打开调试功能再试一次,\n并联系软件作者").show();
                 return;
             }
 
-            search = new XFile.Search(MainActivity.File_Dir + name);
+            try {
+                search = new XFile.Search(MainActivity.File_Dir + name);
+            } catch (IOException e) {
+                XToast.makeText(getApplicationContext(),
+                        "打开软件之前的消息是看不到的,\n请仔细阅读注意事项,\n保证软件正常运行").show();
+                e.printStackTrace();
+                return;
+            }
 
             aroundSting = getPreString();
             size = aroundSting.size();
@@ -192,6 +201,7 @@ public class MessageCaptor extends AccessibilityService {
             /**
              * 从列表右边开始扫 就是先找撤回消息的前一句再根据这个找下一句
              */
+            flag = false;
             for (int i = size - 1; i >= 0; i--)
                 scan(i);
 
@@ -225,8 +235,21 @@ public class MessageCaptor extends AccessibilityService {
                     i++;
                     if (!screenList.contains(content)) {
                         addToListMsg();
+                        num--;
                         break;
                     }
+                }
+            }
+
+            /**
+             * 如果还是没找全的话
+             * 提醒不能对面整屏的撤回
+             */
+            if (listMsg.size() == 0 || num > 0) {
+                if (screenList.size() == 0) {
+                    line = "屏幕内必须有对方说过的一句话"
+                            + sdf.format(new Date());
+                    addToListMsg();
                 }
             }
 
@@ -268,6 +291,8 @@ public class MessageCaptor extends AccessibilityService {
         void scan(int i) {
 
             target = aroundSting.get(i);
+            //把换行变成空格
+            target = xFile.format(target);
             Log.i(TAG, "i: " + i);
             Log.w(TAG, "target : " + target);
             //连续撤回的次数 QQ是null 微信是文字_某某撤回了一条消息
@@ -338,8 +363,11 @@ public class MessageCaptor extends AccessibilityService {
 
         void addToListMsg() {
 
+            //如果这条是刚刚加过的(比如之前正向的scan)
             if (listMsg.contains(line))
-                return;
+                //但如果是两张图片的几率还是挺大的需要保留
+                if (!content.equals("[图片]"))
+                    return;
 
             //如果是图片的话把从QQ缓存里找来的图片保存到自己的文件夹下
             if (content.equals("[图片]")) {
@@ -366,8 +394,6 @@ public class MessageCaptor extends AccessibilityService {
          * @return ScreenList
          */
         List<String> getScreen() {
-
-            Date start = new Date();
 
             List<String> screenList = new ArrayList<>();
 
@@ -404,11 +430,6 @@ public class MessageCaptor extends AccessibilityService {
                 e.printStackTrace();
             }
 
-            if (screenList.size() == 0)
-                getNodes.get();
-
-            Date end = new Date();
-            Log.i(TAG, "get screen cost " + (end.getTime() - start.getTime()) + " mm");
             Log.w(TAG, "Screen List is: " + screenList);
 
             return screenList;
@@ -421,8 +442,6 @@ public class MessageCaptor extends AccessibilityService {
          * @return Item before withdraw
          */
         List<String> getPreString() {
-
-            Date start = new Date();
 
             List<String> preSting = new ArrayList<>();
 
@@ -457,9 +476,6 @@ public class MessageCaptor extends AccessibilityService {
             if (preSting.size() == 0)
                 getNodes.get();
 
-            Date end = new Date();
-            Log.i(TAG, "get preString cost " + (end.getTime() - start.getTime()) + " mm");
-
             Log.w(TAG, "pre String List is : " + preSting);
 
             return preSting;
@@ -473,8 +489,6 @@ public class MessageCaptor extends AccessibilityService {
          * @return Item after withdraw
          */
         List<String> getAftString() {
-
-            Date start = new Date();
 
             List<String> aftSting = new ArrayList<>();
 
@@ -508,9 +522,6 @@ public class MessageCaptor extends AccessibilityService {
 
             if (aftSting.size() == 0)
                 getNodes.get();
-
-            Date end = new Date();
-            Log.i(TAG, "get after String cost " + (end.getTime() - start.getTime()) + " mm");
 
             Log.w(TAG, "after String List is : " + aftSting);
 
@@ -672,12 +683,12 @@ public class MessageCaptor extends AccessibilityService {
             mHandler.postDelayed(singleClick, 300);
         }
     }
+
     /**
      * 单击
      * 判断撤回消息列表里是否存在当前的聊天对象 如果有,就直接输出
      * 如果没有,就查找
      */
-
     class SingleClick implements Runnable {
 
         String name;
@@ -685,6 +696,7 @@ public class MessageCaptor extends AccessibilityService {
         SingleClick(String name) {
             this.name = name;
         }
+
         @Override
         public void run() {
             Log.w(TAG, "Single Click");
@@ -698,11 +710,11 @@ public class MessageCaptor extends AccessibilityService {
         }
 
     }
+
     /**
      * 双击
      * 直接查找
      */
-
     class DoubleClick implements Runnable {
 
         String name;
@@ -710,6 +722,7 @@ public class MessageCaptor extends AccessibilityService {
         DoubleClick(String name) {
             this.name = name;
         }
+
         @Override
         public void run() {
             Log.e(TAG, "Double Click");
@@ -718,13 +731,13 @@ public class MessageCaptor extends AccessibilityService {
         }
 
     }
+
     /**
      * 三击
      * 删除当前联系人加入的最后一行消息
      * 在滚屏和切换窗口时会多加消息
      * 主要是调试用
      */
-
     class TrebleClick implements Runnable {
 
         String name;
@@ -732,6 +745,7 @@ public class MessageCaptor extends AccessibilityService {
         TrebleClick(String name) {
             this.name = name;
         }
+
         @Override
         public void run() {
 
@@ -742,10 +756,10 @@ public class MessageCaptor extends AccessibilityService {
         }
 
     }
+
     /**
      * 往本地写内容
      */
-
     class AddNewMessage implements Runnable {
         @Override
         public void run() {
@@ -937,9 +951,8 @@ public class MessageCaptor extends AccessibilityService {
             return line.substring(0, line.length() - 11);
         } catch (Exception e) {
             e.printStackTrace();
+            return "error";
         }
-        return null;
-
     }
 
     /**
@@ -1010,31 +1023,31 @@ public class MessageCaptor extends AccessibilityService {
             AccessibilityNodeInfo n0 = getRootInActiveWindow();
 
             try {
-                Log.v(TAG, "\nv0                            " + print(n0));
+                Log.e(TAG, "\nv0                            " + print(n0));
                 int v1 = n0.getChildCount();
                 for (int i1 = 0; i1 < v1; i1++) {
                     AccessibilityNodeInfo n1 = n0.getChild(i1);
-                    Log.v(TAG, "\n    v1: " + i1 + "                     " + print(n1));
+                    Log.e(TAG, "\n    v1: " + i1 + "                     " + print(n1));
                     int v2 = n1.getChildCount();
                     for (int i2 = 0; i2 < v2; i2++) {
                         AccessibilityNodeInfo n2 = n1.getChild(i2);
-                        Log.v(TAG, "\n        v2: " + i2 + "                 " + print(n2));
+                        Log.e(TAG, "\n        v2: " + i2 + "                 " + print(n2));
                         int v3 = n2.getChildCount();
                         for (int i3 = 0; i3 < v3; i3++) {
                             AccessibilityNodeInfo n3 = n2.getChild(i3);
-                            Log.v(TAG, "\n            v3: " + i3 + "             " + print(n3));
+                            Log.e(TAG, "\n            v3: " + i3 + "             " + print(n3));
                             int v4 = n3.getChildCount();
                             for (int i4 = 0; i4 < v4; i4++) {
                                 AccessibilityNodeInfo n4 = n3.getChild(i4);
-                                Log.v(TAG, "\n                v4: " + i4 + "         " + print(n4));
+                                Log.e(TAG, "\n                v4: " + i4 + "         " + print(n4));
                                 int v5 = n4.getChildCount();
                                 for (int i5 = 0; i5 < v5; i5++) {
                                     AccessibilityNodeInfo n5 = n4.getChild(i5);
-                                    Log.v(TAG, "\n                    v5: " + i5 + "     " + print(n5));
+                                    Log.e(TAG, "\n                    v5: " + i5 + "     " + print(n5));
                                     int v6 = n5.getChildCount();
                                     for (int i6 = 0; i6 < v6; i6++) {
                                         AccessibilityNodeInfo n6 = n5.getChild(i6);
-                                        Log.v(TAG, "\n                        v6: " + i6 + " " + print(n6));
+                                        Log.e(TAG, "\n                        v6: " + i6 + " " + print(n6));
                                     }
                                 }
                             }

@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -40,18 +39,13 @@ public class XFile extends AppCompatActivity {
         private String mPath;
         private RandomAccessFile rf;
         private int seek;
-        private int length;
-        private boolean flag;               //判断之前是否输出过next line 因为seek被多加了12
+        private int size;
 
-        Search(String path) {
+        Search(String path) throws IOException {
             mPath = path;
-            try {
-                rf = new RandomAccessFile(mPath, "r");
-                seekEnd();
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, "search : file not found");
-                e.printStackTrace();
-            }
+            rf = new RandomAccessFile(mPath, "r");
+            size = (int) rf.length();
+            seekEnd();
         }
 
         /**
@@ -62,39 +56,29 @@ public class XFile extends AppCompatActivity {
          * @return line
          */
         String nextLine() {
-            String line;
-            int c;
             try {
-                rf.seek(seek);
+                String line;
                 while (true) {
-                    if (seek < 0) {
+
+                    seek--;
+                    rf.seek(seek);
+
+                    if (seek == 0) {
                         Log.e(TAG, "File Read Over");
-                        return null;
-                    }
-
-                    c = rf.read();
-                    if (c == '\n') {
                         line = rf.readLine();
-                        seek -= 12;
-                        rf.seek(seek);
-                        if (line != null) {
-                            String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
-                            length = s.length();
-                            Log.v(TAG, "seek: " + (seek + 12));
-                            Log.d(TAG, "Next Line : " + s);
-                            flag = true;
-                            return s;
-                        }
-
-                    } else if (seek == 0) {
-                        line = (char) c + rf.readLine();
                         String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
                         Log.w(TAG, "The Last Line " + s);
-                        seek--;
                         return s;
-                    } else {
-                        seek--;
-                        rf.seek(seek);
+                    }
+
+                    if (rf.read() == '\n') {
+                        line = rf.readLine();
+                        if (line != null) {
+                            String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                            Log.v(TAG, "seek: " + seek);
+                            Log.d(TAG, "Next Line : " + s);
+                            return s;
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -108,31 +92,25 @@ public class XFile extends AppCompatActivity {
          * @return line
          */
         String preLine() {
-
-            //如果之前有read next line的话seek会多加
-            if (flag) {
-                flag = false;
-                seek += (13 + length);           //自己加上的12加上1的'/n'
-            } else seek += length;
-
             try {
-                String line = " ";
-                while (line.length() < 12) {
+
+                String line;
+                while (true) {
+
                     seek++;
+                    if (seek == size)
+                        return null;
                     rf.seek(seek);
-                    line = rf.readLine();
-                    if (line == null)
-                        return null;
-                    if (seek > rf.length())
-                        return null;
+
+                    if (rf.read() == '\n') {
+                        line = rf.readLine();
+                        String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+                        Log.v(TAG, "seek : " + seek);
+                        Log.i(TAG, "pre Line : " + s);
+                        return s;
+                    }
+
                 }
-
-                String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
-                Log.v(TAG, "seek : " + seek);
-                Log.i(TAG, "pre Line : " + s);
-                length = s.length();
-
-                return s;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -143,12 +121,7 @@ public class XFile extends AppCompatActivity {
          * 指针调到文件末尾
          */
         void seekEnd() {
-            try {
-                seek = (int) (rf.length() - 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            seek = (size - 1);
         }
 
         void closeFile() {
@@ -208,7 +181,7 @@ public class XFile extends AppCompatActivity {
                 int index = 0;
                 while (null != (str = reader.readLine())) {
                     if (index != lineNumber) {
-                        writer.write(str + "\r\n");
+                        writer.write(str + "\n");
                         Log.v(TAG, mFileName + " : " + str);
                     } else {
                         Log.w(TAG, "Remove : " + str);
@@ -239,14 +212,7 @@ public class XFile extends AppCompatActivity {
         if (content == null || fileName == null)
             return;
 
-        //把换行号换成空格,不然会打乱文件格式
-        StringBuilder builder = new StringBuilder(content);
-        int i;
-        while ((i = builder.indexOf("\n")) > 0) {
-            builder.replace(i, i + 1, " ");
-        }
-
-        content = builder.toString();
+        content = format(content);
 
         try {
             FileOutputStream fos = mContext.openFileOutput(fileName, Context.MODE_APPEND);
@@ -259,6 +225,22 @@ public class XFile extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 把换行号换成空格,不然会打乱文件格式
+     *
+     * @return 没有换行符的String
+     */
+    String format(String content) {
+        if (content == null)
+            return null;
+        StringBuilder builder = new StringBuilder(content);
+        int i;
+        while ((i = builder.indexOf("\n")) > 0) {
+            builder.replace(i, i + 1, " ");
+        }
+        return builder.toString();
     }
 
     /**
@@ -288,7 +270,7 @@ public class XFile extends AppCompatActivity {
     public void printFile(String fileName) {
         try {
             InputStreamReader read = new InputStreamReader(
-                    new FileInputStream(fileName), "utf-8");// 考虑到编码格式
+                    new FileInputStream(fileName), "utf-8");
             BufferedReader bufferedReader = new BufferedReader(read);
             String lineTxt;
             while ((lineTxt = bufferedReader.readLine()) != null) {
