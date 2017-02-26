@@ -9,10 +9,10 @@
 
 ### 废话不多说, 先看效果展示:
 #### 撤回文字消息:
-<img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px>
+   <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px>
 <br>
 #### 撤回图片消息:
-<img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px>
+   <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px>
 <hr>
 ### 软件使用方法
 要注意的地方软件里边我都有写, 这边简单写两句:
@@ -47,7 +47,9 @@
   * 同时会生成日志
   
   * 如果报issue请带上日志哦
-  
+
+<hr>
+
 ### 软件主要技术点
 #### (详细可以看源码, 我注释写的挺清楚了)
 
@@ -65,6 +67,8 @@
 
 7. **[4.0新增]**更完善的查找算法, 即使一次撤回10条也能不怕
 
+
+<hr>
 #### 快去下载体验吧
 
   
