@@ -14,12 +14,12 @@
 
 #### 撤回文字消息:
 
-  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01_.gif width=300px>
+  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px>
 <br>
 
 #### 撤回图片消息:
 
-  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02_.gif width=300px>
+  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px>
 <br>
 <hr>
 
