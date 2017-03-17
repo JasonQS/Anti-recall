@@ -13,11 +13,13 @@
 ### 废话不多说, 先看效果展示:
 
 #### 撤回文字消息:
-   <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px>
+<img src=http://omv5sejap.bkt.clouddn.com/demo01.gif width=300px>
+<!-- <!--    <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px> --> -->
 <br>
 
 #### 撤回图片消息:
-   <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px>
+<img src=http://omv5sejap.bkt.clouddn.com/demo02.gif width=300px>
+<!--    <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px> -->
 <br>
 
 ### 软件使用方法
@@ -68,13 +70,13 @@
 
 4. 把聊天记录存入本地, 有需要的时候查找, 如何正确的找到撤回的消息也是本程序一大**难点!**</p>
 
-5. **[4.0新增]**更复杂, 更完善的查找算法!
+5. **[4.0新增]** 更复杂, 更完善的查找算法!
 
-6. **[4.0新增]**根据图片消息发送的时间, 去QQ的图片缓存目录查找同时创建的文件, 实现**能查看撤回的图片!**
+6. **[4.0新增]** 根据图片消息发送的时间, 去QQ的图片缓存目录查找同时创建的文件, 实现**能查看撤回的图片!**
 
-7. **[4.0新增]**把联系人列表存入set, 即使不是和当前联系人发来的消息也能截获
+7. **[4.0新增]** 把联系人列表存入set, 即使不是和当前联系人发来的消息也能截获
 
-8. **[4.0新增]**更完善的查找算法, 即使一次撤回10条也能不怕
+8. **[4.0新增]** 更完善的查找算法, 即使一次撤回10条也能不怕
 
 9. **免Root!** 
 
