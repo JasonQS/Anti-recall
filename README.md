@@ -13,13 +13,13 @@
 ### 废话不多说, 先看效果展示:
 
 #### 撤回文字消息:
-<img src=http://omv5sejap.bkt.clouddn.com/demo01.gif width=300px>
-<!-- <!--    <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px> --> -->
+
+  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px>
 <br>
 
 #### 撤回图片消息:
-<img src=http://omv5sejap.bkt.clouddn.com/demo02.gif width=300px>
-<!--    <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px> -->
+
+  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px>
 <br>
 
 ### 软件使用方法
