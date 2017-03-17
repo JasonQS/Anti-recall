@@ -14,13 +14,14 @@
 
 #### 撤回文字消息:
 
-  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px>
+  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01_.gif width=300px>
 <br>
 
 #### 撤回图片消息:
 
-  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px>
+  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02_.gif width=300px>
 <br>
+<hr>
 
 ### 软件使用方法
 要注意的地方软件里边我都有写, 这边简单写两句:
