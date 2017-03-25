@@ -2,18 +2,24 @@
 <!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
+  ~
+  ~ Last modified 17-2-21 下午5:58
   -->
 
 <resources>
 
     <color name="colorTextLight">#eee</color>
 
-    <color name="colorName">#DDDDDD</color>
+    <color name="colorBackground">#edf8fa</color>
+    <color name="colorContent">#afdbfa</color>
+    <color name="colorName">#D0D0D0</color>
 
-    <color name="colorMenu">#c3e0e6</color>
-    <color name="colorBtnOn">#add9ca</color>
-    <color name="colorBtnOff">#c3e0e6</color>
+    <color name="colorMenu">#DAEEF2</color>
+    <color name="colorBtnOn">#B8E6D6</color>
+    <color name="colorBtnOff">#DAEEF2</color>
 
+    <color name="white">#FFFFFF</color>
+    <color name="hr">#11000000</color>
     <color name="transparent">#00000000</color>
 
 </resources>

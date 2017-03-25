@@ -61,6 +61,8 @@ public class XFile extends AppCompatActivity {
                 while (true) {
 
                     seek--;
+                    if (seek < 0)
+                        return null;
                     rf.seek(seek);
 
                     if (seek == 0) {
@@ -82,6 +84,7 @@ public class XFile extends AppCompatActivity {
                     }
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }
@@ -104,6 +107,8 @@ public class XFile extends AppCompatActivity {
 
                     if (rf.read() == '\n') {
                         line = rf.readLine();
+                        if (line == null)
+                            return null;
                         String s = new String(line.getBytes("ISO-8859-1"), "UTF-8");
                         Log.v(TAG, "seek : " + seek);
                         Log.i(TAG, "pre Line : " + s);
@@ -179,8 +184,17 @@ public class XFile extends AppCompatActivity {
                         new FileOutputStream(temp)));
                 String str;
                 int index = 0;
+                String tempS = " ";
                 while (null != (str = reader.readLine())) {
                     if (index != lineNumber) {
+                        // TODO: test
+//                        if (tempS.equals(str))
+//                            continue;
+//                        if ((str.contains(":") && str.contains("/")))
+//                            continue;
+//                        if (str.contains("null"))
+//                            continue;
+
                         writer.write(str + "\n");
                         Log.v(TAG, mFileName + " : " + str);
                     } else {
@@ -188,6 +202,7 @@ public class XFile extends AppCompatActivity {
                         XToast.makeText(mContext, str).show();
                     }
                     index++;
+                    tempS = str;
                 }
                 reader.close();
                 writer.close();
@@ -312,8 +327,15 @@ public class XFile extends AppCompatActivity {
                             continue;
                         Log.v(TAG, line);
 
-                        content = line.substring(0, i - 11);
-                        time = line.substring(i - 11, i);
+                        try {
+                            content = line.substring(0, i - 13);
+                            time = line.substring(i - 13, i);
+                        } catch (Exception e) {
+                            //为与4.0.3兼容
+                            content = line.substring(0, i - 11);
+                            time = line.substring(i - 11, i);
+
+                        }
                         name = line.substring(i + 1);
                         XListAdapter.MsgList.add(0, content);
                         XListAdapter.TimeList.add(0, time);

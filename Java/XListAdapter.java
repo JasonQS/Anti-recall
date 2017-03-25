@@ -95,8 +95,14 @@ class XListAdapter extends RecyclerView.Adapter {
 
         //设置时间
         String time;
-        time = TimeList.get(position);
+        try {
+            time = sdf.format(Long.parseLong(TimeList.get(position)));
+        } catch (Exception e) {
+            //为与4.0.3兼容
+            time = TimeList.get(position);
+        }
 
+        //4.0.3
         //为了布局 把原先时间的分隔符从空格改为换行
         if (time.contains(" ")) {
             String[] s = time.split(" ");
@@ -111,6 +117,7 @@ class XListAdapter extends RecyclerView.Adapter {
             String imageTime = text.substring(6);
             Bitmap bitmap = getLocalBitmap(imageTime);
             vh.getImage().setImageBitmap(bitmap);
+            vh.getTvMessage().setText(" ");
         } else {
             vh.getImage().setImageBitmap(null);
             vh.getTvMessage().setText(text);

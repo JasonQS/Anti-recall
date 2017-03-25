@@ -14,7 +14,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +58,6 @@ public class MessageCaptor extends AccessibilityService {
     TrebleClick trebleClick;
     AddNewMessage addNewMessage;
     XFile xFile;
-    GetNodes getNodes;
 
     @Override
     protected void onServiceConnected() {
@@ -67,7 +65,6 @@ public class MessageCaptor extends AccessibilityService {
         xFile = new XFile(this);
         QQ_NameList = getNameList();
         mHandler = new Handler();
-        getNodes = new GetNodes();
     }
 
     @Override
@@ -124,8 +121,11 @@ public class MessageCaptor extends AccessibilityService {
                 if (nodeInfo.getText() == null)
                     break;
                 //只有点击了"撤回一条消息"才会继续执行
-                if (!nodeInfo.getText().toString().contains(TEXT_WITHDRAW))
+                if (!nodeInfo.getText().toString().contains(TEXT_WITHDRAW)) {
+                    //test
+//                    new GetNodes();
                     break;
+                }
 
                 String name = getName();
 
@@ -181,7 +181,7 @@ public class MessageCaptor extends AccessibilityService {
             if (name == null) {
                 Log.e(TAG, "name is null !");
                 XToast.makeText(getApplicationContext(),
-                        "无法获取联系人名字,\n请打开调试功能再试一次,\n并联系软件作者").show();
+                        "无法获取联系人名字 请\nshutdown软件\n打开辅助功能\n打开软件").show();
                 return;
             }
 
@@ -189,7 +189,7 @@ public class MessageCaptor extends AccessibilityService {
                 search = new XFile.Search(MainActivity.File_Dir + name);
             } catch (IOException e) {
                 XToast.makeText(getApplicationContext(),
-                        "打开软件之前的消息是看不到的,\n请仔细阅读注意事项,\n保证软件正常运行").show();
+                        "打开软件之前的消息是看不到的").show();
                 e.printStackTrace();
                 return;
             }
@@ -247,8 +247,8 @@ public class MessageCaptor extends AccessibilityService {
              */
             if (listMsg.size() == 0 || num > 0) {
                 if (screenList.size() == 0) {
-                    line = "屏幕内必须有对方说过的一句话"
-                            + sdf.format(new Date());
+                    line = "屏幕内必须有对方说过的一句话\n/请不要暴力测试"
+                            + new Date().getTime();
                     addToListMsg();
                 }
             }
@@ -317,8 +317,16 @@ public class MessageCaptor extends AccessibilityService {
                             line = search.preLine();                //就找下一句
 
                         Log.i(TAG, "read : " + line);
-                        if (line == null)
+                        if (line == null) {                         //这种情况发生在target被刚写入的
+                            search.nextLine();
                             continue;                               //这一行可能是之后滚屏加进来的
+                        }
+
+                        if (aroundSting.contains(getContent(line))) {
+                            Log.w(TAG, "Screen List Contains this content , Continue");
+                            continue;
+                        }
+
                         content = getContent(line);
                         Log.e(TAG, "撤回的消息是: " + content);
 
@@ -375,8 +383,13 @@ public class MessageCaptor extends AccessibilityService {
                 boolean b = getImageFileInQQ(time);
                 if (b)
                     line = "#image" + time + getTime_String(line);
-                else line = "由于该图片曾经发过 所以无法找到...哭" + getTime_String(line);
+                else line = "该图片曾经发过\n所以无法找到" + getTime_String(line);
             }
+
+
+            //有时候getContent报错了就没有加时间会导致解析错误
+            if (line.length() < 13)
+                line += new Date().getTime();
 
             listMsg.add(line);
 
@@ -430,6 +443,10 @@ public class MessageCaptor extends AccessibilityService {
                 e.printStackTrace();
             }
 
+            // TODO: test
+            if (screenList.size() == 0)
+                new GetNodes();
+
             Log.w(TAG, "Screen List is: " + screenList);
 
             return screenList;
@@ -474,7 +491,7 @@ public class MessageCaptor extends AccessibilityService {
             }
 
             if (preSting.size() == 0)
-                getNodes.get();
+                new GetNodes();
 
             Log.w(TAG, "pre String List is : " + preSting);
 
@@ -521,7 +538,7 @@ public class MessageCaptor extends AccessibilityService {
             }
 
             if (aftSting.size() == 0)
-                getNodes.get();
+                new GetNodes();
 
             Log.w(TAG, "after String List is : " + aftSting);
 
@@ -539,6 +556,14 @@ public class MessageCaptor extends AccessibilityService {
                     if (n3.getText() != null) {
                         content = n3.getText().toString();
                         screenList.add(content);
+                    } else if (n3.getChildCount() == 3) {
+                        CharSequence charSequence = n3.getChild(2).getText();
+                        if (charSequence == null)
+                            continue;
+                        if (charSequence.toString().contains("红包")) {
+                            // TODO: 抢红包
+                            Log.e(TAG, "收到红包 !");
+                        }
                     }
                 }
             }
@@ -551,12 +576,25 @@ public class MessageCaptor extends AccessibilityService {
                 childCount = n2.getChildCount();
                 if (childCount != 0) {
                     n3 = n2.getChild(childCount - 1);
+
                     if (n3.getText() != null) {
                         content = n3.getText().toString();
                         screenList.add(content);
                     } else if (n3.getClassName().equals("android.widget.RelativeLayout")) {
-                        content = "[图片]";
-                        screenList.add(content);
+                        //判断是不是红包
+                        if (n3.getChildCount() == 3) {
+                            CharSequence charSequence = n3.getChild(2).getText();
+                            if (charSequence == null)
+                                continue;
+                            if (charSequence.toString().contains("红包")) {
+                                // TODO: 抢红包
+                                Log.e(TAG, "收到红包 !");
+//                                getHongBao(n3);
+                            }
+                        } else {
+                            content = "[图片]";
+                            screenList.add(content);
+                        }
                     }
                 }
             }
@@ -651,6 +689,42 @@ public class MessageCaptor extends AccessibilityService {
             }
         }
 
+    }
+
+    void getHongBao(AccessibilityNodeInfo nodeInfo) {
+
+        new GetNodes(nodeInfo);
+
+        if (!is_wx) {
+            CharSequence text = nodeInfo.getChild(1).getText();
+            if (text == null || text.toString().equals("已拆开")) {
+                Log.e(TAG, "已拆开 !");
+                return;
+            } else Log.w(TAG, "text : " + text);
+        }
+
+        if (!nodeInfo.isClickable()) {
+            Log.e(TAG, "unClickable ! ");
+            return;
+        }
+        if (!nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK)) {
+            Log.e(TAG, "click failed !");
+            return;
+        }
+
+        if (is_wx) {
+            if (nodeInfo.getChildCount() != 5) {
+                Log.e(TAG, "wx : childCount != 5 !");
+                return;
+            }
+
+            AccessibilityNodeInfo btn = nodeInfo.getChild(3);
+            if (!btn.isClickable()) {
+                Log.e(TAG, "wx : child unClickable !");
+                return;
+            }
+            btn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+        }
     }
 
     /**
@@ -764,7 +838,6 @@ public class MessageCaptor extends AccessibilityService {
         @Override
         public void run() {
             try {
-
                 List<String> list = new Search().getScreen();
                 if (list.size() < 1) {
                     Log.d(TAG, "Screen List is Empty, return");
@@ -776,12 +849,28 @@ public class MessageCaptor extends AccessibilityService {
                 //判断是不是刚刚加过的 这边偷懒了没有去文件里查找确认
                 //微信会在滚屏时加入大量历史消息
                 if (item.equals(tempMessage)) {
+                    //4.0.3:
+                    // 图片相同的可能性很大
+//                    if (!item.equals("[图片]")) {
+
                     Log.d(TAG, "Equal to Last Msg, return");
                     return;
+//                    }
                 }
+
+                if (item.contains(TEXT_WITHDRAW)) {
+                    Log.i(TAG, "Contains 撤回了一条消息 , return");
+                    return;
+                }
+
                 //给消息加上时间戳
-                Date date = new Date();
-                String line = item + sdf.format(date);
+                long date = new Date().getTime();
+
+                //4.0.3 保存的时间为格式化好的, 由于该格式只精确到分,查找图片的精度不够
+                //所以改为在显示的时候再加sdf.format
+                //String line = item + sdf.format(date);
+
+                String line = item + date;
                 tempMessage = item;
                 String name = getName();
                 if (!QQ_NameList.contains(name)) {
@@ -819,8 +908,8 @@ public class MessageCaptor extends AccessibilityService {
             //如果在联系人列表里出现过的,那么就是在其他人的聊天界面
             if (QQ_NameList.contains(name)) {
                 String content = string.substring(index1 + 1);
-                Date date = new Date();
-                String line = content + sdf.format(date);
+                long date = new Date().getTime();
+                String line = content + date;
                 xFile.writeFile(line, name);
                 return true;
             } else {
@@ -831,8 +920,8 @@ public class MessageCaptor extends AccessibilityService {
                     Log.i(TAG, "name: " + name);
                     if (QQ_NameList.contains(name)) {
                         String content = string.substring(index1 + 1);
-                        Date date = new Date();
-                        String line = content + sdf.format(date);
+                        long date = new Date().getTime();
+                        String line = content + date;
                         xFile.writeFile(line, name);
                         return true;
                     }
@@ -879,7 +968,6 @@ public class MessageCaptor extends AccessibilityService {
 
             String content;
             String name;
-            String time;
 
             int i = string.indexOf(':');
             if (i < 1) {
@@ -889,13 +977,14 @@ public class MessageCaptor extends AccessibilityService {
             name = string.substring(0, i);
             content = string.substring(i + 2);
             //是QQ群消息
-            if (name.charAt(i - 1) == ')' && name.contains("(")) {
-                content = string.substring(i + 1);
-                name = name.substring(name.indexOf('(') + 1, name.indexOf(')'));
-            }
-            time = sdf.format(new Date());
-            Log.w(TAG, "name : " + name + "    content : " + content + "    time : " + time);
-            String line = content + time;
+            if (!is_wx)
+                if (name.charAt(i - 1) == ')' && name.contains("(")) {
+                    content = string.substring(i + 1);
+                    name = name.substring(name.indexOf('(') + 1, name.indexOf(')'));
+                }
+            long date = new Date().getTime();
+            Log.w(TAG, "name : " + name + "    content : " + content + "    time : " + date);
+            String line = content + date;
             tempMessage = content;
             xFile.writeFile(line, name);
         }
@@ -931,7 +1020,7 @@ public class MessageCaptor extends AccessibilityService {
             Log.w(TAG, "name : " + s);
             return s;
         } else {
-            getNodes.get();
+            new GetNodes();
             Log.e(TAG, "Get Name ERROR !");
             return null;
         }
@@ -948,10 +1037,10 @@ public class MessageCaptor extends AccessibilityService {
     String getContent(String line) {
 
         try {
-            return line.substring(0, line.length() - 11);
+            return line.substring(0, line.length() - 13);
         } catch (Exception e) {
             e.printStackTrace();
-            return "error";
+            return "Error";
         }
     }
 
@@ -963,7 +1052,7 @@ public class MessageCaptor extends AccessibilityService {
      * @return time
      */
     String getTime_String(String line) {
-        return line.substring(line.length() - 11);
+        return line.substring(line.length() - 13);
     }
 
     /**
@@ -980,14 +1069,17 @@ public class MessageCaptor extends AccessibilityService {
      */
     long getTime_Long(String line) {
 
-        try {
-            Date date = sdf.parse(line.substring(line.length() - 11));
-            return date.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        //4.0.3
+//        try {
+//            Date date = sdf.parse(line.substring(line.length() - 11));
+//            return date.getTime();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
 
-        return 0;
+        String substring = line.substring(line.length() - 13);
+
+        return Long.parseLong(substring);
     }
 
     /**
@@ -1003,51 +1095,60 @@ public class MessageCaptor extends AccessibilityService {
             CharSequence packageName = nodeInfo.getPackageName();
             CharSequence className = nodeInfo.getClassName();
             boolean focusable = nodeInfo.isFocusable();
+            boolean clickable = nodeInfo.isClickable();
             Rect rect = new Rect();
             nodeInfo.getBoundsInScreen(rect);
 
-            StringBuilder builder = new StringBuilder()
-                    .append("package name: ").append(packageName).append(" \t")
-                    .append("location: ").append(rect).append(" \t")
-                    .append("text: ").append(text).append(" \t")
-                    .append("description: ").append(description).append(" \t")
-                    .append("class name: ").append(className).append(" \t")
-                    .append("focusable: ").append(focusable).append(" \t")
-                    .append('\n');
-
-            return builder.toString();
+            return "| " +
+                    "text: " + text + " \t" +
+                    "description: " + description + " \t" +
+                    "location: " + rect + " \t" +
+                    "package name: " + packageName + " \t" +
+                    "class name: " + className + " \t" +
+                    "focusable: " + focusable + " \t" +
+                    "clickable: " + clickable + " \t" +
+                    '\n';
 
         }
 
-        void get() {
+        //无参就打印根布局
+        GetNodes() {
             AccessibilityNodeInfo n0 = getRootInActiveWindow();
+            show(n0);
+        }
 
+        //传了参数就只打印这个节点下的所有自节点
+        GetNodes(AccessibilityNodeInfo n) {
+            show(n);
+        }
+
+        private void show(AccessibilityNodeInfo n) {
             try {
-                Log.e(TAG, "\nv0                            " + print(n0));
-                int v1 = n0.getChildCount();
+                Log.w(TAG, "\nv0                            " + print(n));
+                int v1 = n.getChildCount();
                 for (int i1 = 0; i1 < v1; i1++) {
-                    AccessibilityNodeInfo n1 = n0.getChild(i1);
-                    Log.e(TAG, "\n    v1: " + i1 + "                     " + print(n1));
+                    AccessibilityNodeInfo n1 = n.getChild(i1);
+                    Log.w(TAG, "\n    v1: " + i1 + "                     " + print(n1));
                     int v2 = n1.getChildCount();
                     for (int i2 = 0; i2 < v2; i2++) {
                         AccessibilityNodeInfo n2 = n1.getChild(i2);
-                        Log.e(TAG, "\n        v2: " + i2 + "                 " + print(n2));
+                        Log.w(TAG, "\n        v2: " + i2 + "                 " + print(n2));
                         int v3 = n2.getChildCount();
                         for (int i3 = 0; i3 < v3; i3++) {
                             AccessibilityNodeInfo n3 = n2.getChild(i3);
-                            Log.e(TAG, "\n            v3: " + i3 + "             " + print(n3));
+                            Log.w(TAG, "\n            v3: " + i3 + "             " + print(n3));
                             int v4 = n3.getChildCount();
                             for (int i4 = 0; i4 < v4; i4++) {
                                 AccessibilityNodeInfo n4 = n3.getChild(i4);
-                                Log.e(TAG, "\n                v4: " + i4 + "         " + print(n4));
+                                Log.w(TAG, "\n                v4: " + i4 + "         " + print(n4));
                                 int v5 = n4.getChildCount();
                                 for (int i5 = 0; i5 < v5; i5++) {
                                     AccessibilityNodeInfo n5 = n4.getChild(i5);
-                                    Log.e(TAG, "\n                    v5: " + i5 + "     " + print(n5));
+                                    Log.w(TAG, "\n                    v5: " + i5 + "     " + print(n5));
                                     int v6 = n5.getChildCount();
                                     for (int i6 = 0; i6 < v6; i6++) {
                                         AccessibilityNodeInfo n6 = n5.getChild(i6);
-                                        Log.e(TAG, "\n                        v6: " + i6 + " " + print(n6));
+                                        Log.w(TAG, "\n                        v6: " + i6 + " " + print(n6));
                                     }
                                 }
                             }

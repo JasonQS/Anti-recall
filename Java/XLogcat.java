@@ -92,9 +92,9 @@ class XLogcat {
              * 显示当前mPID程序的 E和W等级的日志.
              *
              * */
-
+            cmd = "logcat *:e *:d | grep \"(" + mPID + ")\"";
 //            cmd = "logcat -s | grep \"(" + mPID + ")\"";
-            cmd = "logcat -s";
+//            cmd = "logcat -s";
 
         }
 

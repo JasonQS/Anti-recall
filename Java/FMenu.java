@@ -12,10 +12,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import static com.qiansheng.messagecapture.Debug.DebugEnabled;
 
 public class FMenu extends Fragment implements View.OnClickListener {
 
@@ -62,6 +65,15 @@ public class FMenu extends Fragment implements View.OnClickListener {
         btn_skip.setOnClickListener(this);
         btn_debug.setOnClickListener(this);
 
+        if (DebugEnabled) {
+            XLogcat.getInstance().start();
+            view.findViewById(R.id.textView_debug).setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBtnOn));
+
+        } else {
+            XLogcat.getInstance().stop();
+            view.findViewById(R.id.textView_debug).setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorBtnOff));
+
+        }
     }
 
     @Override

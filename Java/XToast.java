@@ -44,7 +44,7 @@ class XToast {
         String s = text.toString();
         if (s.startsWith("#image")) {
             Log.w(TAG, "text : " + s);
-            String imageTime = s.substring(6);
+            String imageTime = s.substring(6,19);
             Bitmap bitmap = getLocalBitmap(imageTime);
             iv.setImageBitmap(bitmap);
             iv.setVisibility(View.VISIBLE);

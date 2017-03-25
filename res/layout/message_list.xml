@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
+  ~
+  ~ Last modified 17-2-21 下午5:58
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,87 +14,92 @@
     android:orientation="horizontal">
 
     <RelativeLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp">
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp">
 
         <!--名字-->
 
-        <LinearLayout
-            android:id="@+id/LinearLayout_Name"
+        <TextView
+            android:id="@+id/Text_Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="7dp"
-            android:background="@drawable/bg_name">
+            android:layout_marginBottom="5dp"
+            android:layout_marginStart="15dp"
+            android:text="Name"
+            android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/Text_Name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:maxWidth="100sp"
-                android:text="Name" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/Layout_Content_Time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/LinearLayout_Name"
-            android:layout_toStartOf="@+id/LinearLayout_Time">
+            android:layout_below="@id/Text_Name">
 
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/LinearLayout_Content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="7dp"
-                android:layout_marginStart="10dp"
-                android:background="@drawable/bg_content">
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="50dp"
+                android:layout_toStartOf="@+id/LinearLayout_Time">
 
-                <!--文字-->
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="7dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_content">
+
+                    <!--文字-->
+
+                    <TextView
+                        android:id="@+id/Text_Message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginBottom="7dp"
+                        android:text=""
+                        android:textSize="18sp" />
+
+                    <!--图片-->
+
+                    <ImageView
+                        android:id="@+id/Img_Message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:maxHeight="200dp"
+                        android:maxWidth="200dp" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!--时间-->
+
+            <LinearLayout
+                android:id="@+id/LinearLayout_Time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp">
 
                 <TextView
-                    android:id="@+id/Text_Message"
+                    android:id="@+id/Text_Time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text=""
-
-                    />
-
-                <!--图片-->
-
-                <ImageView
-                    android:id="@+id/Img_Message"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:maxHeight="200dp"
-                    android:maxWidth="200dp" />
-
-            </RelativeLayout>
-        </LinearLayout>
-
-        <!--时间-->
-
-        <LinearLayout
-            android:id="@+id/LinearLayout_Time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="5dp">
-
-            <TextView
-                android:id="@+id/Text_Time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="10:10\n12/12"
-                android:textColor="#666666" />
-        </LinearLayout>
-
+                    android:text="10:10\n12/12"
+                    android:textColor="#666666"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
+
+    <include layout="@layout/hr" />
 
 </RelativeLayout>

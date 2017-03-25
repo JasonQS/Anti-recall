@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
             if (ifCheckVersion())
                 new XUpdate(this).checkUpdate();
 
+        checkPermission();
+
     }
 
     void initView() {
@@ -122,22 +124,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(TAG, "on stop");
+    void checkPermission() {
+        if (!XCheckPermission.checkFloatWindowPermission(this)) {
+            // TODO: 2017/3/19 加一个对话框再跳转
+            AlertDialog dialog;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Dialog);
+            builder.setMessage("检测到您是小米手机, 请打开悬浮窗权限以保证软件正常运行");
+            builder.setPositiveButton("带我去设置", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    XCheckPermission.applyMiuiPermission(MainActivity.this);
+                }
+            });
 
-        System.gc();
+            dialog = builder.create();
+            dialog.show();
 
-    }
+        }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "on destroy");
-        finish();
-        System.gc();
-        Log.i(TAG, "gc");
     }
 
     public void removeItem(int position, XListAdapter mAdapter) {
@@ -228,10 +232,8 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
             NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            if (networkInfo != null
-                    && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                 Log.i(TAG, "isWifi");
-
                 return true;
             }
         }

@@ -1,6 +1,8 @@
 <!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
+  ~
+  ~ Last modified 17-2-21 下午5:58
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -68,11 +70,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/warn3" />
 
+                <include layout="@layout/hr" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/warn4" />
-
 
                 <TextView
                     android:layout_width="match_parent"
@@ -88,6 +91,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/warn7" />
+
+                <include layout="@layout/hr" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/warn8" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/warn9" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/warn10" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/warn11" />
             </LinearLayout>
 
             <LinearLayout
@@ -98,7 +123,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/warn8"
+                    android:text="@string/warn12"
                     android:textAlignment="center" />
 
                 <ImageView
@@ -109,7 +134,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/warn9"
+                    android:text="@string/warn13"
                     android:textAlignment="center" />
 
                 <ImageView
@@ -120,7 +145,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/warn10"
+                    android:text="@string/warn14"
                     android:textAlignment="center" />
 
 
@@ -129,7 +154,6 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginBottom="10dp"
                 android:background="#aaa" />
 
             <include layout="@layout/domain" />

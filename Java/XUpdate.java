@@ -53,10 +53,7 @@ class XUpdate {
         mSavePath = MainActivity.File_External_Storage;
         mAppName = mContext.getString(R.string.app_name) + ".apk";
         PATH =
-//                "http://www.qsboy.com/MessageCaptor/version.php";
                 "http://www.qsboy.com/MessageCaptor/version.html";
-//                "http://www.qsboy.com/MessageCaptor/version";
-//                "http://www.qsboy.com/MessageCapture/version";
 //                "http://www.qsboy.com/MessageCapture/version.html";
 //                "http://www.qsboy.com/mc/version";
     }

@@ -17,8 +17,6 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.qiansheng.messagecapture.MainActivity.File_Image_Saved;
@@ -70,60 +68,65 @@ class XBitmap {
      * @param time 图片的创建时间
      * @return 是否找到了图片
      */
-    static boolean getImageFileInQQ(final long time) {
+    static boolean getImageFileInQQ(long time) {
 
         final String path = Environment.getExternalStorageDirectory() + File.separator +
                 "tencent/MobileQQ/diskcache";
         final File f = new File(path);
-        final SimpleDateFormat sdf = MessageCaptor.sdf;
+//        final SimpleDateFormat sdf = MessageCaptor.sdf;
         Date start = new Date();
+        final long mTime = time / 1000 * 1000;
+        Log.i(TAG, "Image time : " + mTime);
 
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File file, String name) {
-                if (!name.endsWith("_hd"))
-                    return false;
-                try {
-                    File f = new File(file + File.separator + name);
-                    long l = f.lastModified();                          //系统文件修改时间
-                    String myString = sdf.format(l);                    //设为自己格式的时间
-                    Date myDate = sdf.parse(myString);                  //转换成Date
-                    long last = myDate.getTime();                       //转换成Long
-                    long diff = Math.abs(last - time);                  //求时间差
-                    if (diff < 10000) {
-                        Log.d(TAG, " ");
-                        Log.d(TAG, "File Name : " + name);
-                        Log.d(TAG, "last time : " + last);
-                        Log.d(TAG, "now  time : " + time);
-                        Log.d(TAG, "Diff Time : " + diff);
-                    }
-                    return (diff < 100);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                return false;
+                //4.0.3
+                //当时以为'hd'的是高清的, 后来发现并不是
+//                if (!name.endsWith("_hd"))
+//                    return false;
+                File f = new File(file + File.separator + name);
+                long l = f.lastModified();                          //系统文件修改时间
+                Log.v(TAG, "File time : " + l);
+
+                //4.0.3
+//                    String myString = sdf.format(l);                    //设为自己格式的时间
+//                    Date myDate = sdf.parse(myString);                  //转换成Date
+//                    long last = myDate.getTime();                       //转换成Long
+//                    long diff = Math.abs(last - time);                  //求时间差
+//                    if (diff < 10000) {
+//                        Log.d(TAG, " ");
+//                        Log.d(TAG, "File Name : " + name);
+//                        Log.d(TAG, "last time : " + last);
+//                        Log.d(TAG, "now  time : " + time);
+//                        Log.d(TAG, "Diff Time : " + diff);
+//                    }
+//                    return (diff < 100);
+                return l == mTime;
             }
         };
 
         File[] files = f.listFiles(filter);
         if (files == null || files.length == 0)
             return false;
-        File file = null;
-        if (files.length == 1)
-            file = files[0];
-        else {
-            //因为这边的查找精度只精确到分 所以可能会有重复的情况,这样就输出最近的那张图片
+        File file = files[0];
+
+//        4.0.3
+//        File file = null;
+//        if (files.length == 1)
+//            file = files[0];
+//        else {
+//            //因为这边的查找精度只精确到分 所以可能会有重复的情况,这样就输出最近的那张图片
             long l0 = 0;
             for (File fi : files) {
-                long l = fi.lastModified();
+                long l = fi.length();
                 if (l > l0) {
                     l0 = l;
                     file = fi;
                 }
             }
-        }
-
-        assert file != null;
+//        }
+//        assert file != null;
         Log.i(TAG, "image: " + file.getName());
 
         saveBitmap(file, time);

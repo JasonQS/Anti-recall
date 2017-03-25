@@ -1,6 +1,8 @@
 <!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
+  ~
+  ~ Last modified 17-2-21 下午5:58
   -->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
@@ -50,11 +52,9 @@
 
     <item>
         <shape android:shape="rectangle">
-            <gradient
-                android:angle="90"
-                android:endColor="#c0cad1"
-                android:startColor="#CCCCCC" />
             <corners android:radius="10dp" />
+            <solid android:color="@color/colorName" />
+
         </shape>
     </item>
 </layer-list>

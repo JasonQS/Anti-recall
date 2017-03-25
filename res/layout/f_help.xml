@@ -1,6 +1,8 @@
 <!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
+  ~
+  ~ Last modified 17-2-21 下午5:58
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -55,21 +57,17 @@
                     android:text="step1" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_column="2"
-                android:paddingBottom="0dp"
-                android:paddingTop="0dp">
+            <LinearLayout android:layout_column="2">
 
                 <TextView
                     android:layout_width="210dp"
                     android:layout_height="wrap_content"
+
                     android:text="@string/step1" />
             </LinearLayout>
         </TableRow>
 
-        <TableRow
-            android:paddingBottom="0dp"
-            android:paddingTop="0dp">
+        <TableRow android:paddingTop="0dp">
 
             <LinearLayout android:layout_column="0">
 
@@ -89,14 +87,13 @@
             </LinearLayout>
         </TableRow>
 
-        <TableRow android:paddingTop="0dp">
+        <LinearLayout android:paddingTop="0dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_column="2"
-                android:text="@string/step1_1" />
-        </TableRow>
+                android:text="@string/step3" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -132,9 +129,7 @@
                     android:text="如图" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_column="2"
-                android:paddingTop="0dp">
+            <LinearLayout android:layout_column="2">
 
                 <ImageView
                     android:layout_width="216dp"
