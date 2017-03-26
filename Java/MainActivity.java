@@ -62,14 +62,12 @@ public class MainActivity extends AppCompatActivity {
 
         xFile = new XFile(this);
 
-        //wifi环境下检查更新
-        if (isWifi())
-            if (ifCheckVersion())
-                new XUpdate(this).checkUpdate();
+        checkUpdate();
 
         checkPermission();
 
     }
+
 
     void initView() {
 
@@ -126,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
     void checkPermission() {
         if (!XCheckPermission.checkFloatWindowPermission(this)) {
-            // TODO: 2017/3/19 加一个对话框再跳转
             AlertDialog dialog;
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Dialog);
             builder.setMessage("检测到您是小米手机, 请打开悬浮窗权限以保证软件正常运行");
@@ -238,6 +235,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    public void checkUpdate(View view) {
+        //wifi环境下检查更新
+        XUpdate xUpdate = new XUpdate(this);
+        xUpdate.checkUpdate();
+        if (!xUpdate.needUpdate)
+            XToast.makeText(this, "已是最新版").show();
+
+    }
+
+    void checkUpdate() {
+        //wifi环境下检查更新
+        if (isWifi())
+            if (ifCheckVersion())
+                new XUpdate(this).checkUpdate();
     }
 
     /**

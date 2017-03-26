@@ -1,8 +1,6 @@
 <!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
-  ~
-  ~ Last modified 17-2-21 下午5:58
   -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -66,10 +64,15 @@
             android:text="@string/about_me_4" />
 
         <TextView
+            android:autoLink="web"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/about_me_5" />
-
+<!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content" -->
+    <!--android:autoLink="web"-->
+    <!--android:text=""/>-->
         <include layout="@layout/domain"/>
 
     </LinearLayout>

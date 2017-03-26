@@ -46,6 +46,8 @@ class XUpdate {
     private String TAG = "X-Update";
     private Intent intent;
 
+    boolean needUpdate = true;
+
     XUpdate(Context context) {
 
         mContext = context;
@@ -111,10 +113,12 @@ class XUpdate {
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
-        boolean a = serverVersion > localVersion;
+        boolean b = serverVersion > localVersion;
         Log.i(TAG, "local version code : " + localVersion);
-        Log.i(TAG, "need update?    " + a);
-        return a;
+        Log.i(TAG, "need update?    " + b);
+
+        needUpdate = b;
+        return b;
     }
 
     private void showNoticeDialog() {
@@ -169,14 +173,13 @@ class XUpdate {
                             Log.w(TAG, "用时 " + (end.getTime() - start.getTime()) + " mm");
                             Log.w(TAG, "存储位置 : " + apkFile);
 
-                            new XNotification(mContext,intent).showInstall();
-
                             break;
                         }
                         fos.write(buffer, 0, readNumber);
                     }
                     fos.close();
                     is.close();
+                    new XNotification(mContext,intent).showInstall();
 
                 } catch (Exception e) {
                     e.printStackTrace();

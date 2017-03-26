@@ -17,19 +17,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
 public class FAbout extends Fragment {
 
     TextView version;
-
-    ImageView image1;
-    ImageView image2;
-    ImageView image3;
-    ImageView image4;
-    ImageView image5;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,13 +33,6 @@ public class FAbout extends Fragment {
         version = (TextView) view.findViewById(R.id.version);
 
         setVersion();
-
-        image1 = (ImageView) view.findViewById(R.id.about_me_image_1);
-        image2 = (ImageView) view.findViewById(R.id.about_me_image_2);
-        image3 = (ImageView) view.findViewById(R.id.about_me_image_3);
-        image4 = (ImageView) view.findViewById(R.id.about_me_image_4);
-        image5 = (ImageView) view.findViewById(R.id.about_me_image_5);
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,21 +74,6 @@ public class FAbout extends Fragment {
     }
 
     String TAG = "about";
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "on destroy");
-
-        image1 = null;
-        image2 = null;
-        image3 = null;
-        image4 = null;
-        image5 = null;
-
-        System.gc();
-
-    }
 
     @Override
     public void onDetach() {

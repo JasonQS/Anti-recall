@@ -1,8 +1,6 @@
 <!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
-  ~
-  ~ Last modified 17-2-21 下午5:58
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,13 +10,14 @@
     android:theme="@style/help"
     tools:context="com.qiansheng.messagecapture.FAbout">
 
-    <include layout="@layout/domain"/>
+    <include layout="@layout/domain" />
 
     <TableLayout
         android:id="@+id/tableLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:paddingBottom="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,11 +42,9 @@
             android:layout_height="2dp"
             android:background="#aaa" />
 
-        <TableRow
-            android:paddingBottom="0dp">
+        <TableRow android:paddingBottom="0dp">
 
-            <LinearLayout
-                android:layout_column="0">
+            <LinearLayout android:layout_column="0">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,14 +63,16 @@
             </LinearLayout>
         </TableRow>
 
-        <TableRow android:paddingTop="0dp">
+        <TableRow
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp">
 
-            <LinearLayout
-                android:layout_column="0">
+            <LinearLayout android:layout_column="0">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="checkUpdate"
                     android:text="检查更新" />
             </LinearLayout>
 
@@ -81,21 +80,30 @@
                 android:layout_column="2"
                 android:gravity="end">
 
-                <TextView
-                    android:layout_width="180dp"
-                    android:layout_height="wrap_content"
-                    android:text="已是最新版"
-                    android:textAlignment="viewEnd" />
             </LinearLayout>
         </TableRow>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#aaa" />
+        <TableRow
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp">
+
+            <LinearLayout android:layout_column="0">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="更新内容" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_column="2"
+                android:gravity="end" />
+        </TableRow>
+
     </TableLayout>
 
-    <HorizontalScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/textView_address"
@@ -104,120 +112,32 @@
         android:paddingTop="0dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp">
+
+            <include layout="@layout/hr" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginStart="20dp"
-                android:ems="1"
-                android:text="\n\n\n更新内容:" />
+                android:text="@string/update_4.1" />
 
-            <LinearLayout
+            <include layout="@layout/hr" />
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="30dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:layout_marginStart="20dp"
-                android:orientation="vertical">
+                android:text="@string/update_4.0" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="可以看到撤回的图片啦" />
-
-                <ImageView
-                    android:id="@+id/about_me_image_1"
-                    android:layout_width="216dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/image_type" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="可以查看连续撤回的啦" />
-
-                <ImageView
-                    android:id="@+id/about_me_image_2"
-                    android:layout_width="216dp"
-                    android:layout_height="wrap_content"
-                    android:baselineAlignBottom="true"
-                    android:src="@drawable/image_multiple_withdraw" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="在其他人的聊天界面也可以啦" />
-
-                <ImageView
-                    android:id="@+id/about_me_image_3"
-                    android:layout_width="216dp"
-                    android:layout_height="wrap_content"
-                    android:baselineAlignBottom="true"
-                    android:src="@drawable/image_on_other_chat_interface" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="妈妈再也不用担心我找不到辅助功能啦" />
-
-                <ImageView
-                    android:id="@+id/about_me_image_4"
-                    android:layout_width="216dp"
-                    android:layout_height="wrap_content"
-                    android:baselineAlignBottom="true"
-                    android:src="@drawable/image_can_skip" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="30dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="稍微优化了下界面..." />
-
-                <ImageView
-                    android:id="@+id/about_me_image_5"
-                    android:layout_width="216dp"
-                    android:layout_height="wrap_content"
-                    android:baselineAlignBottom="true"
-                    android:src="@drawable/image_app_main" />
-
-            </LinearLayout>
 
         </LinearLayout>
-    </HorizontalScrollView>
+    </ScrollView>
 
 </RelativeLayout>
