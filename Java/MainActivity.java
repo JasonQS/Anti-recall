@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     static String File_Image_Saved;
     static String File_Dir;
     static String File_External_Storage;
+    XUpdate xUpdate;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
+        xUpdate = new XUpdate(MainActivity.this);
     }
 
     @Override
@@ -239,11 +240,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void checkUpdate(View view) {
         //wifi环境下检查更新
-        XUpdate xUpdate = new XUpdate(this);
-        xUpdate.checkUpdate();
-        if (!xUpdate.needUpdate)
-            XToast.makeText(this, "已是最新版").show();
 
+        xUpdate.checkUpdate();
+                        new Handler().postDelayed(new CheckVersion(),500);
+    }
+
+    class CheckVersion implements Runnable {
+
+        @Override
+        public void run() {
+
+            if (!xUpdate.needUpdate)
+                XToast.makeText(MainActivity.this, "已是最新版").show();
+        }
     }
 
     void checkUpdate() {
