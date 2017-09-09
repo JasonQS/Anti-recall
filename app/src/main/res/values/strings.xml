@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">AntiRecall</string>
+    <string name="title_home">防撤回神器</string>
+    <string name="title_dashboard">特别关心</string>
+    <string name="title_notifications">设置</string>
+</resources>
