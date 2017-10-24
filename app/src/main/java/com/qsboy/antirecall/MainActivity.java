@@ -1,45 +1,73 @@
 package com.qsboy.antirecall;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import com.qsboy.antirecall.dummy.DummyContent;
+import com.qsboy.antirecall.utils.CheckAuthority;
 
-    private TextView mTextMessage;
+public class MainActivity extends AppCompatActivity implements ItemFragment.OnListFragmentInteractionListener {
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
-                    return true;
-            }
-            return false;
-        }
+    private static String TAG = "Main Activity";
 
-    };
+    private ItemFragment itemFragment;
+    private SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
+        itemFragment = new ItemFragment();
+        settingsFragment = new SettingsFragment();
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        CheckAuthority checkAuthority = new CheckAuthority(this);
+        boolean overlayPermission = checkAuthority.checkAlertWindowPermission();
+        Log.i(TAG, "authorized: " + overlayPermission);
+        if (!overlayPermission) {
+            Toast.makeText(getApplicationContext(), "为显示撤回的消息\n请授予悬浮窗权限", Toast.LENGTH_LONG).show();
+        }
+
     }
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    transaction.replace(R.id.content, itemFragment);
+                    break;
+                case R.id.navigation_dashboard:
+
+                    break;
+                case R.id.navigation_notifications:
+                    transaction.replace(R.id.content, settingsFragment);
+                    break;
+            }
+
+            transaction.commit();
+
+            return true;
+        }
+
+    };
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
+    }
 }
