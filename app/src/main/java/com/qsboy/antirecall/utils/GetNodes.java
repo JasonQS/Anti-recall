@@ -3,7 +3,6 @@ package com.qsboy.antirecall.utils;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.util.Printer;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import org.jetbrains.annotations.Contract;
@@ -16,18 +15,18 @@ public class GetNodes {
 
     static String TAG = "get nodes";
 
-    public static void show(AccessibilityNodeInfo node, int num) {
-        Log.i(TAG, "\t");
-        Log.i(TAG, "\t");
-        iter(node, num);
-        Log.i(TAG, "\t");
+    public static void show(AccessibilityNodeInfo node) {
+        Log.v(TAG, "\t");
+        Log.v(TAG, "\t");
+        iter(node, 0);
+        Log.v(TAG, "\t");
     }
 
     private static void iter(AccessibilityNodeInfo node, int num) {
         if (node == null) return;
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            Log.i(TAG, "\n\t" + addPadding(num) + i + addPadding(num, 6) + print(node.getChild(i)));
+            Log.v(TAG, "\n\t" + addPadding(num) + i + addPadding(num, 6) + print(node.getChild(i)));
             iter(node.getChild(i), num + 1);
         }
     }

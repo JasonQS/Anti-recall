@@ -11,10 +11,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-
-        jackOptions {
-            enabled true
-        }
     }
     buildTypes {
         release {
@@ -23,8 +19,14 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    maven {
+        url "https://jitpack.io"
     }
 }
 
@@ -33,11 +35,18 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.+'
-    compile 'com.android.support:design:26.+'
-    compile 'com.android.support:support-vector-drawable:26.+'
-    compile 'com.android.support:support-v4:26.+'
-    compile 'com.android.support:recyclerview-v7:26.+'
-    compile 'com.google.android.gms:play-services-plus:11.0.4'
+
+    compile 'com.ramotion.foldingcell:folding-cell:1.2.1'
+
+//    compile 'com.ToxicBakery.viewpager.transforms:view-pagerx6x6-transforms:1.2.32@aar'
+    compile 'com.idescout.sql:sqlscout-server:2.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:support-vector-drawable:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
+    compile 'com.google.android.gms:play-services-plus:11.6.0'
+    compile 'org.jetbrains:annotations:15.0'
+    compile project(':library')
     testCompile 'junit:junit:4.12'
 }

@@ -1,4 +1,4 @@
-package com.qsboy.antirecall.sql;
+package com.qsboy.antirecall.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,7 +27,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-
+        String sql = "DROP TABLE IF EXISTS " + TABLE_NAME;
+        sqLiteDatabase.execSQL(sql);
+        onCreate(sqLiteDatabase);
     }
 
 }

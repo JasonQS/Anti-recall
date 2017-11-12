@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.qsboy.antirecall.sql.DBHelper;
+import com.qsboy.antirecall.db.DBHelper;
 
 import org.junit.Test;
 

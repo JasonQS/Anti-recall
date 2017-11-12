@@ -1,4 +1,4 @@
-package com.qsboy.antirecall.sql;
+package com.qsboy.antirecall.db;
 
 /**
  * Created by JasonQS

@@ -6,12 +6,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.qsboy.antirecall.sql.DBHelper;
+import com.qsboy.antirecall.db.DBHelper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.qsboy.antirecall.sql.DBHelper.TABLE_NAME;
+import static com.qsboy.antirecall.db.DBHelper.TABLE_NAME;
 import static org.junit.Assert.assertEquals;
 
 /**

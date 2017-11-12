@@ -1,6 +1,7 @@
-package com.qsboy.antirecall.measure;
+package com.qsboy.antirecall.access;
 
 import android.view.accessibility.AccessibilityNodeInfo;
+
 
 /**
  * Created by JasonQS
@@ -9,7 +10,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class Client {
 
     AccessibilityNodeInfo nameNode;
-    AccessibilityNodeInfo chatViewNode;
+    AccessibilityNodeInfo chatGroupViewNode;
     AccessibilityNodeInfo timestampNode;
     AccessibilityNodeInfo headIconNode;
     AccessibilityNodeInfo messageNode;
@@ -24,8 +25,8 @@ public class Client {
     String packageName;
     String nameId;
     String picId;
-    String chatViewId;
+    String chatGroupViewId;
 
-
+    boolean isGroupMessage;
 }
 

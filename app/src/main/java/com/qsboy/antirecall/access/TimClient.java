@@ -1,11 +1,13 @@
-package com.qsboy.antirecall.measure;
+package com.qsboy.antirecall.access;
 
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.qsboy.antirecall.utils.GetNodes;
 
+import java.util.Date;
 import java.util.List;
+
 
 /**
  * Created by JasonQS
@@ -15,9 +17,20 @@ public class TimClient extends Client {
 
     static String TAG = "Tim";
 
+    List<AccessibilityNodeInfo> inputList;
+    List<AccessibilityNodeInfo> sendList;
+    final String IdTimeStamp = "com.tencent.tim:id/chat_item_time_stamp";
+    final String IdHeadIcon = "com.tencent.tim:id/chat_item_head_icon";
+    final String IdChatItem = "com.tencent.tim:id/chat_item_content_layout";
+    final String IdNickName = "com.tencent.tim:id/chat_item_nick_name";
+    final String IdGrayBar = "com.tencent.tim:id/graybar";
+    final String IdInput = "com.tencent.tim:id/input";
+    final String IdSend = "com.tencent.tim:id/fun_btn";
+
     public TimClient() {
+        packageName = "com.tencent.tim";
         nameId = "com.tencent.tim:id/title";
-        chatViewId = "com.tencent.tim:id/listView1";
+        chatGroupViewId = "com.tencent.tim:id/listView1";
         picId = "com.tencent.tim:id/pic";
     }
 
@@ -40,30 +53,32 @@ public class TimClient extends Client {
      * 发送按钮   8-1
      */
     public void init(AccessibilityNodeInfo root) {
-        packageName = "com.tencent.tim";
+
         if (root.getChildCount() < 10)
             return;
+
         nameNode = root.getChild(1);
+        if (nameNode == null) {
+            Log.d(TAG, "init: name node is null, return");
+            return;
+        }
         if (!nameNode.getViewIdResourceName().equals(nameId)) {
             Log.d(TAG, "init: 名字ID不对，return");
             return;
         }
 
-        inputNode = root.findAccessibilityNodeInfosByViewId("com.tencent.tim:id/input").get(0);
-        sendBtnNode = root.findAccessibilityNodeInfosByViewId("com.tencent.tim:id/fun_btn").get(0);
-
-        chatViewNode = root.getChild(4);
-        if (!chatViewNode.getViewIdResourceName().equals(chatViewId))
-            chatViewNode = root.getChild(5);
-        if (!chatViewNode.getViewIdResourceName().equals(chatViewId)) {
-            Log.d(TAG, "init: not chat view, return");
+        inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
+        sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
+        if (inputList.size() == 0) {
+            Log.d(TAG, "init: input is null, return");
             return;
         }
-
-        if (nameNode == null) {
-            Log.d(TAG, "init: name node is null, return");
+        if (sendList.size() == 0) {
+            Log.d(TAG, "init: send button is null, return");
             return;
         }
+        inputNode = inputList.get(0);
+        sendBtnNode = sendList.get(0);
         if (inputNode == null) {
             Log.d(TAG, "init: input node is null, return");
             return;
@@ -72,24 +87,45 @@ public class TimClient extends Client {
             Log.d(TAG, "init: sendButton node is null, return");
             return;
         }
-        if (chatViewNode == null) {
+
+        chatGroupViewNode = root.getChild(4);
+        if (chatGroupViewNode.getViewIdResourceName().equals(chatGroupViewId))
+            isGroupMessage = false;
+        else
+            chatGroupViewNode = root.getChild(5);
+        if (chatGroupViewNode == null) {
             Log.d(TAG, "init: chatView node is null, return");
             return;
         }
+        else isGroupMessage = true;
+        if (!chatGroupViewNode.getViewIdResourceName().equals(chatGroupViewId)) {
+            Log.d(TAG, "init: not chat view, return");
+            return;
+        }
 
-        for (int i = 0; i < chatViewNode.getChildCount(); i++) {
-            AccessibilityNodeInfo group = chatViewNode.getChild(i);
-            GetNodes.show(group, 0);
+        Date in = new Date();
+        for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
+            AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
+            GetNodes.show(group);
             for (int j = 0; j < group.getChildCount(); j++) {
                 AccessibilityNodeInfo child = group.getChild(j);
-                switch (child.getViewIdResourceName()) {
-                    case "com.tencent.tim:id/chat_item_time_stamp":
+                if (child == null) {
+                    Log.d(TAG, "init: child is null, continue");
+                    continue;
+                }
+                String nodeId = child.getViewIdResourceName();
+                if (nodeId == null) {
+                    Log.d(TAG, "init: node ID is null, continue");
+                    continue;
+                }
+                switch (nodeId) {
+                    case IdTimeStamp:
                         timestampNode = child;
                         break;
-                    case "com.tencent.tim:id/chat_item_head_icon":
+                    case IdHeadIcon:
                         headIconNode = child;
                         break;
-                    case "com.tencent.tim:id/chat_item_content_layout":
+                    case IdChatItem:
                         switch (child.getClassName().toString()) {
                             case "android.widget.RelativeLayout":
                                 if (child.getChildCount() != 0) {
@@ -116,16 +152,17 @@ public class TimClient extends Client {
 //                        if (child.getChildCount() != 0)
                         // TODO: 2017/10/23 多类型消息
                         break;
-                    case "com.tencent.tim:id/chat_item_nick_name":
+                    case IdNickName:
                         nickNameNode = child;
                         break;
-                    case "com.tencent.tim:id/graybar":
+                    case IdGrayBar:
                         if (!child.isClickable() && !child.isFocusable())
                             recallNode = child;
 
                 }
             }
         }
-
+        Date out = new Date();
+        Log.i(TAG, "init: time: " + (out.getTime() - in.getTime()));
     }
 }

@@ -1,4 +1,4 @@
-package com.qsboy.antirecall.sql;
+package com.qsboy.antirecall.db;
 
 import android.content.Context;
 import android.database.Cursor;

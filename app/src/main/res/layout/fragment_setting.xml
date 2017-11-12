@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.qsboy.antirecall.ui.Setting">
+
+    <com.fenjuly.mylibrary.DropDownLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp">
+
+        <com.fenjuly.mylibrary.ToggleExpandLayout
+            android:id="@+id/toggleLayout1"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.fenjuly.mylibrary.ToggleExpandLayout>
+
+        <com.fenjuly.mylibrary.ToggleExpandLayout
+            android:id="@+id/toggleLayout"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.fenjuly.mylibrary.ToggleExpandLayout>
+    </com.fenjuly.mylibrary.DropDownLayout>
+</FrameLayout>
