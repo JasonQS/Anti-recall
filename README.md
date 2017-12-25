@@ -6,8 +6,6 @@
 
 #### 发现棘手问题，微信版本可能不再支持
 
-### 引言
-
 #### 安卓市场上防撤回软件五花八门, 但全都是需要root的, 不仅麻烦, 随之而来的安全问题令人担忧. 那么, 能不能不要root呢?
 
 #### 当然啦, 下面我就给大家带来我用课余时间开发了半年之久的**防撤回神器**!
@@ -18,12 +16,12 @@
 
 #### 撤回文字消息:
 
-  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo01.gif width=300px>
+  <img src=https://github.com/JasonQS/Anti-recall/blob/4.1/demo/demo01.gif width=300px>
 <br>
 
 #### 撤回图片消息:
 
-  <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo02.gif width=300px>
+  <img src=https://github.com/JasonQS/Anti-recall/blob/4.1/demo/demo02.gif width=300px>
 <br>
 <hr>
 
@@ -47,7 +45,7 @@
    * 应该会收到一条表示成功的弹窗
 
    * 如图 
-   <img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/notification.jpg width=200px>
+   <img src=https://github.com/JasonQS/Anti-recall/blob/4.1/demo/notification.jpg width=200px>
 
  
 * **[重要]**如果没有的话需要**重启**哦
