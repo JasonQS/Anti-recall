@@ -40,7 +40,7 @@
 //        try {
 //            db = ordersDBHelper.getReadableDatabase();
 //            // select count(Id) from Orders
-//            cursor = db.query(DBHelper.TABLE_NAME, new String[]{"COUNT(Id)"}, null, null, null, null, null);
+//            cursor = db.query(DBHelper.Table_Name_Recalled_Message, new String[]{"COUNT(Id)"}, null, null, null, null, null);
 //
 //            if (cursor.moveToFirst()) {
 //                count = cursor.getInt(0);
@@ -71,12 +71,12 @@
 //            db = ordersDBHelper.getWritableDatabase();
 //            db.beginTransaction();
 //
-//            db.execSQL("insert into " + DBHelper.TABLE_NAME + " (Id, CustomName, OrderPrice, Country) values (1, 'Arc', 100, 'China')");
-//            db.execSQL("insert into " + DBHelper.TABLE_NAME + " (Id, CustomName, OrderPrice, Country) values (2, 'Bor', 200, 'USA')");
-//            db.execSQL("insert into " + DBHelper.TABLE_NAME + " (Id, CustomName, OrderPrice, Country) values (3, 'Cut', 500, 'Japan')");
-//            db.execSQL("insert into " + DBHelper.TABLE_NAME + " (Id, CustomName, OrderPrice, Country) values (4, 'Bor', 300, 'USA')");
-//            db.execSQL("insert into " + DBHelper.TABLE_NAME + " (Id, CustomName, OrderPrice, Country) values (5, 'Arc', 600, 'China')");
-//            db.execSQL("insert into " + DBHelper.TABLE_NAME + " (Id, CustomName, OrderPrice, Country) values (6, 'Doom', 200, 'China')");
+//            db.execSQL("insert into " + DBHelper.Table_Name_Recalled_Message + " (Id, CustomName, OrderPrice, Country) values (1, 'Arc', 100, 'China')");
+//            db.execSQL("insert into " + DBHelper.Table_Name_Recalled_Message + " (Id, CustomName, OrderPrice, Country) values (2, 'Bor', 200, 'USA')");
+//            db.execSQL("insert into " + DBHelper.Table_Name_Recalled_Message + " (Id, CustomName, OrderPrice, Country) values (3, 'Cut', 500, 'Japan')");
+//            db.execSQL("insert into " + DBHelper.Table_Name_Recalled_Message + " (Id, CustomName, OrderPrice, Country) values (4, 'Bor', 300, 'USA')");
+//            db.execSQL("insert into " + DBHelper.Table_Name_Recalled_Message + " (Id, CustomName, OrderPrice, Country) values (5, 'Arc', 600, 'China')");
+//            db.execSQL("insert into " + DBHelper.Table_Name_Recalled_Message + " (Id, CustomName, OrderPrice, Country) values (6, 'Doom', 200, 'China')");
 //
 //            db.setTransactionSuccessful();
 //        }catch (Exception e){
@@ -126,7 +126,7 @@
 //        try {
 //            db = ordersDBHelper.getReadableDatabase();
 //            // select * from Orders
-//            cursor = db.query(DBHelper.TABLE_NAME, ORDER_COLUMNS, null, null, null, null, null);
+//            cursor = db.query(DBHelper.Table_Name_Recalled_Message, ORDER_COLUMNS, null, null, null, null, null);
 //
 //            if (cursor.getCount() > 0) {
 //                List<Order> orderList = new ArrayList<Order>(cursor.getCount());
@@ -167,7 +167,7 @@
 //            contentValues.put("CustomName", "Jne");
 //            contentValues.put("OrderPrice", 700);
 //            contentValues.put("Country", "China");
-//            db.insertOrThrow(DBHelper.TABLE_NAME, null, contentValues);
+//            db.insertOrThrow(DBHelper.Table_Name_Recalled_Message, null, contentValues);
 //
 //            db.setTransactionSuccessful();
 //            return true;
@@ -195,7 +195,7 @@
 //            db.beginTransaction();
 //
 //            // delete from Orders where Id = 7
-//            db.delete(DBHelper.TABLE_NAME, "Id = ?", new String[]{String.valueOf(7)});
+//            db.delete(DBHelper.Table_Name_Recalled_Message, "Id = ?", new String[]{String.valueOf(7)});
 //            db.setTransactionSuccessful();
 //            return true;
 //        } catch (Exception e) {
@@ -221,7 +221,7 @@
 //            // update Orders set OrderPrice = 800 where Id = 6
 //            ContentValues cv = new ContentValues();
 //            cv.put("OrderPrice", 800);
-//            db.update(DBHelper.TABLE_NAME,
+//            db.update(DBHelper.Table_Name_Recalled_Message,
 //                    cv,
 //                    "Id = ?",
 //                    new String[]{String.valueOf(6)});
@@ -252,7 +252,7 @@
 //            db = ordersDBHelper.getReadableDatabase();
 //
 //            // select * from Orders where CustomName = 'Bor'
-//            cursor = db.query(DBHelper.TABLE_NAME,
+//            cursor = db.query(DBHelper.Table_Name_Recalled_Message,
 //                    ORDER_COLUMNS,
 //                    "CustomName = ?",
 //                    new String[] {"Bor"},
@@ -294,7 +294,7 @@
 //        try {
 //            db = ordersDBHelper.getReadableDatabase();
 //            // select count(Id) from Orders where Country = 'China'
-//            cursor = db.query(DBHelper.TABLE_NAME,
+//            cursor = db.query(DBHelper.Table_Name_Recalled_Message,
 //                    new String[]{"COUNT(Id)"},
 //                    "Country = ?",
 //                    new String[] {"China"},
@@ -329,7 +329,7 @@
 //        try {
 //            db = ordersDBHelper.getReadableDatabase();
 //            // select Id, CustomName, Max(OrderPrice) as OrderPrice, Country from Orders
-//            cursor = db.query(DBHelper.TABLE_NAME, new String[]{"Id", "CustomName", "Max(OrderPrice) as OrderPrice", "Country"}, null, null, null, null, null);
+//            cursor = db.query(DBHelper.Table_Name_Recalled_Message, new String[]{"Id", "CustomName", "Max(OrderPrice) as OrderPrice", "Country"}, null, null, null, null, null);
 //
 //            if (cursor.getCount() > 0){
 //                if (cursor.moveToFirst()) {

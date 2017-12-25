@@ -10,9 +10,17 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final String DB_NAME = "messages.db";
     public static final int DB_VERSION = 1;
-    public static String TABLE_NAME = "withdrawals";
+    public static final String DB_NAME = "messages.db";
+    public static final String Table_Name_Prefix_WX = "wx_";
+    public static final String Table_Name_Prefix_QQ_And_Tim = "qq_";
+    public static final String Table_Name_Prefix_Group = "group_";
+    public static final String Table_Name_Recalled_Message = "recalled";
+
+    public static final String Column_Name_ID = "id";
+    public static final String Column_Name_Message = "message";
+    public static final String Column_Name_Time = "time";
+    public static final String Column_Name_SubName = "sub_name";
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -20,16 +28,20 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // create table Orders(Id integer primary key, CustomName text, OrderPrice integer, Country text);
-        String sql = "create table if not exists " + TABLE_NAME + " (Id integer primary key, Withdrawals text, Name text, Time text)";
+        String sql = "CREATE TABLE IF NOT EXISTS " +
+                "recalled" + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "withdrawals TEXT, " +
+                "name TEXT, " +
+                "sub_name TEXT, " +
+                "id INTEGER, " +
+                "time INTEGER)";
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS " + TABLE_NAME;
-        sqLiteDatabase.execSQL(sql);
-        onCreate(sqLiteDatabase);
+
     }
 
 }

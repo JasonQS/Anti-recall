@@ -55,7 +55,7 @@
 
     <!--intent-->
     <string name="pref_action_safe_update">pref.intent.action.UpdateGestureActivity</string>
-    <string name="service_label">access</string>
+    <string name="service_label">Anti-recall</string>
 
     <!--entries-->
     <string-array name="pref_entries_net_flow">
@@ -81,6 +81,8 @@
         <item>2</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title">Jason</string>
+    <string name="name">name1231231</string>
+    <string name="message">也称乱数假文或者哑元文本，是印刷及排版领域所常用的虚拟文字。</string>
+    <string name="time">10:10\n12/22</string>
 </resources>

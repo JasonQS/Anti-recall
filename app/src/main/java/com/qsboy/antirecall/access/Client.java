@@ -28,5 +28,14 @@ public class Client {
     String chatGroupViewId;
 
     boolean isGroupMessage;
+    String name;
+
+    public boolean init(AccessibilityNodeInfo root) {
+        return false;
+    }
+
+    public void addMessage(AccessibilityNodeInfo root) {
+
+    }
 }
 

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <!--Title-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_title"
+        android:background="@color/bgTitle"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title"
+            android:textColor="@color/text_color_title"
+            android:textSize="@dimen/text_size_title" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_content_content"
+        android:background="@color/bgContent"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/time"
+            android:baselineAligned="false">
+
+            <!--name-->
+            <LinearLayout
+                android:id="@+id/name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/bgName"
+                android:gravity="center">
+
+                <ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingEnd="@dimen/half_margin"
+                        android:paddingStart="@dimen/half_margin"
+                        android:text="@string/name"
+                        android:textColor="@color/text_color_name"
+                        android:textSize="@dimen/text_size_name" />
+                </ScrollView>
+
+            </LinearLayout>
+
+            <!--message-->
+            <LinearLayout
+                android:id="@+id/message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center_vertical">
+
+                <include layout="@layout/multi_message_layout" />
+
+                <!--<ScrollView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content">-->
+                    <!---->
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:paddingEnd="@dimen/half_margin"-->
+                        <!--android:paddingStart="@dimen/half_margin"-->
+                        <!--android:text="@string/message"-->
+                        <!--android:textColor="@color/text_color_message"-->
+                        <!--android:textSize="@dimen/text_size_message_content" />-->
+                <!--</ScrollView>-->
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--time-->
+        <LinearLayout
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:background="@color/bgName"
+            android:gravity="center"
+            android:padding="@dimen/half_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time"
+                android:textColor="@color/text_color_time"
+                android:textSize="@dimen/text_size_time" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

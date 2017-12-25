@@ -11,7 +11,7 @@ import com.qsboy.antirecall.db.DBHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.qsboy.antirecall.db.DBHelper.TABLE_NAME;
+import static com.qsboy.antirecall.db.DBHelper.Table_Name_Recalled_Message;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -32,7 +32,7 @@ public class ExampleInstrumentedTest {
         SQLiteOpenHelper helper = new DBHelper(appContext, DBHelper.DB_NAME, null, DBHelper.DB_VERSION);
         db = helper.getWritableDatabase();
         db.beginTransaction();
-        String sql = "create table if not exists " + TABLE_NAME + " (Id integer primary key, Withdrawals text, Name text, Time text)";
+        String sql = "create table if not exists " + Table_Name_Recalled_Message + " (Id integer primary key, Withdrawals text, Name text, Time text)";
         db.execSQL(sql);
 
     }

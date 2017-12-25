@@ -3,8 +3,6 @@ package com.qsboy.antirecall.access;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.antirecall.utils.GetNodes;
-
 import java.util.Date;
 
 
@@ -32,7 +30,7 @@ public class QQClient extends Client {
 
     public QQClient() {
         packageName = "com.tencent.qq";
-        nameId = "com.tencent.mobileqq:id/title";
+        nameId = "com.tencent.mobileqq:id/name";
         picId = "com.tencent.mobileqq:id/pic";
         chatGroupViewId = "com.tencent.mobileqq:id/listView1";
     }
@@ -54,58 +52,63 @@ public class QQClient extends Client {
      * 文本框     8-0
      * 发送按钮   8-1
      */
-    public void init(AccessibilityNodeInfo root) {
-        if (root.getChildCount() < 10)
-            return;
+    public boolean init(AccessibilityNodeInfo root) {
+        if (root.getChildCount() != 13) {
+            Log.i(TAG, "init: root.childCount: " + root.getChildCount());
+            return false;
+        }
 
         titleGroupViewNode = root.getChild(root.getChildCount() - 1);
         int titleNodeChildCount = titleGroupViewNode.getChildCount();
         if (titleGroupViewNode == null) {
-            Log.d(TAG, "init: title node is null, return");
-            return;
+            Log.d(TAG, "init: name node is null, return");
+            return false;
         }
         if (titleNodeChildCount != 4 && titleNodeChildCount != 5) {
             Log.d(TAG, "init: titleGroupViewNode child count is not 4 or 5, return");
-            return;
+            return false;
         }
         isGroupMessage = titleNodeChildCount != 4;
 
         nameNode = titleGroupViewNode.getChild(2);
         if (nameNode == null) {
             Log.d(TAG, "init: name node is null, return");
-            return;
+            return false;
         }
         if (!nameNode.getViewIdResourceName().equals(nameId)) {
             Log.d(TAG, "init: 名字ID不对，return");
-            return;
+            return false;
         }
 
         inputBoxNode = root.getChild(2);
         if (inputBoxNode == null || inputBoxNode.getChildCount() != 2) {
             Log.d(TAG, "init: inputBox is null, return");
-            return;
+            return false;
         }
         inputBoxNode = inputBoxNode.getChild(0);
         sendBtnNode = inputBoxNode.getChild(1);
         if (inputNode == null) {
             Log.d(TAG, "init: input node is null, return");
-            return;
+            return false;
         }
         if (sendBtnNode == null) {
             Log.d(TAG, "init: sendButton node is null, return");
-            return;
+            return false;
         }
 
         chatGroupViewNode = root.getChild(0);
         if (chatGroupViewNode == null) {
             Log.d(TAG, "init: chatView node is null, return");
-            return;
+            return false;
         }
         if (!chatGroupViewNode.getViewIdResourceName().equals(chatGroupViewId)) {
             Log.d(TAG, "init: not chat view, return");
-            return;
+            return false;
         }
+        return true;
+    }
 
+    private void addMessage() {
         Date in = new Date();
         for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
             AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);

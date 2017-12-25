@@ -36,17 +36,16 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+
     compile 'com.ramotion.foldingcell:folding-cell:1.2.1'
 
-//    compile 'com.ToxicBakery.viewpager.transforms:view-pagerx6x6-transforms:1.2.32@aar'
-    compile 'com.idescout.sql:sqlscout-server:2.0'
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
     compile 'com.android.support:support-vector-drawable:26.1.0'
     compile 'com.android.support:support-v4:26.1.0'
     compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile 'com.google.android.gms:play-services-plus:11.6.0'
-    compile 'org.jetbrains:annotations:15.0'
-    compile project(':library')
+    compile 'com.android.support:cardview-v7:26.1.0'
+
     testCompile 'junit:junit:4.12'
 }
