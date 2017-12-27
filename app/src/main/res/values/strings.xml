@@ -1,88 +1,12 @@
 <resources>
     <string name="app_name">Anti-recall</string>
     <string name="title_home">防撤回</string>
-    <string name="title_dashboard">特别关心</string>
-    <string name="title_notifications">设置</string>
-
-    <!--key-->
-    <string name="pref_key_user_settings">pref_key_user_settings</string>
-    <string name="pref_key_user_info">pref_key_user_info</string>
-    <string name="pref_key_user_vip">pref_key_user_vip</string>
-    <string name="pref_key_user_logout">pref_key_user_logout</string>
-
-    <string name="pref_key_safe_settings">pref_key_safe_settings</string>
-    <string name="pref_key_safe_switch">pref_key_safe_switch</string>
-    <string name="pref_key_safe_update">pref_key_safe_update</string>
-    <string name="pref_key_safe_level">pref_key_safe_level</string>
-
-    <string name="pref_key_net_settings">pref_key_net_settings</string>
-    <string name="pref_key_net_offline">pref_key_net_offline</string>
-    <string name="pref_key_net_flow">pref_key_net_flow</string>
-    <string name="pref_key_net_flow_info">pref_key_net_flow_info</string>
-    <string name="pref_key_net_flow_change">pref_key_net_flow_change</string>
-
-    <string name="pref_key_notify_settings">pref_key_notify_settings</string>
-    <string name="pref_key_notify_switch">pref_key_notify_switch</string>
-    <string name="pref_key_notify_ring">pref_key_notify_ring</string>
-
-    <!--title-->
-    <string name="pref_title_user_settings">用户</string>
-    <string name="pref_title_user_vip">开通会员</string>
-    <string name="pref_title_user_logout">退出登录</string>
-
-    <string name="pref_title_safe_settings">安全</string>
-    <string name="pref_title_safe_switch">开启手势密码</string>
-    <string name="pref_title_safe_gesture">手势设置</string>
-    <string name="pref_title_safe_update">更改手势</string>
-    <string name="pref_title_safe_level">设置安全级别</string>
-
-    <string name="pref_title_net_settings">网络</string>
-    <string name="pref_title_net_offline">离线模式</string>
-    <string name="pref_title_net_flow">网络选择</string>
-    <string name="pref_title_net_flow_change">省流量模式</string>
-
-    <string name="pref_title_notify_settings">通知</string>
-    <string name="pref_title_notify_switch">开启推送</string>
-    <string name="pref_title_notify_ring">通知消息铃声</string>
-
-    <!--summary-->
-    <string name="pref_summary_user_vip">开通会员可享受不限量的云备份服务</string>
-    <string name="pref_summary_user_logout">选择其他账号登录</string>
-
-    <string name="pref_summary_safe_level">当前安全级别:中</string>
-
-    <string name="pref_summary_net_offline">开启后将不再进行网络请求</string>
-
-    <!--intent-->
-    <string name="pref_action_safe_update">pref.intent.action.UpdateGestureActivity</string>
+    <string name="title_monitor">特别关心</string>
+    <string name="title_setting">设置</string>
     <string name="service_label">Anti-recall</string>
 
-    <!--entries-->
-    <string-array name="pref_entries_net_flow">
-        <item>2G</item>
-        <item>3G</item>
-        <item>4G</item>
-    </string-array>
-    <string-array name="pref_entries_safe_level">
-        <item>高</item>
-        <item>中</item>
-        <item>低</item>
-    </string-array>
-
-    <!--entryValues-->
-    <string-array name="pref_entryValues_net_flow">
-        <item>2G</item>
-        <item>3G</item>
-        <item>4G</item>
-    </string-array>
-    <string-array name="pref_entryValues_safe_level">
-        <item>12</item>
-        <item>6</item>
-        <item>2</item>
-    </string-array>
-
     <string name="title">Jason</string>
-    <string name="name">name1231231</string>
-    <string name="message">也称乱数假文或者哑元文本，是印刷及排版领域所常用的虚拟文字。</string>
+    <string name="name">name</string>
+    <string name="message">Hello world</string>
     <string name="time">10:10\n12/22</string>
 </resources>

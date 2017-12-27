@@ -1,7 +1,5 @@
 package com.qsboy.antirecall.utils;
 
-import android.telephony.TelephonyManager;
-
 /**
  * Created by JasonQS
  */

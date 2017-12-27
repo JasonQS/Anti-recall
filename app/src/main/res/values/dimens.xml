@@ -1,16 +1,15 @@
 <resources>
-    <dimen name="default_margin">16dp</dimen>
-    <dimen name="half_margin">8dp</dimen>
+
+    <dimen name="margin_default">16dp</dimen>
+    <dimen name="margin_half">8dp</dimen>
 
     <dimen name="height_title">32dp</dimen>
     <dimen name="height_content_title">48dp</dimen>
     <dimen name="height_content_content">208dp</dimen>
 
-
     <dimen name="text_size_title">16sp</dimen>
     <dimen name="text_size_time">12sp</dimen>
     <dimen name="text_size_name">14sp</dimen>
-    <dimen name="text_size_message_title">14sp</dimen>
-    <dimen name="text_size_message_content">14sp</dimen>
+    <dimen name="text_size_message">14sp</dimen>
 
 </resources>

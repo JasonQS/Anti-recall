@@ -3,18 +3,20 @@ package com.qsboy.antirecall.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.util.Pair;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.qsboy.antirecall.db.DBHelper.*;
+import static com.qsboy.antirecall.db.DBHelper.Column_Name_ID;
+import static com.qsboy.antirecall.db.DBHelper.Column_Name_Message;
+import static com.qsboy.antirecall.db.DBHelper.Column_Name_SubName;
+import static com.qsboy.antirecall.db.DBHelper.Column_Name_Time;
+import static com.qsboy.antirecall.db.DBHelper.Table_Name_Prefix_Group;
+import static com.qsboy.antirecall.db.DBHelper.Table_Name_Prefix_QQ_And_Tim;
+import static com.qsboy.antirecall.db.DBHelper.Table_Name_Prefix_WX;
 
 /**
  * Created by JasonQS
