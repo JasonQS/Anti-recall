@@ -12,21 +12,26 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class GetNodes {
 
-    static String TAG = "get nodes";
+    private static String TAG = "GetNodes";
 
     public static void show(AccessibilityNodeInfo node) {
-        Log.v(TAG, "\t");
-        Log.v(TAG, "\t");
-        iter(node, 0);
-        Log.v(TAG, "\t");
+        log("\t--------");
+        iter(node, 0, "v");
+        log("\t");
     }
 
-    private static void iter(AccessibilityNodeInfo node, int num) {
+    public static void show(AccessibilityNodeInfo node, String level) {
+        log(level, "\t--------");
+        iter(node, 0, level);
+        log(level, "\t");
+    }
+
+    private static void iter(AccessibilityNodeInfo node, int num, String level) {
         if (node == null) return;
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            Log.v(TAG, "\n\t" + addPadding(num) + i + addPadding(num, 6) + print(node.getChild(i)));
-            iter(node.getChild(i), num + 1);
+            log(level, "\n\t" + addPadding(num) + i + addPadding(num, 6) + print(node.getChild(i)));
+            iter(node.getChild(i), num + 1, level);
         }
     }
 
@@ -76,5 +81,29 @@ public class GetNodes {
                 "package: " + packageName + " \t" +
                 '\n';
 
+    }
+
+    private static void log(String msg) {
+        Log.v(TAG, msg);
+    }
+
+    private static void log(String level, String msg) {
+        switch (level) {
+            case "v":
+                Log.v(TAG, msg);
+                break;
+            case "d":
+                Log.d(TAG, msg);
+                break;
+            case "i":
+                Log.i(TAG, msg);
+                break;
+            case "w":
+                Log.w(TAG, msg);
+                break;
+            case "e":
+                Log.e(TAG, msg);
+                break;
+        }
     }
 }

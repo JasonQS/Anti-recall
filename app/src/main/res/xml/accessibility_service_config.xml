@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright (c) 2017.
   ~ qsboy.com 版权所有
   -->
@@ -7,9 +6,9 @@
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeAllMask"
     android:accessibilityFeedbackType="feedbackAllMask"
-    android:canRetrieveWindowContent="true"
     android:accessibilityFlags="flagReportViewIds"
+    android:canRetrieveWindowContent="true"
     android:description="@string/service_label"
-    android:notificationTimeout="50"
-    />
+    android:notificationTimeout="200" />
     <!--android:packageNames="com.tencent.mobileqq,com.tencent.mm" -->
+

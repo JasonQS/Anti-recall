@@ -15,39 +15,33 @@ public class QQClient {
 
     AccessibilityNodeInfo nameNode;
     AccessibilityNodeInfo chatGroupViewNode;
-    AccessibilityNodeInfo timestampNode;
-    AccessibilityNodeInfo headIconNode;
-    AccessibilityNodeInfo messageNode;
     AccessibilityNodeInfo groupNode;
-    AccessibilityNodeInfo picNode;
     AccessibilityNodeInfo redPegNode;
-    AccessibilityNodeInfo recallNode;
     AccessibilityNodeInfo inputNode;
     AccessibilityNodeInfo sendBtnNode;
-    AccessibilityNodeInfo nickNameNode;
-    AccessibilityNodeInfo inputBoxNode;
     AccessibilityNodeInfo titleGroupViewNode;
-
-    boolean isGroupMessage;
-    String name;
-
+    AccessibilityNodeInfo inputBoxNode;
     List<AccessibilityNodeInfo> inputList;
     List<AccessibilityNodeInfo> sendList;
 
     final String TAG = "QQ";
 
-    final String packageName = "com.tencent.qq";
     final String IdName = "com.tencent.mobileqq:id/title";
-    final String IdPic = "com.tencent.mobileqq:id/pic";
     final String IdChatGroupView = "com.tencent.mobileqq:id/listView1";
     final String IdTimeStamp = "com.tencent.mobileqq:id/chat_item_time_stamp";
     final String IdHeadIcon = "com.tencent.mobileqq:id/chat_item_head_icon";
     final String IdChatItem = "com.tencent.mobileqq:id/chat_item_content_layout";
     final String IdNickName = "com.tencent.mobileqq:id/chat_item_nick_name";
     final String IdGrayBar = "com.tencent.mobileqq:id/graybar";
-    final String IdInput = "com.tencent.tim:id/input";
-    final String IdSend = "com.tencent.tim:id/fun_btn";
+    final String IdInput = "com.tencent.mobileqq:id/input";
+    final String IdSend = "com.tencent.mobileqq:id/fun_btn";
 
+    int headIconPos;
+    int messagePos;
+    String message;
+    String name;
+
+    boolean isGroupMessage;
 
     /**
      * 好友：
@@ -68,6 +62,7 @@ public class QQClient {
      */
     public boolean init(AccessibilityNodeInfo root) {
         if (root.getChildCount() != 13) {
+            // TODO: 非好友是10
             Log.i(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
@@ -78,37 +73,59 @@ public class QQClient {
             Log.d(TAG, "init: name node is null, return");
             return false;
         }
-        if (titleNodeChildCount != 4 && titleNodeChildCount != 5) {
-            Log.d(TAG, "init: titleGroupViewNode child count is not 4 or 5, return");
+        if (titleNodeChildCount != 5 && titleNodeChildCount != 6) {
+            Log.d(TAG, "init: titleGroupViewNode child count is not 5 or 6, return");
             return false;
         }
-        isGroupMessage = titleNodeChildCount != 4;
+        isGroupMessage = titleNodeChildCount == 6;
 
         nameNode = titleGroupViewNode.getChild(2);
         if (nameNode == null) {
             Log.d(TAG, "init: name node is null, return");
             return false;
         }
+        if (nameNode.getChildCount() > 0)
+            nameNode = nameNode.getChild(0);
         if (!nameNode.getViewIdResourceName().equals(IdName)) {
             Log.d(TAG, "init: 名字ID不对，return");
             return false;
         }
+        if (nameNode.getText() == null) {
+            Log.i(TAG, "init: name is null");
+            return false;
+        }
 
-        inputBoxNode = root.getChild(2);
-        if (inputBoxNode == null || inputBoxNode.getChildCount() != 2) {
-            Log.d(TAG, "init: inputBox is null, return");
+        inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
+        sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
+        if (inputList.size() == 0) {
+            Log.d(TAG, "init: input is null, return");
             return false;
         }
-        inputBoxNode = inputBoxNode.getChild(0);
-        sendBtnNode = inputBoxNode.getChild(1);
-        if (inputNode == null) {
-            Log.d(TAG, "init: input node is null, return");
+        if (sendList.size() == 0) {
+            Log.d(TAG, "init: send button is null, return");
             return false;
         }
-        if (sendBtnNode == null) {
-            Log.d(TAG, "init: sendButton node is null, return");
-            return false;
-        }
+        inputNode = inputList.get(0);
+        sendBtnNode = sendList.get(0);
+//
+//        inputBoxNode = root.getChild(2);
+//        if (inputBoxNode == null || inputBoxNode.getChildCount() != 2)
+//            inputBoxNode = root.getChild(3);
+//        if (inputBoxNode == null || inputBoxNode.getChildCount() != 2) {
+//            Log.d(TAG, "init: inputBox is null, return");
+//            return false;
+//        }
+//
+//        inputNode = inputBoxNode.getChild(0);
+//        sendBtnNode = inputBoxNode.getChild(1);
+//        if (inputNode == null) {
+//            Log.d(TAG, "init: input node is null, return");
+//            return false;
+//        }
+//        if (sendBtnNode == null) {
+//            Log.d(TAG, "init: sendButton node is null, return");
+//            return false;
+//        }
 
         chatGroupViewNode = root.getChild(0);
         if (chatGroupViewNode == null) {
@@ -123,6 +140,10 @@ public class QQClient {
     }
 
     public void addMessage(AccessibilityNodeInfo root) {
+        Date in1 = new Date();
+        if (!init(root))
+            return;
+        Date out1 = new Date();
         Date in = new Date();
         for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
             AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
@@ -140,10 +161,11 @@ public class QQClient {
                 }
                 switch (nodeId) {
                     case IdTimeStamp:
-                        timestampNode = child;
+                        //时间戳
                         break;
                     case IdHeadIcon:
-                        headIconNode = child;
+                        //头像图标
+                        headIconPos = j;
                         break;
                     case IdChatItem:
                         switch (child.getClassName().toString()) {
@@ -151,38 +173,57 @@ public class QQClient {
                                 if (child.getChildCount() != 0) {
                                     if (child.getContentDescription() != null) {
                                         redPegNode = child;
+                                        message = "红包";
+                                        //红包或者是分享
                                         Log.d(TAG, "content_layout: 红包");
                                     }
                                 } else {
-                                    picNode = child;
+                                    message = "[图片]";
                                     Log.d(TAG, "content_layout: 图片");
                                 }
                                 break;
                             case "android.widget.LinearLayout": {
+                                if (child.getChildCount() == 2) {
+                                    AccessibilityNodeInfo child1 = child.getChild(0);
+                                    AccessibilityNodeInfo child2 = child.getChild(1);
+                                    if (child1.getClassName() == "android.widget.TextView") {
+                                        if (child2.getClassName() == "android.widget.TextView") {
+                                            message = "回复 " + child1.getText() + ": \n" + child2.getText();
+                                        }
+                                    }
+                                }
                                 groupNode = child;
                                 Log.d(TAG, "content_layout: 组合消息");
                             }
                             break;
                             case "android.widget.TextView": {
-                                messageNode = child;
+                                message = child.getText().toString();
                                 Log.d(TAG, "content_layout: 普通文本");
                             }
                             break;
                         }
-//                        if (child.getChildCount() != 0)
-                        // TODO: 2017/10/23 多类型消息
+                        messagePos = j;
                         break;
                     case IdNickName:
-                        nickNameNode = child;
+                        name = child.getText().toString();
                         break;
                     case IdGrayBar:
-                        if (!child.isClickable() && !child.isFocusable())
-                            recallNode = child;
-
+//                        if (!child.isClickable() && !child.isFocusable())
+                        // 撤回消息或者是有人加入
+                        // 撤回消息的是不可点击的
                 }
             }
+            //2人聊天 头像在消息右边
+            if (!isGroupMessage)
+                if (messagePos < headIconPos)
+                    name = "我";
+                else
+                    name = nameNode.getText().toString();
+            Log.i(TAG, name + " : " + message);
         }
+
         Date out = new Date();
-        Log.i(TAG, "init: time: " + (out.getTime() - in.getTime()));
+        Log.i(TAG, "init: time: " + (out1.getTime() - in1.getTime()));
+        Log.i(TAG, "add : time: " + (out.getTime() - in.getTime()));
     }
 }

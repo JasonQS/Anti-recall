@@ -16,7 +16,7 @@ import com.ramotion.foldingcell.FoldingCell;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static String TAG = "Main Activity";
+    final String TAG = "Main Activity";
 
     private TextView mTextMessage;
 
@@ -34,9 +34,13 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_setting:
                     mTextMessage.setText(R.string.title_setting);
+                    // 跳转到辅助功能的设置
+                    Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                    startActivity(intent);
                     return true;
+                default:
+                    return false;
             }
-            return false;
         }
     };
 
@@ -57,9 +61,6 @@ public class MainActivity extends AppCompatActivity {
 //        final FoldingCell fc = findViewById(R.id.folding_cell);
 //        fc.setOnClickListener(v -> fc.toggle(false));
 
-        // 跳转到辅助功能的设置
-        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-        startActivity(intent);
     }
 
 }

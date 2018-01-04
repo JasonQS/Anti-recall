@@ -3,6 +3,8 @@ package com.qsboy.antirecall.access;
 import android.accessibilityservice.AccessibilityService;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityEventSource;
+import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.List;
@@ -52,23 +54,32 @@ public class MainAccessibilityService extends AccessibilityService {
                 Log.i(TAG, "Notification: " + texts);
                 break;
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                GetNodes.show(root);
+                GetNodes.show(root, "d");
                 switch (packageName) {
                     case pknTim:
-                        new TimClient().init(root);
                         break;
                     case pknQQ:
-                        new QQClient().init(root);
                         break;
                 }
             case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
                 if (root == null)
                     return;
+                // 只需在改变类型为文字时执行添加操作
+                // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
+
                 switch (packageName) {
                     case pknTim:
+                        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+                            break;
+                        CharSequence cs = event.getSource().getText();
+                        Log.i(TAG, "onAccessibilityEvent: " + cs);
                         new TimClient().addMessage(root);
                         break;
                     case pknQQ:
+                        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+                            break;
+                        cs = event.getSource().getText();
+                        Log.i(TAG, "onAccessibilityEvent: " + cs);
                         new QQClient().addMessage(root);
                         break;
                 }
