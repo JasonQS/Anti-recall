@@ -11,12 +11,33 @@ import java.util.List;
  * Created by JasonQS
  */
 
-public class TimClient extends Client {
+public class TimClient {
 
-    static String TAG = "Tim";
+    AccessibilityNodeInfo nameNode;
+    AccessibilityNodeInfo chatGroupViewNode;
+    AccessibilityNodeInfo timestampNode;
+    AccessibilityNodeInfo headIconNode;
+    AccessibilityNodeInfo messageNode;
+    AccessibilityNodeInfo groupNode;
+    AccessibilityNodeInfo picNode;
+    AccessibilityNodeInfo redPegNode;
+    AccessibilityNodeInfo recallNode;
+    AccessibilityNodeInfo inputNode;
+    AccessibilityNodeInfo sendBtnNode;
+    AccessibilityNodeInfo nickNameNode;
+
+    boolean isGroupMessage;
+    String name;
 
     List<AccessibilityNodeInfo> inputList;
     List<AccessibilityNodeInfo> sendList;
+
+    final String TAG = "Tim";
+
+    final String packageName = "com.tencent.tim";
+    final String IdName = "com.tencent.tim:id/title";
+    final String IdPic = "com.tencent.tim:id/pic";
+    final String IdChatGroupView = "com.tencent.tim:id/listView1";
     final String IdTimeStamp = "com.tencent.tim:id/chat_item_time_stamp";
     final String IdHeadIcon = "com.tencent.tim:id/chat_item_head_icon";
     final String IdChatItem = "com.tencent.tim:id/chat_item_content_layout";
@@ -24,13 +45,6 @@ public class TimClient extends Client {
     final String IdGrayBar = "com.tencent.tim:id/graybar";
     final String IdInput = "com.tencent.tim:id/input";
     final String IdSend = "com.tencent.tim:id/fun_btn";
-
-    public TimClient() {
-        packageName = "com.tencent.tim";
-        nameId = "com.tencent.tim:id/name";
-        chatGroupViewId = "com.tencent.tim:id/listView1";
-        picId = "com.tencent.tim:id/pic";
-    }
 
 
     /**
@@ -51,7 +65,7 @@ public class TimClient extends Client {
      * 发送按钮   8-1
      */
     public boolean init(AccessibilityNodeInfo root) {
-        if (root.getChildCount() != 15) {
+        if (root.getChildCount() != 14 && root.getChildCount() != 15) {
             Log.i(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
@@ -61,7 +75,7 @@ public class TimClient extends Client {
             Log.d(TAG, "init: name node is null, return");
             return false;
         }
-        if (!nameNode.getViewIdResourceName().equals(nameId)) {
+        if (!nameNode.getViewIdResourceName().equals(IdName)) {
             Log.d(TAG, "init: 名字ID不对，return");
             return false;
         }
@@ -92,7 +106,7 @@ public class TimClient extends Client {
         }
 
         chatGroupViewNode = root.getChild(4);
-        if (chatGroupViewNode.getViewIdResourceName().equals(chatGroupViewId))
+        if (chatGroupViewNode.getViewIdResourceName().equals(IdChatGroupView))
             isGroupMessage = false;
         else
             chatGroupViewNode = root.getChild(5);
@@ -100,15 +114,16 @@ public class TimClient extends Client {
             Log.d(TAG, "init: chatView node is null, return");
             return false;
         } else isGroupMessage = true;
-        if (!chatGroupViewNode.getViewIdResourceName().equals(chatGroupViewId)) {
+        if (!chatGroupViewNode.getViewIdResourceName().equals(IdChatGroupView)) {
             Log.d(TAG, "init: not chat view, return");
             return false;
         }
         return true;
     }
 
-    @Override
     public void addMessage(AccessibilityNodeInfo root) {
+        if (!init(root))
+            return;
         Date in = new Date();
         for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
             AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);

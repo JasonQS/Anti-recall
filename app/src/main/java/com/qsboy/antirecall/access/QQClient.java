@@ -4,36 +4,50 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
  * Created by JasonQS
  */
 
-public class QQClient extends Client {
+public class QQClient {
 
-    static String TAG = "QQ";
-
+    AccessibilityNodeInfo nameNode;
+    AccessibilityNodeInfo chatGroupViewNode;
+    AccessibilityNodeInfo timestampNode;
+    AccessibilityNodeInfo headIconNode;
+    AccessibilityNodeInfo messageNode;
+    AccessibilityNodeInfo groupNode;
+    AccessibilityNodeInfo picNode;
+    AccessibilityNodeInfo redPegNode;
+    AccessibilityNodeInfo recallNode;
+    AccessibilityNodeInfo inputNode;
+    AccessibilityNodeInfo sendBtnNode;
+    AccessibilityNodeInfo nickNameNode;
     AccessibilityNodeInfo inputBoxNode;
     AccessibilityNodeInfo titleGroupViewNode;
 
-//    List<AccessibilityNodeInfo> inputList;
-//    List<AccessibilityNodeInfo> sendList;
-//    final String IdInput = "com.tencent.tim:id/input";
-//    final String IdSend = "com.tencent.tim:id/fun_btn";
+    boolean isGroupMessage;
+    String name;
 
+    List<AccessibilityNodeInfo> inputList;
+    List<AccessibilityNodeInfo> sendList;
+
+    final String TAG = "QQ";
+
+    final String packageName = "com.tencent.qq";
+    final String IdName = "com.tencent.mobileqq:id/title";
+    final String IdPic = "com.tencent.mobileqq:id/pic";
+    final String IdChatGroupView = "com.tencent.mobileqq:id/listView1";
     final String IdTimeStamp = "com.tencent.mobileqq:id/chat_item_time_stamp";
     final String IdHeadIcon = "com.tencent.mobileqq:id/chat_item_head_icon";
     final String IdChatItem = "com.tencent.mobileqq:id/chat_item_content_layout";
     final String IdNickName = "com.tencent.mobileqq:id/chat_item_nick_name";
     final String IdGrayBar = "com.tencent.mobileqq:id/graybar";
+    final String IdInput = "com.tencent.tim:id/input";
+    final String IdSend = "com.tencent.tim:id/fun_btn";
 
-    public QQClient() {
-        packageName = "com.tencent.qq";
-        nameId = "com.tencent.mobileqq:id/name";
-        picId = "com.tencent.mobileqq:id/pic";
-        chatGroupViewId = "com.tencent.mobileqq:id/listView1";
-    }
 
     /**
      * 好友：
@@ -75,7 +89,7 @@ public class QQClient extends Client {
             Log.d(TAG, "init: name node is null, return");
             return false;
         }
-        if (!nameNode.getViewIdResourceName().equals(nameId)) {
+        if (!nameNode.getViewIdResourceName().equals(IdName)) {
             Log.d(TAG, "init: 名字ID不对，return");
             return false;
         }
@@ -101,14 +115,14 @@ public class QQClient extends Client {
             Log.d(TAG, "init: chatView node is null, return");
             return false;
         }
-        if (!chatGroupViewNode.getViewIdResourceName().equals(chatGroupViewId)) {
+        if (!chatGroupViewNode.getViewIdResourceName().equals(IdChatGroupView)) {
             Log.d(TAG, "init: not chat view, return");
             return false;
         }
         return true;
     }
 
-    private void addMessage() {
+    public void addMessage(AccessibilityNodeInfo root) {
         Date in = new Date();
         for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
             AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
