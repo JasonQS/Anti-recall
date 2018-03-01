@@ -14,7 +14,6 @@ import static com.qsboy.antirecall.db.DBHelper.Column_Name_ID;
 import static com.qsboy.antirecall.db.DBHelper.Column_Name_Message;
 import static com.qsboy.antirecall.db.DBHelper.Column_Name_SubName;
 import static com.qsboy.antirecall.db.DBHelper.Column_Name_Time;
-import static com.qsboy.antirecall.db.DBHelper.Table_Name_Prefix_Group;
 import static com.qsboy.antirecall.db.DBHelper.Table_Name_Prefix_QQ_And_Tim;
 import static com.qsboy.antirecall.db.DBHelper.Table_Name_Prefix_WX;
 
@@ -22,17 +21,16 @@ import static com.qsboy.antirecall.db.DBHelper.Table_Name_Prefix_WX;
  * Created by JasonQS
  */
 
+@SuppressWarnings({"unused"})
 public class Dao {
 
     private String TAG = "Dao";
-    private Context context;
     private DBHelper dbHelper;
 
     SQLiteDatabase db = null;
     Cursor cursor = null;
 
     public Dao(Context context) {
-        this.context = context;
         dbHelper = new DBHelper(context, DBHelper.DB_NAME, null, DBHelper.DB_VERSION);
     }
 
@@ -45,104 +43,100 @@ public class Dao {
         }
     }
 
-    public void addMessage(String tableName, String subName, Boolean isWX, String message) {
-        if (isWX)
-            tableName = Table_Name_Prefix_WX + tableName;
-        else tableName = Table_Name_Prefix_QQ_And_Tim + tableName;
-
+    public void addMessage(String name, String subName, Boolean isWX, String message) {
+        String tableName = getTableName(name, isWX);
         this.addMessage(tableName, subName, isWX, message, new Date().getTime());
     }
 
     /**
-     * @param tableName 联系人名字
-     * @param subName   群昵称
-     * @param isWX      是微信
-     * @param message   消息记录
-     * @param time      时间
+     * @param name    联系人名字
+     * @param subName 群昵称
+     * @param isWX    是微信
+     * @param message 消息记录
+     * @param time    时间
      */
-    private void addMessage(String tableName, String subName, Boolean isWX, String message, long time) {
-        if (isWX)
-            tableName = Table_Name_Prefix_WX + tableName;
-        else tableName = Table_Name_Prefix_QQ_And_Tim + tableName;
+    public void addMessage(String name, String subName, Boolean isWX, String message, long time) {
+        String tableName = getTableName(name, isWX);
+        String sqlCreateTable;
 
+        sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
+                Column_Name_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Column_Name_SubName + " TEXT, " +
+                Column_Name_Message + " TEXT NOT NULL, " +
+                Column_Name_Time + " INTEGER NOT NULL)";
+        db = dbHelper.getWritableDatabase();
+        db.beginTransaction();
         try {
-            String sqlCreateTable;
-            if (subName == null)
-                sqlCreateTable = "CREATE TABLE IF NOT EXISTS " +
-                        tableName + " (" +
-                        Column_Name_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        Column_Name_Message + " TEXT, " +
-                        Column_Name_Time + " INTEGER)";
-            else
-                sqlCreateTable = "CREATE TABLE IF NOT EXISTS " +
-                        Table_Name_Prefix_Group + tableName + " (" +
-                        Column_Name_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        Column_Name_SubName + " TEXT, " +
-                        Column_Name_Message + " TEXT, " +
-                        Column_Name_Time + " INTEGER)";
-
-            String sqlInsert = "INSERT INTO" + tableName + " (" +
-                    Column_Name_Message + "," +
-                    Column_Name_Time + ") " +
-                    "VALUES ('" + message + "'," + time + ")";
-
-            db = dbHelper.getWritableDatabase();
-            db.beginTransaction();
-
             db.execSQL(sqlCreateTable);
-            db.execSQL(sqlInsert);
+            ContentValues values = new ContentValues();
+            values.put(Column_Name_Message, message);
+            values.put(Column_Name_Time, time);
+            if (subName != null)
+                values.put(Column_Name_SubName, subName);
+            long newRowId = db.insert(tableName, null, values);
 
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
-            // TODO: 17/12/2017 db.close
+            db.close();
         }
     }
 
-    public boolean insertData(String tableName, String subName, String message, long time) {
-
-        SQLiteDatabase db = null;
-        try {
-            db = dbHelper.getWritableDatabase();
-            db.beginTransaction();
-
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(Column_Name_Message, message);
-            contentValues.put(Column_Name_SubName, subName);
-            contentValues.put(Column_Name_Time, time);
-            db.insertOrThrow(tableName, null, contentValues);
-
-            db.setTransactionSuccessful();
-            return true;
-        } finally {
-            if (db != null) {
-                db.endTransaction();
-                db.close();
-            }
-        }
-    }
-
-
-    public List<Integer> queryMessage(String tableName, String message) {
-        List<Integer> ids = new ArrayList<>();
-
+    public List<Integer> queryByMessage(String name, Boolean isWX, String message) {
+        String tableName = getTableName(name, isWX);
+        List<Integer> list = new ArrayList<>();
         // SELECT * FROM tableName WHERE Message = message
-        cursor = db.query(tableName, null, Column_Name_Message + " = ?", new String[]{message}, null, null, Column_Name_ID + " desc");
-        Log.i(TAG, "queryMessage: cursor position: " + cursor.getPosition());
+        cursor = db.query(
+                tableName,
+                null,
+                Column_Name_Message + " = ?",
+                new String[]{message},
+                null,
+                null,
+                Column_Name_ID + " desc");
+        Log.i(TAG, "queryByMessage: cursor position: " + cursor.getPosition());
         while (cursor.moveToNext()) {
-            Log.d(TAG, "queryMessage: cursor position: " + cursor.getPosition());
-            ids.add(cursor.getInt(0));
+            Log.d(TAG, "queryByMessage: cursor position: " + cursor.getPosition());
+            list.add(cursor.getInt(0));
         }
-        return ids;
+        return list;
     }
 
-    public String queryId(String tableName, int id) {
+    public Messages queryById(String name, Boolean isWX, int id) {
+        String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
-        cursor = db.query(tableName, null, "Id = ?", new String[]{String.valueOf(id)}, null, null, null);
+        cursor = db.query(tableName,
+                null,
+                Column_Name_ID + " = ?",
+                new String[]{String.valueOf(id)},
+                null,
+                null,
+                null);
         if (cursor.getCount() == 0)
             return null;
-        return cursor.getString(2);
+        //如果没有subName
+        String message = cursor.getString(1);
+        String time = cursor.getString(2);
+        String subName = cursor.getString(0);
+
+        if (cursor.getColumnIndex(Column_Name_SubName) == -1) {
+            return new Messages(id, isWX, tableName, subName, message, time);
+        } else return new Messages(id, isWX, tableName, null, message, time);
 
     }
 
+    public void deleteMessage(String name, Boolean isWX, int id) {
+        String tableName = getTableName(name, isWX);
+        String selection = Column_Name_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        db.delete(tableName, selection, selectionArgs);
+    }
+
+    public static String getTableName(String name, Boolean isWX) {
+        String tableName;
+        if (isWX)
+            tableName = Table_Name_Prefix_WX + name;
+        else tableName = Table_Name_Prefix_QQ_And_Tim + name;
+        return tableName;
+    }
 }

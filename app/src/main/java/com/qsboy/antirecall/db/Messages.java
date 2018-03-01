@@ -6,12 +6,22 @@ package com.qsboy.antirecall.db;
 
 public class Messages {
 
-    public String getName() {
-        return name;
-    }
+    private int id;
 
-    public void setName(String name) {
+    private boolean isWX;
+    private String name;
+    private String subName;
+    private String message;
+    private String time;
+    private String image;
+
+    public Messages(int id, boolean isWX, String name, String subName, String message, String time) {
+        this.id = id;
+        this.isWX = isWX;
         this.name = name;
+        this.subName = subName;
+        this.message = message;
+        this.time = time;
     }
 
     public int getId() {
@@ -22,12 +32,31 @@ public class Messages {
         this.id = id;
     }
 
-    public int getTime() {
-        return time;
+    public boolean isWX() {
+        return isWX;
     }
 
-    public void setTime(int time) {
-        this.time = time;
+    public void setWX(boolean WX) {
+        isWX = WX;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSubName() {
+        if (this.subName == null)
+            return name;
+        else
+            return subName;
+    }
+
+    public void setSubName(String subName) {
+        this.subName = subName;
     }
 
     public String getMessage() {
@@ -38,29 +67,20 @@ public class Messages {
         this.message = message;
     }
 
-    public String getImg() {
-        return img;
+    public String getTime() {
+        return time;
     }
 
-    public void setImg(String img) {
-        this.img = img;
-    }
-
-    public String name;
-    public int id;
-    public int time;
-    public String message;
-    public String img;
-
-    public Messages(int id, int time, String message) {
-        this.id = id;
-        this.message = message;
+    public void setTime(String time) {
         this.time = time;
     }
 
-    public Messages(int id, int time, String message, String img) {
-        this(id, time, message);
-        this.img = img;
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
 }

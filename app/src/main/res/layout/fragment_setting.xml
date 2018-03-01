@@ -8,12 +8,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="15dp"
-        android:layout_marginLeft="15dp">
+        android:layout_marginStart="15dp">
 
         <com.fenjuly.mylibrary.ToggleExpandLayout
             android:id="@+id/toggleLayout1"
             android:layout_marginTop="15dp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </com.fenjuly.mylibrary.ToggleExpandLayout>
@@ -21,7 +21,7 @@
         <com.fenjuly.mylibrary.ToggleExpandLayout
             android:id="@+id/toggleLayout"
             android:layout_marginTop="15dp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </com.fenjuly.mylibrary.ToggleExpandLayout>

@@ -6,17 +6,26 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.qsboy.antirecall.db.Messages;
+import com.qsboy.antirecall.ui.MultiMessagesAdapter;
 import com.qsboy.antirecall.utils.CheckAuthority;
 import com.ramotion.foldingcell.FoldingCell;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     final String TAG = "Main Activity";
+
+    public static ArrayList<Messages> messagesList = new ArrayList<>();
+    MultiMessagesAdapter adapter;
+    RecyclerView recyclerView;
 
     private TextView mTextMessage;
 
@@ -44,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    //todo 查找的时候加个program bar提示
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "为显示撤回的消息\n请授予悬浮窗权限", Toast.LENGTH_LONG).show();
         }
 
-//        final FoldingCell fc = findViewById(R.id.folding_cell);
-//        fc.setOnClickListener(v -> fc.toggle(false));
+        final FoldingCell fc = findViewById(R.id.folding_cell);
+        fc.setOnClickListener(v -> fc.toggle(false));
 
     }
 

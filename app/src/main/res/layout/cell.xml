@@ -16,11 +16,9 @@
         folding-cell:backSideColor="@color/bgBackSideColor"
         folding-cell:cameraHeight="30">
 
-        <!-- CONTENT (UNFOLDED) LAYOUT -->
-        <include layout="@layout/cell_content_layout" />
+        <include layout="@layout/cell_unfold" />
 
-        <!-- TITLE (FOLDED) LAYOUT -->
-        <include layout="@layout/cell_title_layout" />
+        <include layout="@layout/cell_fold" />
 
     </com.ramotion.foldingcell.FoldingCell>
 </android.support.v7.widget.CardView>
