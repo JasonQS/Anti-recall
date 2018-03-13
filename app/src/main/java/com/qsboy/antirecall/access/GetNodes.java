@@ -12,25 +12,38 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class GetNodes {
 
+    private static int padding = 10;
+
     private static String TAG = "GetNodes";
 
+    static String border = getBorder();
+
     public static void show(AccessibilityNodeInfo node) {
-        log("\t--------");
+        log(border);
         iter(node, 0, "v");
-        log("\t");
+        log(border);
     }
 
     public static void show(AccessibilityNodeInfo node, String level) {
-        log(level, "\t--------");
+        log(level, border);
         iter(node, 0, level);
-        log(level, "\t");
+        log(level, border);
+    }
+
+    private static String getBorder(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("\t");
+        for (int i = 0; i < padding; i++)
+            builder.append("--------");
+        builder.append("--------");
+        return builder.toString();
     }
 
     private static void iter(AccessibilityNodeInfo node, int num, String level) {
         if (node == null) return;
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            log(level, "\n\t" + addPadding(num) + i + addPadding(num, 6) + print(node.getChild(i)));
+            log(level, "\n\t" + addPadding(num) + i + addPadding(num, padding) + print(node.getChild(i)));
             iter(node.getChild(i), num + 1, level);
         }
     }
@@ -38,9 +51,8 @@ public class GetNodes {
     @NonNull
     private static String addPadding(int num) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++)
             builder.append("\t");
-        }
         return builder.toString();
     }
 
@@ -49,9 +61,8 @@ public class GetNodes {
         if (amount < num)
             return "";
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < amount - num; i++) {
+        for (int i = 0; i < amount - num; i++)
             builder.append("\t");
-        }
         return builder.toString();
     }
 

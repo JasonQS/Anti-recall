@@ -25,7 +25,7 @@ public class MainAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getPackageName() == null) {
-            Log.d(TAG, "onAccessibilityEvent: package name is null, return");
+            Log.d(TAG, "onAccessibilityEvent: package subName is null, return");
             return;
         }
         packageName = event.getPackageName().toString();
@@ -89,27 +89,27 @@ public class MainAccessibilityService extends AccessibilityService {
             content = string.substring(i + 2);
             //是QQ群消息
 //            if (!is_wx)
-//                if (name.charAt(i - 1) == ')' && name.contains("(")) {
+//                if (subName.charAt(i - 1) == ')' && subName.contains("(")) {
 //                    content = string.substring(i + 1);
-//                    name = name.substring(name.indexOf('(') + 1, name.indexOf(')'));
+//                    subName = subName.substring(subName.indexOf('(') + 1, subName.indexOf(')'));
 //                }
 //            long date = new Date().getTime();
-//            Log.w(TAG, "name : " + name + "    content : " + content + "    time : " + date);
+//            Log.w(TAG, "subName : " + subName + "    content : " + content + "    time : " + date);
 //            String line = content + date;
 //            tempMessage = content;
-//            xFile.writeFile(line, name);
+//            xFile.writeFile(line, subName);
         }
 
     }
 
-    private void onNotification(AccessibilityEvent event){
+    private void onNotification(AccessibilityEvent event) {
         List<CharSequence> texts = event.getText();
         if (texts.isEmpty() || texts.size() == 0)
             return;
-        Log.i(TAG, "Notification: " + texts);
+        Log.i(TAG, "onNotification: " + texts);
     }
 
-    private void onContentChanged(AccessibilityEvent event){
+    private void onContentChanged(AccessibilityEvent event) {
         if (root == null)
             return;
         // 只需在改变类型为文字时执行添加操作
@@ -120,20 +120,20 @@ public class MainAccessibilityService extends AccessibilityService {
                 if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
                     break;
                 CharSequence cs = event.getSource().getText();
-                Log.i(TAG, "onAccessibilityEvent: " + cs);
+                Log.i(TAG, "onContentChanged: " + cs);
                 new TimClient(this).addMessage(root);
                 break;
             case pknQQ:
                 if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
                     break;
                 cs = event.getSource().getText();
-                Log.i(TAG, "onAccessibilityEvent: " + cs);
+                Log.i(TAG, "onContentChanged: " + cs);
                 new QQClient(this).addMessage(root);
                 break;
         }
     }
 
-    private void onClick(AccessibilityEvent event){
+    private void onClick(AccessibilityEvent event) {
         GetNodes.show(root, "d");
         switch (packageName) {
             case pknTim:
@@ -142,8 +142,6 @@ public class MainAccessibilityService extends AccessibilityService {
                 break;
         }
     }
-
-
 
 
     @Override

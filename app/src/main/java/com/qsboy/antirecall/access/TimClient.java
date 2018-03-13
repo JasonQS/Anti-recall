@@ -14,18 +14,9 @@ import java.util.List;
  * Created by JasonQS
  */
 
-public class TimClient {
+public class TimClient extends Client{
 
-    AccessibilityNodeInfo nameNode;
-    AccessibilityNodeInfo chatGroupViewNode;
-    AccessibilityNodeInfo groupNode;
-    AccessibilityNodeInfo redPegNode;
-    AccessibilityNodeInfo inputNode;
-    AccessibilityNodeInfo sendBtnNode;
-    List<AccessibilityNodeInfo> inputList;
-    List<AccessibilityNodeInfo> sendList;
-
-    final String TAG = "Tim";
+    String TAG = "Tim";
 
     final String IdName = "com.tencent.tim:id/title";
     final String IdChatGroupView = "com.tencent.tim:id/listView1";
@@ -39,14 +30,9 @@ public class TimClient {
 
     int headIconPos;
     int messagePos;
-    String message;
-    String name;
-    boolean isGroupMessage;
 
-    Dao dao;
-
-    TimClient(Context context){
-        dao = new Dao(context);
+    public TimClient(Context context) {
+        super(context);
     }
 
     /**
@@ -66,7 +52,7 @@ public class TimClient {
      * 文本框     8-0
      * 发送按钮   8-1
      */
-    public boolean init(AccessibilityNodeInfo root) {
+    protected boolean init(AccessibilityNodeInfo root) {
         if (root.getChildCount() != 14 && root.getChildCount() != 15) {
             Log.d(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
@@ -74,7 +60,7 @@ public class TimClient {
 
         nameNode = root.getChild(1);
         if (nameNode == null) {
-            Log.d(TAG, "init: name node is null, return");
+            Log.d(TAG, "init: subName node is null, return");
             return false;
         }
         if (!nameNode.getViewIdResourceName().equals(IdName)) {
@@ -82,9 +68,10 @@ public class TimClient {
             return false;
         }
         if (nameNode.getText() == null) {
-            Log.i(TAG, "init: name is null");
+            Log.i(TAG, "init: subName is null");
             return false;
         }
+        title = nameNode.getText().toString();
 
         inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
         sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
@@ -123,92 +110,82 @@ public class TimClient {
         return true;
     }
 
-    public void addMessage(AccessibilityNodeInfo root) {
-        Date in1 = new Date();
-        if (!init(root))
-            return;
-        Date out1 = new Date();
-        Date in = new Date();
-        for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
-            AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
-            GetNodes.show(group);
-            for (int j = 0; j < group.getChildCount(); j++) {
-                AccessibilityNodeInfo child = group.getChild(j);
-                if (child == null) {
-                    Log.d(TAG, "init: child is null, continue");
-                    continue;
-                }
-                String nodeId = child.getViewIdResourceName();
-                if (nodeId == null) {
-                    Log.d(TAG, "init: node ID is null, continue");
-                    continue;
-                }
-                switch (nodeId) {
-                    case IdTimeStamp:
-                        //时间戳
-                        break;
-                    case IdHeadIcon:
-                        //头像图标
-                        headIconPos = j;
-                        break;
-                    case IdChatItem:
-                        switch (child.getClassName().toString()) {
-                            case "android.widget.RelativeLayout":
-                                if (child.getChildCount() != 0) {
-                                    if (child.getContentDescription() != null) {
-                                        redPegNode = child;
-                                        message = "红包";
-                                        // TODO: 红包或者是分享
-                                        Log.d(TAG, "content_layout: 红包");
-                                    }
-                                } else {
-                                    message = "[图片]";
-                                    Log.d(TAG, "content_layout: 图片");
+    protected void parser(AccessibilityNodeInfo group) {
+        for (int j = 0; j < group.getChildCount(); j++) {
+            AccessibilityNodeInfo child = group.getChild(j);
+            if (child == null) {
+                Log.d(TAG, "init: child is null, continue");
+                continue;
+            }
+            String nodeId = child.getViewIdResourceName();
+            if (nodeId == null) {
+                Log.d(TAG, "init: node ID is null, continue");
+                continue;
+            }
+            switch (nodeId) {
+                case IdTimeStamp:
+                    //时间戳
+                    break;
+                case IdHeadIcon:
+                    //头像图标
+                    headIconPos = j;
+                    break;
+                case IdChatItem:
+                    switch (child.getClassName().toString()) {
+                        case "android.widget.RelativeLayout":
+                            if (child.getChildCount() != 0) {
+                                if (child.getContentDescription() != null) {
+                                    redPegNode = child;
+                                    message = "红包";
+                                    // TODO: 红包或者是分享
+                                    Log.d(TAG, "content_layout: 红包");
                                 }
-                                break;
-                            case "android.widget.LinearLayout": {
-                                if (child.getChildCount() == 2) {
-                                    AccessibilityNodeInfo child1 = child.getChild(0);
-                                    AccessibilityNodeInfo child2 = child.getChild(1);
-                                    if (child1.getClassName() == "android.widget.TextView") {
-                                        if (child2.getClassName() == "android.widget.TextView") {
-                                            message = "回复 " + child1.getText() + ": \n" + child2.getText();
-                                        }
-                                    }
-                                }
-                                groupNode = child;
-                                Log.d(TAG, "content_layout: 组合消息");
+                            } else {
+                                message = "[图片]";
+                                Log.d(TAG, "content_layout: 图片");
                             }
                             break;
-                            case "android.widget.TextView": {
-                                message = child.getText().toString();
-                                Log.d(TAG, "content_layout: 普通文本");
+                        case "android.widget.LinearLayout": {
+                            if (child.getChildCount() == 2) {
+                                AccessibilityNodeInfo child1 = child.getChild(0);
+                                AccessibilityNodeInfo child2 = child.getChild(1);
+                                if (child1.getClassName() == "android.widget.TextView") {
+                                    if (child2.getClassName() == "android.widget.TextView") {
+                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
+                                    }
+                                }
                             }
-                            break;
+                            groupNode = child;
+                            Log.d(TAG, "content_layout: 组合消息");
                         }
-                        messagePos = j;
                         break;
-                    case IdNickName:
-                        name = child.getText().toString();
+                        case "android.widget.TextView": {
+                            message = child.getText().toString();
+                            Log.d(TAG, "content_layout: 普通文本");
+                        }
                         break;
-                    case IdGrayBar:
+                    }
+                    messagePos = j;
+                    break;
+                case IdNickName:
+                    subName = child.getText().toString();
+                    subName = subName.substring(0, subName.length() - 1);
+                    break;
+                case IdGrayBar:
 //                        if (!child.isClickable() && !child.isFocusable())
-                        // 撤回消息或者是有人加入
-                        // 撤回消息的是不可点击的
-                }
+                    // 撤回消息或者是有人加入
+                    // 撤回消息的是不可点击的
             }
             //2人聊天 头像在消息右边
             if (!isGroupMessage)
                 if (messagePos < headIconPos)
-                    name = "我";
-                else
-                    name = nameNode.getText().toString();
+                    subName = "我";
+                else {
+                    subName = nameNode.getText().toString();
+                    subName = subName.substring(0, subName.length() - 1);
+                }
 
-            Log.i(TAG, name + " : " + message);
+            Log.i(TAG, subName + " : " + message);
         }
-
-        Date out = new Date();
-        Log.i(TAG, "init: time: " + (out1.getTime() - in1.getTime()));
-        Log.i(TAG, "add : time: " + (out.getTime() - in.getTime()));
     }
 }

@@ -45,12 +45,12 @@
 //
 //        nameNode = child0.getChild(1);
 //        if (nameNode == null) {
-//            Log.d(TAG, "init: name node is null, return");
+//            Log.d(TAG, "init: subName node is null, return");
 //            return false;
 //        }
 //        if (nameNode.getText() != null) {
-//            name = nameNode.getText().toString();
-//            Log.i(TAG, "init: name: " + name);
+//            subName = nameNode.getText().toString();
+//            Log.i(TAG, "init: subName: " + subName);
 //        }
 //
 //        inputBoxNode = child0.getChild(4).getChild(0).getChild(1);
