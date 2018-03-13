@@ -1,7 +1,10 @@
 package com.qsboy.antirecall.access;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
+
+import com.qsboy.antirecall.db.Dao;
 
 import java.util.Date;
 import java.util.List;
@@ -40,8 +43,13 @@ public class QQClient {
     int messagePos;
     String message;
     String name;
-
     boolean isGroupMessage;
+
+    Dao dao;
+
+    QQClient(Context context){
+        dao = new Dao(context);
+    }
 
     /**
      * 好友：

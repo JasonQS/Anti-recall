@@ -41,7 +41,7 @@
             android:layout_weight="3">
 
             <TextView
-                android:id="@+id/cell_message"
+                android:id="@+id/cell_message_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|start"
@@ -52,6 +52,7 @@
                 android:textSize="@dimen/text_size_message" />
 
             <!--<ImageView-->
+                <!--android:id="@+id/cell_message_image"-->
                 <!--android:layout_width="wrap_content"-->
                 <!--android:layout_height="wrap_content"-->
                 <!--tools:ignore="ContentDescription" />-->
@@ -64,7 +65,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:background="@color/bgName"
         android:padding="@dimen/margin_half">
 
         <TextView

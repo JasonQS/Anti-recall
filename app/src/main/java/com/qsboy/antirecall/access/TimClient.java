@@ -1,7 +1,10 @@
 package com.qsboy.antirecall.access;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
+
+import com.qsboy.antirecall.db.Dao;
 
 import java.util.Date;
 import java.util.List;
@@ -38,8 +41,13 @@ public class TimClient {
     int messagePos;
     String message;
     String name;
-
     boolean isGroupMessage;
+
+    Dao dao;
+
+    TimClient(Context context){
+        dao = new Dao(context);
+    }
 
     /**
      * 好友：

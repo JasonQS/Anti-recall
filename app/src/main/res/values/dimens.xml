@@ -5,7 +5,9 @@
 
     <dimen name="height_title">32dp</dimen>
     <dimen name="height_content_title">48dp</dimen>
-    <dimen name="height_content_content">208dp</dimen>
+    <dimen name="height_content_content">240dp</dimen>
+    <dimen name="height_item_fold">80dp</dimen>
+    <dimen name="height_item_unfold">272dp</dimen>
 
     <dimen name="text_size_title">16sp</dimen>
     <dimen name="text_size_time">12sp</dimen>

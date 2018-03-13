@@ -48,41 +48,14 @@ public class MainAccessibilityService extends AccessibilityService {
 
         switch (eventType) {
             case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
-                List<CharSequence> texts = event.getText();
-                if (texts.isEmpty() || texts.size() == 0)
-                    return;
-                Log.i(TAG, "Notification: " + texts);
+                onNotification(event);
+                break;
+            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                onContentChanged(event);
                 break;
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                GetNodes.show(root, "d");
-                switch (packageName) {
-                    case pknTim:
-                        break;
-                    case pknQQ:
-                        break;
-                }
-            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
-                if (root == null)
-                    return;
-                // 只需在改变类型为文字时执行添加操作
-                // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
-
-                switch (packageName) {
-                    case pknTim:
-                        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
-                            break;
-                        CharSequence cs = event.getSource().getText();
-                        Log.i(TAG, "onAccessibilityEvent: " + cs);
-                        new TimClient().addMessage(root);
-                        break;
-                    case pknQQ:
-                        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
-                            break;
-                        cs = event.getSource().getText();
-                        Log.i(TAG, "onAccessibilityEvent: " + cs);
-                        new QQClient().addMessage(root);
-                        break;
-                }
+                onClick(event);
+                break;
 
         }
     }
@@ -128,6 +101,50 @@ public class MainAccessibilityService extends AccessibilityService {
         }
 
     }
+
+    private void onNotification(AccessibilityEvent event){
+        List<CharSequence> texts = event.getText();
+        if (texts.isEmpty() || texts.size() == 0)
+            return;
+        Log.i(TAG, "Notification: " + texts);
+    }
+
+    private void onContentChanged(AccessibilityEvent event){
+        if (root == null)
+            return;
+        // 只需在改变类型为文字时执行添加操作
+        // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
+
+        switch (packageName) {
+            case pknTim:
+                if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+                    break;
+                CharSequence cs = event.getSource().getText();
+                Log.i(TAG, "onAccessibilityEvent: " + cs);
+                new TimClient(this).addMessage(root);
+                break;
+            case pknQQ:
+                if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+                    break;
+                cs = event.getSource().getText();
+                Log.i(TAG, "onAccessibilityEvent: " + cs);
+                new QQClient(this).addMessage(root);
+                break;
+        }
+    }
+
+    private void onClick(AccessibilityEvent event){
+        GetNodes.show(root, "d");
+        switch (packageName) {
+            case pknTim:
+                break;
+            case pknQQ:
+                break;
+        }
+    }
+
+
+
 
     @Override
     public void onInterrupt() {

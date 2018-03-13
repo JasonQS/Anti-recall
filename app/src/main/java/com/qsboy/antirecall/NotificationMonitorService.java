@@ -14,6 +14,7 @@ import android.util.Log;
 @TargetApi(21)
 public class NotificationMonitorService extends NotificationListenerService {
 
+    // TODO: 微信自动登录
     // 在收到消息时触发
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
