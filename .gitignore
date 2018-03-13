@@ -7,4 +7,5 @@
 /build
 /captures
 .externalNativeBuild
+.gitignore
 README.md
