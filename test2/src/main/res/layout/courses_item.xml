@@ -1,0 +1,39 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:layout_marginBottom="15dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/course_item_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/horizontal_list"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_height="30dp"
+            android:visibility="visible"/>
+
+    </LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/ic_launcher"
+        android:visibility="gone"
+        android:tint="@color/colorAccent"/>
+
+
+</RelativeLayout>

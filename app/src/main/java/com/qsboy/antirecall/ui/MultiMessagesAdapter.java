@@ -9,7 +9,6 @@ import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,7 +28,6 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
 
     Context context;
     Dao dao;
-
     int day;
     Calendar calendar = Calendar.getInstance();
 
@@ -44,7 +42,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
 
     @Override
     protected void convert(BaseViewHolder helper, Messages item) {
-        Log.i(TAG, "convert: " + item.getMessage());
+        Log.v(TAG, "convert: " + item.getMessage());
         helper.setText(R.id.cell_name, item.getSubName());
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
@@ -61,7 +59,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     }
 
     public Messages fetchData(String name, boolean isWX, int id) {
-        Log.i(TAG, "fetch data: " + id);
+        Log.v(TAG, "fetch data: " + id);
         return dao.queryById(name, isWX, id);
     }
 

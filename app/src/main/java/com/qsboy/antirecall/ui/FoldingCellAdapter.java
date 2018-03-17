@@ -30,6 +30,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
     String TAG = "FoldingCellAdapter";
 
     Context context;
+    Dao dao;
     Calendar now = Calendar.getInstance();
     Calendar calendar = Calendar.getInstance();
 
@@ -39,11 +40,12 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
     public FoldingCellAdapter(@Nullable List<Messages> data, Context context) {
         super(R.layout.cell, data);
         this.context = context;
+        dao = new Dao(context);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, Messages item) {
-        Log.i(TAG, "convert: " + item.getMessage());
+        Log.v(TAG, "convert: " + item.getMessage());
         FoldingCell fc = helper.getView(R.id.folding_cell);
         RecyclerView recyclerView = helper.getView(R.id.cell_recycler_view);
         MultiMessagesAdapter adapter = new MultiMessagesAdapter(null, context);
@@ -57,21 +59,20 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         List<Messages> messages = adapter.prepareData(item.getName(), item.isWX(), item.getId());
         final int[] top = {item.getId() - 2};
         final int[] bot = {item.getId() + 2};
-        int max = new Dao(context).getMaxID(item.getName(), item.isWX());
+        int max = dao.getMaxID(item.getName(), item.isWX());
         if (messages.size() != 0)
             adapter.addData(messages);
         adapter.setStartUpFetchPosition(2);
         adapter.setUpFetchEnable(true);
         adapter.setPreLoadNumber(4);
         adapter.setEnableLoadMore(true);
-//        adapter.disableLoadMoreIfNotFullPage(recyclerView);
         adapter.setUpFetchListener(() -> recyclerView.post(() -> {
             if (top[0] <= 1)
                 adapter.setUpFetchEnable(false);
             Messages data = adapter.fetchData(item.getName(), item.isWX(), --top[0]);
             if (data != null)
                 adapter.addData(0, data);
-            Log.i(TAG, "convert: UpFetch");
+            Log.v(TAG, "convert: UpFetch");
         }));
         adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
             Messages data = adapter.fetchData(item.getName(), item.isWX(), ++bot[0]);
@@ -81,7 +82,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
                 adapter.addData(data);
                 adapter.loadMoreComplete();
             }
-            Log.i(TAG, "convert: OnLoadMore");
+            Log.v(TAG, "convert: OnLoadMore");
         }), recyclerView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
