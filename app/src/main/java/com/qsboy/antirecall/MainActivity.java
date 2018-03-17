@@ -25,8 +25,11 @@ import com.qsboy.antirecall.ui.MultiMessagesAdapter;
 import com.qsboy.antirecall.utils.CheckAuthority;
 import com.ramotion.foldingcell.FoldingCell;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "为显示撤回的消息\n请授予悬浮窗权限", Toast.LENGTH_LONG).show();
         }
 
-//        prepareDataForTest();
+        prepareDataForTest();
 
         foldingCellAdapter = new FoldingCellAdapter(null, this);
         List<Messages> messages = foldingCellAdapter.prepareData();
@@ -126,38 +129,18 @@ public class MainActivity extends AppCompatActivity {
     // TODO: for test
     public void prepareDataForTest() {
         Dao dao = new Dao(this);
-        dao.addMessage("Jason", "qs", false, "a");
-        dao.addMessage("Jason", "qs", false, "b");
-        dao.addMessage("Jason", "qs", false, "c");
-        dao.addMessage("Jason", "qs", false, "d");
-        dao.addMessage("Jason", "qs", false, "e");
-        dao.addMessage("Jason", "qs", false, "f");
-        dao.addMessage("Jason", "qs", false, "g");
-        dao.addMessage("Jason", "qs", false, "h");
-        dao.addMessage("Jason", "qs", false, "i");
-        dao.addMessage("Jason", "qs", false, "j");
-        dao.addMessage("Jason", "qs", false, "hello");
-        dao.addMessage("Jason", "qs", false, "world");
-        dao.addMessage("Jason", "qs", false, "0");
-        dao.addMessage("Jason", "qs", false, "1");
-        dao.addMessage("Jason", "qs", false, "2");
-        dao.addMessage("Jason", "qs", false, "3");
-        dao.addMessage("Jason", "qs", false, "4");
-        dao.addMessage("Jason", "qs", false, "5");
-        dao.addMessage("Jason", "qs", false, "6");
-        dao.addMessage("Jason", "qs", false, "7");
-        dao.addMessage("Jason", "qs", false, "8");
-        dao.addMessage("Jason", "qs", false, "9");
-        List<Messages> ids = dao.queryByMessage("Jason", false, "hello");
-        Log.i(TAG, "prepareDataForTest: ids: " + ids);
-        for (Messages messages : ids)
-            dao.addRecall(
-                    messages.getId(),
-                    messages.getName(),
-                    messages.getSubName(),
-                    messages.isWX(),
-                    messages.getMessage(),
-                    messages.getTime());
+        dao.deleteAll();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -9);
+        for (int i = 1; i < 200;) {
+            for (int j = 1; j < 21; j++, i++) {
+                dao.addMessage("Jason", "qs", false, String.valueOf(i), calendar.getTime().getTime());
+                calendar.add(Calendar.MINUTE, 3);
+                calendar.add(Calendar.SECOND, 3);
+            }
+            dao.addRecall(i, "Jason", "qs", false, String.valueOf(i), calendar.getTime().getTime());
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
     }
 
 }

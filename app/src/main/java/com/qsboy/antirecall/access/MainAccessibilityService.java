@@ -37,7 +37,7 @@ public class MainAccessibilityService extends AccessibilityService {
 
         root = getRootInActiveWindow();
         if (root == null) {
-            Log.d(TAG, "onAccessibilityEvent: root is null, return");
+//            Log.d(TAG, "onAccessibilityEvent: root is null, return");
             return;
         }
 
@@ -114,31 +114,31 @@ public class MainAccessibilityService extends AccessibilityService {
             return;
         // 只需在改变类型为文字时执行添加操作
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
+        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+            return;
+        CharSequence cs = event.getSource().getText();
 
+        // TODO: 只有当 changed content 为 "消息.*" 时才添加新消息
         switch (packageName) {
             case pknTim:
-                if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
-                    break;
-                CharSequence cs = event.getSource().getText();
-                Log.i(TAG, "onContentChanged: " + cs);
+                Log.w(TAG, "\nonContentChanged: " + cs);
                 new TimClient(this).addMessage(root);
                 break;
             case pknQQ:
-                if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
-                    break;
-                cs = event.getSource().getText();
-                Log.i(TAG, "onContentChanged: " + cs);
+                Log.w(TAG, "\nonContentChanged: " + cs);
                 new QQClient(this).addMessage(root);
                 break;
         }
     }
 
     private void onClick(AccessibilityEvent event) {
-        GetNodes.show(root, "d");
+//        GetNodes.show(root, "d");
         switch (packageName) {
             case pknTim:
+                new TimClient(this).getScreen(root);
                 break;
             case pknQQ:
+                new QQClient(this).getScreen(root);
                 break;
         }
     }

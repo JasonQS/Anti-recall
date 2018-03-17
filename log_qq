@@ -1,0 +1,13 @@
+说说:
+03-15 21:26:52.364 com.qsboy.antirecall V/GetNodes: 	----------------------------------------------------------------------------------------
+03-15 21:26:52.364 com.qsboy.antirecall V/GetNodes: 	0										| text: null 	description: null 	ID: null 	class: android.widget.LinearLayout 	location: Rect(0, 1230 - 1080, 1659) 	focusable: true 	clickable: false 	package: com.tencent.mobileqq
+03-15 21:26:52.364 com.qsboy.antirecall V/GetNodes: 		0									| text: Jason发表了说说 	description: null 	ID: com.tencent.mobileqq:id/name 	class: android.widget.TextView 	location: Rect(339, 1296 - 741, 1386) 	focusable: false 	clickable: false 	package: com.tencent.mobileqq
+03-15 21:26:52.364 com.qsboy.antirecall V/GetNodes: 		1									| text: null 	description: null 	ID: com.tencent.mobileqq:id/name 	class: android.widget.RelativeLayout 	location: Rect(165, 1452 - 915, 1659) 	focusable: false 	clickable: true 	package: com.tencent.mobileqq
+03-15 21:26:52.364 com.qsboy.antirecall V/GetNodes: 			0								| text: 列表新年快乐（ 	description: null 	ID: com.tencent.mobileqq:id/name 	class: android.widget.TextView 	location: Rect(201, 1488 - 485, 1544) 	focusable: false 	clickable: false 	package: com.tencent.mobileqq
+03-15 21:26:52.365 com.qsboy.antirecall V/GetNodes: 			1								| text: 02-16 00:11 	description: null 	ID: com.tencent.mobileqq:id/name 	class: android.widget.TextView 	location: Rect(201, 1574 - 394, 1623) 	focusable: false 	clickable: false 	package: com.tencent.mobileqq
+03-15 21:26:52.365 com.qsboy.antirecall V/GetNodes: 	----------------------------------------------------------------------------------------
+
+撤回:
+03-15 21:26:51.051 com.qsboy.antirecall V/GetNodes: 	----------------------------------------------------------------------------------------
+03-15 21:26:51.051 com.qsboy.antirecall V/GetNodes: 	0										| text: 对方撤回了一条消息 	description: null 	ID: com.tencent.mobileqq:id/graybar 	class: android.widget.TextView 	location: Rect(351, 1568 - 729, 1641) 	focusable: false 	clickable: false 	package: com.tencent.mobileqq
+03-15 21:26:51.051 com.qsboy.antirecall V/GetNodes: 	----------------------------------------------------------------------------------------

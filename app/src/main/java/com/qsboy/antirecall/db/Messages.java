@@ -1,9 +1,5 @@
 package com.qsboy.antirecall.db;
 
-import java.util.Date;
-
-import javax.xml.namespace.NamespaceContext;
-
 /**
  * Created by JasonQS
  */
@@ -17,7 +13,7 @@ public class Messages {
     private String name;
     private String subName;
     private String message;
-    private String time;
+    private long time;
     private String[] images;
 
     public Messages(int id, boolean isWX, String name, String subName, String message) {
@@ -28,12 +24,12 @@ public class Messages {
         this.message = message;
     }
 
-    public Messages(int id, boolean isWX, String name, String subName, String message, String time) {
+    public Messages(int id, boolean isWX, String name, String subName, String message, long time) {
         this(id, isWX, name, subName, message);
         this.time = time;
     }
 
-    public Messages(int id, boolean isWX, String name, String subName, String message, String time, String[] images) {
+    public Messages(int id, boolean isWX, String name, String subName, String message, long time, String[] images) {
         this(id, isWX, name, subName, message, time);
         this.images = images;
     }
@@ -94,11 +90,11 @@ public class Messages {
         this.message = message;
     }
 
-    public String getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(long time) {
         this.time = time;
     }
 

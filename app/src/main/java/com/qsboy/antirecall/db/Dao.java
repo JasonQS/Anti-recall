@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.qsboy.antirecall.db.DBHelper.*;
@@ -50,7 +51,7 @@ public class Dao {
                 Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 Column_SubName + " TEXT, " +
                 Column_Message + " TEXT NOT NULL, " +
-                Column_Time + " TimeStamp NOT NULL DEFAULT(datetime('now','localtime')))";
+                Column_Time + " REAL NOT NULL)";
 
         db = dbHelper.getWritableDatabase();
         db.beginTransaction();
@@ -59,6 +60,31 @@ public class Dao {
             ContentValues values = new ContentValues();
             values.put(Column_SubName, subName);
             values.put(Column_Message, message);
+            values.put(Column_Time, new Date().getTime());
+            db.insert(tableName, null, values);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+            close();
+        }
+    }
+
+    public void addMessage(String name, String subName, Boolean isWX, String message, long time) {
+        String tableName = getTableName(name, isWX);
+        String sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
+                Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Column_SubName + " TEXT, " +
+                Column_Message + " TEXT NOT NULL, " +
+                Column_Time + " REAL NOT NULL)";
+
+        db = dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.execSQL(sqlCreateTable);
+            ContentValues values = new ContentValues();
+            values.put(Column_SubName, subName);
+            values.put(Column_Message, message);
+            values.put(Column_Time, time);
             db.insert(tableName, null, values);
             db.setTransactionSuccessful();
         } finally {
@@ -85,13 +111,13 @@ public class Dao {
         if (!cursor.moveToFirst())
             return null;
 //     Log.i(TAG, "queryByMessage: cursor position: " + cursor.getPosition());
-        while (cursor.moveToNext()) {
+        do {
             Log.d(TAG, "queryByMessage: cursor position: " + cursor.getPosition());
             int id = cursor.getInt(0);
             String subName = cursor.getString(1);
-            String time = cursor.getString(3);
+            long time = cursor.getLong(3);
             list.add(new Messages(id, isWX, name, subName, message, time));
-        }
+        } while (cursor.moveToNext());
         close();
         return list;
     }
@@ -112,12 +138,12 @@ public class Dao {
 //        Log.i(TAG, "queryById: id: " + id);
         String subName = cursor.getString(1);
         String message = cursor.getString(2);
-        String time = cursor.getString(3);
+        long time = cursor.getLong(3);
         close();
         return new Messages(id, isWX, tableName, subName, message, time);
     }
 
-    public void addRecall(int originalID, String name, String subName, Boolean isWX, String message, String time) {
+    public void addRecall(int originalID, String name, String subName, Boolean isWX, String message, long time) {
         db = dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
@@ -150,16 +176,16 @@ public class Dao {
                 null,
                 null,
                 null,
-                null);
+                Column_ID + " DESC");
         if (!cursor.moveToFirst())
             return null;
-        while (cursor.moveToNext()) {
+        do {
             int recalledID = cursor.getInt(0);
             int id = cursor.getInt(1);
             String name = cursor.getString(2);
             String subName = cursor.getString(3);
             String message = cursor.getString(4);
-            String time = cursor.getString(5);
+            long time = cursor.getLong(5);
             boolean isWX = cursor.getInt(6) == 1;
             String image = cursor.getString(7);
             Messages messages = new Messages(id, isWX, name, subName, message, time);
@@ -169,7 +195,7 @@ public class Dao {
                 messages.setImages(images);
             }
             list.add(messages);
-        }
+        } while (cursor.moveToNext());
         close();
         return list;
     }
@@ -184,6 +210,7 @@ public class Dao {
         String[] selectionArgs = {String.valueOf(id)};
         db = dbHelper.getWritableDatabase();
         db.delete(tableName, selection, selectionArgs);
+        close();
     }
 
     public void deleteRecall(int id) {
@@ -191,6 +218,19 @@ public class Dao {
         String[] selectionArgs = {String.valueOf(id)};
         db = dbHelper.getWritableDatabase();
         db.delete(Table_Recalled_Messages, selection, selectionArgs);
+        close();
+    }
+
+    public void deleteAll() {
+        String tableName = getTableName("Jason", false);
+        db = dbHelper.getWritableDatabase();
+        int delete1 = db.delete(Table_Recalled_Messages, null, null);
+        int delete2 = db.delete("sqlite_sequence", null, null);
+        int delete3 = db.delete(tableName, null, null);
+        Log.i(TAG, "deleteAll: " + delete1);
+        Log.i(TAG, "deleteAll: " + delete2);
+        Log.i(TAG, "deleteAll: " + delete3);
+        close();
     }
 
     public int getMaxID(String name, Boolean isWX) {
@@ -210,6 +250,6 @@ public class Dao {
         if (isWX)
             tableName = Table_Prefix_WX + name;
         else tableName = Table_Prefix_QQ_And_Tim + name;
-        return tableName;
+        return "\"" + tableName + "\"";
     }
 }

@@ -100,7 +100,7 @@ public class QQClient extends Client{
         }
         inputNode = inputList.get(0);
         sendBtnNode = sendList.get(0);
-//
+
 //        inputBoxNode = root.getChild(2);
 //        if (inputBoxNode == null || inputBoxNode.getChildCount() != 2)
 //            inputBoxNode = root.getChild(3);

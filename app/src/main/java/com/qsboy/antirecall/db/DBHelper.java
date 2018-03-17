@@ -39,15 +39,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 Column_Name + " TEXT NOT NULL, " +
                 Column_SubName + " TEXT, " +
                 Column_Message + " TEXT NOT NULL, " +
-                Column_Time + " TimeStamp NOT NULL, " +
+                Column_Time + " REAL NOT NULL, " +
                 Column_IsWX + " TEXT NOT NULL, " +
                 Column_Image + " TEXT)";
-
-        String sqlCreateJason = "CREATE TABLE IF NOT EXISTS " + "Jason" + " (" +
-                Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                Column_SubName + " TEXT, " +
-                Column_Message + " TEXT NOT NULL, " +
-                Column_Time + " TimeStamp NOT NULL DEFAULT(datetime('now','localtime')))";
 
         db.execSQL(sqlCreateRecallsTable);
     }

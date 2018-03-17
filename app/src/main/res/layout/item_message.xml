@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/height_content_title"
+    android:layout_height="@dimen/height_content_fold"
     android:background="@color/bgContent"
     android:baselineAligned="false"
     tools:showIn="@layout/cell_fold">
@@ -52,10 +52,10 @@
                 android:textSize="@dimen/text_size_message" />
 
             <!--<ImageView-->
-                <!--android:id="@+id/cell_message_image"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--tools:ignore="ContentDescription" />-->
+            <!--android:id="@+id/cell_message_image"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--tools:ignore="ContentDescription" />-->
         </ScrollView>
     </LinearLayout>
 
@@ -73,6 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/time"
+            android:textAlignment="center"
             android:textColor="@color/text_color_time"
             android:textSize="@dimen/text_size_time" />
     </LinearLayout>

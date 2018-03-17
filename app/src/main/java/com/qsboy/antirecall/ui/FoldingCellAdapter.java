@@ -13,7 +13,13 @@ import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 import com.ramotion.foldingcell.FoldingCell;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import static java.util.Calendar.*;
 
 /**
  * Created by JasonQS
@@ -21,9 +27,14 @@ import java.util.List;
 
 public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
-    Context context;
-
     String TAG = "FoldingCellAdapter";
+
+    Context context;
+    Calendar now = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance();
+
+    SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
+    SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     public FoldingCellAdapter(@Nullable List<Messages> data, Context context) {
         super(R.layout.cell, data);
@@ -32,7 +43,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
 
     @Override
     protected void convert(BaseViewHolder helper, Messages item) {
-        // TODO: 时间显示优化
+        Log.i(TAG, "convert: " + item.getMessage());
         FoldingCell fc = helper.getView(R.id.folding_cell);
         RecyclerView recyclerView = helper.getView(R.id.cell_recycler_view);
         MultiMessagesAdapter adapter = new MultiMessagesAdapter(null, context);
@@ -40,20 +51,20 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         fc.setOnClickListener(v -> fc.toggle(false));
         helper.setText(R.id.cell_title, item.getName());
         helper.setText(R.id.cell_name, item.getSubName());
-        helper.setText(R.id.cell_time, item.getTime());
+        helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
 
         List<Messages> messages = adapter.prepareData(item.getName(), item.isWX(), item.getId());
-        final int[] top = {item.getId() - 3};
+        final int[] top = {item.getId() - 2};
         final int[] bot = {item.getId() + 2};
         int max = new Dao(context).getMaxID(item.getName(), item.isWX());
         if (messages.size() != 0)
             adapter.addData(messages);
-        adapter.setPreLoadNumber(3);
-        adapter.setStartUpFetchPosition(3);
+        adapter.setStartUpFetchPosition(2);
         adapter.setUpFetchEnable(true);
-        adapter.setEnableLoadMore(false);
-        adapter.disableLoadMoreIfNotFullPage(recyclerView);
+        adapter.setPreLoadNumber(4);
+        adapter.setEnableLoadMore(true);
+//        adapter.disableLoadMoreIfNotFullPage(recyclerView);
         adapter.setUpFetchListener(() -> recyclerView.post(() -> {
             if (top[0] <= 1)
                 adapter.setUpFetchEnable(false);
@@ -62,18 +73,16 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
                 adapter.addData(0, data);
             Log.i(TAG, "convert: UpFetch");
         }));
-        adapter.setOnLoadMoreListener(() -> {
-            recyclerView.post(() -> {
-                Messages data = adapter.fetchData(item.getName(), item.isWX(), ++bot[0]);
-                if (bot[0] >= max)
-                    adapter.loadMoreEnd();
-                if (data != null) {
-                    adapter.addData(data);
-                    adapter.loadMoreComplete();
-                }
-                Log.i(TAG, "convert: OnLoadMore");
-            });
-        }, recyclerView);
+        adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
+            Messages data = adapter.fetchData(item.getName(), item.isWX(), ++bot[0]);
+            if (bot[0] >= max)
+                adapter.loadMoreEnd();
+            if (data != null) {
+                adapter.addData(data);
+                adapter.loadMoreComplete();
+            }
+            Log.i(TAG, "convert: OnLoadMore");
+        }), recyclerView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
@@ -98,4 +107,24 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         return dao.queryAllRecalls();
     }
 
+    private String formatTime(long time) {
+        String string;
+        Date date = new Date(time);
+        calendar.setTime(date);
+        switch (now.get(DAY_OF_YEAR) - calendar.get(DAY_OF_YEAR)) {
+            case 0:
+                string = sdfS.format(date);
+                break;
+            case 1:
+                string = "昨天\n" + sdfS.format(date);
+                break;
+            case 2:
+                string = "前天\n" + sdfS.format(date);
+                break;
+            default:
+                string = sdfL.format(date);
+                break;
+        }
+        return string;
+    }
 }

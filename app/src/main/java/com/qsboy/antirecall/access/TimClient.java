@@ -14,7 +14,7 @@ import java.util.List;
  * Created by JasonQS
  */
 
-public class TimClient extends Client{
+public class TimClient extends Client {
 
     String TAG = "Tim";
 
@@ -53,22 +53,23 @@ public class TimClient extends Client{
      * 发送按钮   8-1
      */
     protected boolean init(AccessibilityNodeInfo root) {
-        if (root.getChildCount() != 14 && root.getChildCount() != 15) {
-            Log.d(TAG, "init: root.childCount: " + root.getChildCount());
+        //16 是其他界面
+//        if (root.getChildCount() != 14 && root.getChildCount() != 15) {
+        Log.d(TAG, "init: root.childCount: " + root.getChildCount());
+        if (root.getChildCount() < 14) {
             return false;
         }
 
         nameNode = root.getChild(1);
-        if (nameNode == null) {
-            Log.d(TAG, "init: subName node is null, return");
-            return false;
-        }
+        // 通过群的即时聊天
+        if (nameNode.getChildCount() == 2)
+            nameNode = nameNode.getChild(0);
         if (!nameNode.getViewIdResourceName().equals(IdName)) {
             Log.d(TAG, "init: 名字ID不对，return");
             return false;
         }
         if (nameNode.getText() == null) {
-            Log.i(TAG, "init: subName is null");
+            Log.d(TAG, "init: name is null，return");
             return false;
         }
         title = nameNode.getText().toString();
@@ -85,25 +86,13 @@ public class TimClient extends Client{
         }
         inputNode = inputList.get(0);
         sendBtnNode = sendList.get(0);
-        if (inputNode == null) {
-            Log.d(TAG, "init: input node is null, return");
-            return false;
-        }
-        if (sendBtnNode == null) {
-            Log.d(TAG, "init: sendButton node is null, return");
-            return false;
-        }
 
-        chatGroupViewNode = root.getChild(4);
-        if (chatGroupViewNode.getViewIdResourceName().equals(IdChatGroupView))
+        // 群的 node 位置在4 好友聊天在5
+        if ((chatGroupViewNode = root.getChild(4)).getViewIdResourceName().equals(IdChatGroupView))
+            isGroupMessage = true;
+        else if ((chatGroupViewNode = root.getChild(5)).getViewIdResourceName().equals(IdChatGroupView))
             isGroupMessage = false;
-        else
-            chatGroupViewNode = root.getChild(5);
-        if (chatGroupViewNode == null) {
-            Log.d(TAG, "init: chatView node is null, return");
-            return false;
-        } else isGroupMessage = true;
-        if (!chatGroupViewNode.getViewIdResourceName().equals(IdChatGroupView)) {
+        else {
             Log.d(TAG, "init: not chat view, return");
             return false;
         }
@@ -111,7 +100,10 @@ public class TimClient extends Client{
     }
 
     protected void parser(AccessibilityNodeInfo group) {
-        for (int j = 0; j < group.getChildCount(); j++) {
+        isRecalledMessage = false;
+        int childCount = group.getChildCount();
+
+        for (int j = 0; j < childCount; j++) {
             AccessibilityNodeInfo child = group.getChild(j);
             if (child == null) {
                 Log.d(TAG, "init: child is null, continue");
@@ -168,24 +160,30 @@ public class TimClient extends Client{
                     messagePos = j;
                     break;
                 case IdNickName:
+                    //群聊头像上面的群昵称最后有一个冒号
                     subName = child.getText().toString();
                     subName = subName.substring(0, subName.length() - 1);
                     break;
                 case IdGrayBar:
-//                        if (!child.isClickable() && !child.isFocusable())
                     // 撤回消息或者是有人加入
                     // 撤回消息的是不可点击的
-            }
-            //2人聊天 头像在消息右边
-            if (!isGroupMessage)
-                if (messagePos < headIconPos)
-                    subName = "我";
-                else {
-                    subName = nameNode.getText().toString();
-                    subName = subName.substring(0, subName.length() - 1);
-                }
+                    // 接收文件和撤回消息一样
+                    if (!child.isClickable() && !child.isFocusable()) {
+                        message = child.getText().toString();
+                        isRecalledMessage = true;
+                    }
 
-            Log.i(TAG, subName + " : " + message);
+            }
         }
+        //2人聊天 头像在消息右边
+        Log.v(TAG, "parser: 群消息: " + isGroupMessage);
+        if (!isGroupMessage)
+            if (messagePos < headIconPos)
+                subName = "我";
+            else {
+                subName = nameNode.getText().toString();
+            }
+
+        Log.i(TAG, subName + " : " + message);
     }
 }
