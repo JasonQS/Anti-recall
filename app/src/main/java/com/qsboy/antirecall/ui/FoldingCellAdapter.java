@@ -1,6 +1,7 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -104,7 +105,6 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
     }
 
     public List<Messages> prepareData() {
-        Dao dao = new Dao(context);
         return dao.queryAllRecalls();
     }
 
@@ -128,4 +128,5 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         }
         return string;
     }
+
 }

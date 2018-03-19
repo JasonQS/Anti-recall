@@ -69,11 +69,10 @@ public abstract class Client {
     }
 
     public void findMessage(AccessibilityNodeInfo root) {
+        // TODO:找到撤回位置的上下文
         // TODO:
-        // TODO:
-        // TODO:
-        // TODO:
-        // TODO:
+        // TODO:找到撤回的前一条 找到撤回
+        // TODO:没有前一条 找到撤回的后一条 找到撤回
     }
 
     protected void getScreen(AccessibilityNodeInfo root) {

@@ -27,10 +27,16 @@ public class Dao {
 
     public Dao(Context context) {
         dbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
+        db = dbHelper.getWritableDatabase();
         // TODO: 获取db对象方式待优化 可以多次读完再一起close
     }
 
-    public void close() {
+    private void open() {
+        if (db != null)
+            db = dbHelper.getWritableDatabase();
+    }
+
+    private void close() {
         if (cursor != null) {
             cursor.close();
         }
@@ -53,7 +59,7 @@ public class Dao {
                 Column_Message + " TEXT NOT NULL, " +
                 Column_Time + " REAL NOT NULL)";
 
-        db = dbHelper.getWritableDatabase();
+        open();
         db.beginTransaction();
         try {
             db.execSQL(sqlCreateTable);
@@ -77,7 +83,7 @@ public class Dao {
                 Column_Message + " TEXT NOT NULL, " +
                 Column_Time + " REAL NOT NULL)";
 
-        db = dbHelper.getWritableDatabase();
+        open();
         db.beginTransaction();
         try {
             db.execSQL(sqlCreateTable);
@@ -99,7 +105,7 @@ public class Dao {
         String tableName = getTableName(name, isWX);
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM tableName WHERE Message = message
-        db = dbHelper.getWritableDatabase();
+        open();
         cursor = db.query(
                 tableName,
                 null,
@@ -125,7 +131,7 @@ public class Dao {
     public Messages queryById(String name, Boolean isWX, int id) {
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
-        db = dbHelper.getWritableDatabase();
+        open();
         cursor = db.query(tableName,
                 null,
                 Column_ID + " = ?",
@@ -144,7 +150,7 @@ public class Dao {
     }
 
     public void addRecall(int originalID, String name, String subName, Boolean isWX, String message, long time) {
-        db = dbHelper.getWritableDatabase();
+        open();
         db.beginTransaction();
         try {
             ContentValues values = new ContentValues();
@@ -169,7 +175,7 @@ public class Dao {
     public List<Messages> queryAllRecalls() {
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM Table_Recalled_Messages
-        db = dbHelper.getWritableDatabase();
+        open();
         cursor = db.query(Table_Recalled_Messages,
                 null,
                 null,
@@ -208,7 +214,7 @@ public class Dao {
         String tableName = getTableName(name, isWX);
         String selection = Column_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-        db = dbHelper.getWritableDatabase();
+        open();
         db.delete(tableName, selection, selectionArgs);
         close();
     }
@@ -216,27 +222,31 @@ public class Dao {
     public void deleteRecall(int id) {
         String selection = Column_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-        db = dbHelper.getWritableDatabase();
+        open();
         db.delete(Table_Recalled_Messages, selection, selectionArgs);
         close();
     }
 
     public void deleteAll() {
         String tableName = getTableName("Jason", false);
-        db = dbHelper.getWritableDatabase();
-        int delete1 = db.delete(Table_Recalled_Messages, null, null);
-        int delete2 = db.delete("sqlite_sequence", null, null);
-        int delete3 = db.delete(tableName, null, null);
-        Log.i(TAG, "deleteAll: " + delete1);
-        Log.i(TAG, "deleteAll: " + delete2);
-        Log.i(TAG, "deleteAll: " + delete3);
+        open();
+        try {
+            int delete1 = db.delete(Table_Recalled_Messages, null, null);
+            int delete2 = db.delete("sqlite_sequence", null, null);
+            int delete3 = db.delete(tableName, null, null);
+            Log.i(TAG, "deleteAll: " + delete1);
+            Log.i(TAG, "deleteAll: " + delete2);
+            Log.i(TAG, "deleteAll: " + delete3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         close();
     }
 
     public int getMaxID(String name, Boolean isWX) {
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
-        db = dbHelper.getWritableDatabase();
+        open();
         cursor = db.rawQuery("SELECT MAX(id) FROM " + tableName, null);
         if (!cursor.moveToFirst())
             return 0;

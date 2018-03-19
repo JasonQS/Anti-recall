@@ -1,35 +1,24 @@
 package com.qsboy.antirecall;
 
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.ui.FoldingCellAdapter;
-import com.qsboy.antirecall.ui.MultiMessagesAdapter;
-import com.qsboy.antirecall.utils.CheckAuthority;
-import com.ramotion.foldingcell.FoldingCell;
+import com.qsboy.toast.CheckAuthority;
+import com.qsboy.toast.XToast;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Date in = new Date();
         setContentView(R.layout.activity_main);
 
 //        mTextMessage = findViewById(R.id.message);
@@ -81,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         prepareDataForTest();
+        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 3000);
 
         foldingCellAdapter = new FoldingCellAdapter(null, this);
         List<Messages> messages = foldingCellAdapter.prepareData();
@@ -96,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         // 开启滑动删除
 //        foldingCellAdapter.enableSwipeItem();
 //        foldingCellAdapter.setOnItemSwipeListener(onItemSwipeListener);
+
+        Date out = new Date();
+        Log.i(TAG, "onCreate: time: " + (out.getTime() - in.getTime()));
     }
 
     OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
@@ -128,19 +122,22 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO: for test
     public void prepareDataForTest() {
+        Date in = new Date();
         Dao dao = new Dao(this);
         dao.deleteAll();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -9);
-        for (int i = 1; i < 200;) {
+        for (int i = 1; i < 200; ) {
             for (int j = 1; j < 21; j++, i++) {
                 dao.addMessage("Jason", "qs", false, String.valueOf(i), calendar.getTime().getTime());
                 calendar.add(Calendar.MINUTE, 3);
                 calendar.add(Calendar.SECOND, 3);
             }
-            dao.addRecall(i, "Jason", "qs", false, String.valueOf(i), calendar.getTime().getTime());
+            dao.addRecall(i, "Jason", "qs", false, String.valueOf(i - 1), calendar.getTime().getTime());
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
+        Date out = new Date();
+        Log.i(TAG, "prepareDataForTest: time: " + (out.getTime() - in.getTime()));
     }
 
 }
