@@ -1,3 +1,9 @@
+/*
+ * Copyright © 2016 - 2018 by GitHub.com/JasonQS
+ * anti-recall.qsboy.com
+ * All Rights Reserved
+ */
+
 package com.qsboy.antirecall.db;
 
 import android.content.ContentValues;
@@ -101,7 +107,7 @@ public class Dao {
 
     // TODO: 查找方式待重写
     // TODO: 如果只要id的话只查询id
-    public List<Messages> queryByMessage(String name, Boolean isWX, String message) {
+    public List<Messages> queryByMessage(String name, Boolean isWX, String subName, String message) {
         String tableName = getTableName(name, isWX);
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM tableName WHERE Message = message
@@ -109,8 +115,8 @@ public class Dao {
         cursor = db.query(
                 tableName,
                 null,
-                Column_Message + " = ?",
-                new String[]{message},
+                Column_Message + " = ? and " + Column_SubName + " = ?",
+                new String[]{message,subName},
                 null,
                 null,
                 Column_ID + " desc");
@@ -120,7 +126,6 @@ public class Dao {
         do {
             Log.d(TAG, "queryByMessage: cursor position: " + cursor.getPosition());
             int id = cursor.getInt(0);
-            String subName = cursor.getString(1);
             long time = cursor.getLong(3);
             list.add(new Messages(id, isWX, name, subName, message, time));
         } while (cursor.moveToNext());

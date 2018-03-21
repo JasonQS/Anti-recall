@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
+  ~ anti-recall.qsboy.com
+  ~ All Rights Reserved
+  -->
+
 <resources>
     <string name="app_name">Anti-recall</string>
     <string name="title_home">防撤回</string>

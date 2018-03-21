@@ -1,3 +1,9 @@
+/*
+ * Copyright © 2016 - 2018 by GitHub.com/JasonQS
+ * anti-recall.qsboy.com
+ * All Rights Reserved
+ */
+
 apply plugin: 'com.android.application'
 
 android {
@@ -28,7 +34,7 @@ dependencies {
     compile 'com.ramotion.foldingcell:folding-cell:1.2.1'
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
 
-    compile project(":toast")
+    compile project(':utils')
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.0'

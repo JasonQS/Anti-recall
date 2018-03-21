@@ -1,3 +1,9 @@
+/*
+ * Copyright © 2016 - 2018 by GitHub.com/JasonQS
+ * anti-recall.qsboy.com
+ * All Rights Reserved
+ */
+
 package com.qsboy.antirecall;
 
 import android.graphics.Canvas;
@@ -13,8 +19,8 @@ import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.ui.FoldingCellAdapter;
-import com.qsboy.toast.CheckAuthority;
-import com.qsboy.toast.XToast;
+import com.qsboy.utils.CheckAuthority;
+import com.qsboy.utils.XToast;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -70,8 +76,19 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "为显示撤回的消息\n请授予悬浮窗权限", Toast.LENGTH_LONG).show();
         }
 
-        prepareDataForTest();
-        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 3000);
+//        prepareDataForTest();
+        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 500);
+        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 500);
+        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 4000);
+        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 4000);
+        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 8000);
+        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 8000);
+        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 12000);
+        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 12000);
+        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 16000);
+        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 16000);
+        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 20000);
+        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 20000);
 
         foldingCellAdapter = new FoldingCellAdapter(null, this);
         List<Messages> messages = foldingCellAdapter.prepareData();

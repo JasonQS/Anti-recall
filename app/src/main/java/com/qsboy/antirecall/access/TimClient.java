@@ -1,3 +1,9 @@
+/*
+ * Copyright © 2016 - 2018 by GitHub.com/JasonQS
+ * anti-recall.qsboy.com
+ * All Rights Reserved
+ */
+
 package com.qsboy.antirecall.access;
 
 import android.content.Context;
@@ -33,6 +39,7 @@ public class TimClient extends Client {
 
     public TimClient(Context context) {
         super(context);
+        isWX = false;
     }
 
     /**
@@ -170,7 +177,12 @@ public class TimClient extends Client {
                     // 接收文件和撤回消息一样
                     if (!child.isClickable() && !child.isFocusable()) {
                         message = child.getText().toString();
-                        isRecalledMessage = true;
+
+                        int indexOfRecall = message.indexOf(RECALL);
+                        if (indexOfRecall >= 0) {
+                            isRecalledMessage = true;
+                            subName = message.substring(0, indexOfRecall);
+                        }
                     }
 
             }

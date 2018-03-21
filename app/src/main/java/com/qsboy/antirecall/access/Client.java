@@ -1,3 +1,9 @@
+/*
+ * Copyright © 2016 - 2018 by GitHub.com/JasonQS
+ * anti-recall.qsboy.com
+ * All Rights Reserved
+ */
+
 package com.qsboy.antirecall.access;
 
 import android.content.Context;
@@ -5,10 +11,11 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.Messages;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by JasonQS
@@ -30,8 +37,11 @@ public abstract class Client {
     String title = "";
     String subName = "";
     String message = "";
+    String RECALL = "撤回了一条消息";
     boolean isGroupMessage;
     boolean isRecalledMessage;
+    boolean isWX;
+    int unknonRecalls;
 
     Dao dao;
 
@@ -70,20 +80,32 @@ public abstract class Client {
 
     public void findMessage(AccessibilityNodeInfo root) {
         // TODO:找到撤回位置的上下文
+        List<String> screenList = getScreen(root);
+        for (int i = 1; i < screenList.size(); i++) {
+            String s = screenList.get(i);
+            if (s.contains(RECALL)) {
+                String[] content = screenList.get(i - 1).split(" ");
+                List<Messages> messagesList = dao.queryByMessage(title, isWX, content[0], content[1]);
+            }
+        }
         // TODO:
         // TODO:找到撤回的前一条 找到撤回
         // TODO:没有前一条 找到撤回的后一条 找到撤回
     }
 
-    protected void getScreen(AccessibilityNodeInfo root) {
+    protected List<String> getScreen(AccessibilityNodeInfo root) {
+
         GetNodes.show(root, "v");
+        List<String> list = new ArrayList<>();
         if (!init(root))
-            return;
+            return list;
         for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
             AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
             GetNodes.show(group, "d");
             parser(group);
+            list.add(subName + " " + message);
         }
+        return list;
     }
 
 }

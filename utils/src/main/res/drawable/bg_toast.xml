@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
+  ~ anti-recall.qsboy.com
+  ~ All Rights Reserved
+  -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+    <corners
+        android:radius="10dp" />
+    <gradient
+        android:angle="90"
+        android:centerY="0.9"
+        android:startColor="#A0333333"
+        android:centerColor="#E0333333"
+        android:endColor="#70333333"/>
+
+</shape> 
