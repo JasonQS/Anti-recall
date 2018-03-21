@@ -28,10 +28,6 @@ import java.util.Locale;
 
 import static java.util.Calendar.*;
 
-/**
- * Created by JasonQS
- */
-
 public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
     String TAG = "FoldingCellAdapter";

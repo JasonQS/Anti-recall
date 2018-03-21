@@ -13,10 +13,6 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
-/**
- * Created by JasonQS
- */
-
 @TargetApi(21)
 public class NotificationMonitorService extends NotificationListenerService {
 

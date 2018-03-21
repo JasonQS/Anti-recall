@@ -18,10 +18,6 @@ import java.util.List;
 
 import static com.qsboy.antirecall.db.DBHelper.*;
 
-/**
- * Created by JasonQS
- */
-
 //@SuppressWarnings({"unused"})
 public class Dao {
 

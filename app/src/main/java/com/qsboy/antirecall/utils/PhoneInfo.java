@@ -6,10 +6,6 @@
 
 package com.qsboy.antirecall.utils;
 
-/**
- * Created by JasonQS
- */
-
 public class PhoneInfo {
 //
 //    public static void getInfo() {

@@ -15,11 +15,6 @@ import com.qsboy.antirecall.db.Dao;
 import java.util.Date;
 import java.util.List;
 
-
-/**
- * Created by JasonQS
- */
-
 public class TimClient extends Client {
 
     String TAG = "Tim";

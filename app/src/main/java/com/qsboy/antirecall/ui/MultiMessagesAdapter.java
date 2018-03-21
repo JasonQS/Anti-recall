@@ -26,10 +26,6 @@ import java.util.Locale;
 
 import static java.util.Calendar.*;
 
-/**
- * Created by JasonQS
- */
-
 public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
     String TAG = "MultiMessagesAdapter";

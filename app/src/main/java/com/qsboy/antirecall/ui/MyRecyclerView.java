@@ -12,10 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-/**
- * Created by JasonQS
- */
-
 public class MyRecyclerView extends RecyclerView {
 
     public MyRecyclerView(Context context) {

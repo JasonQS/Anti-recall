@@ -11,11 +11,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-
-/**
- * Created by JasonQS
- */
-
 public class GetNodes {
 
     private static int padding = 10;

@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by JasonQS
- */
-
 public abstract class Client {
 
     AccessibilityNodeInfo nameNode;

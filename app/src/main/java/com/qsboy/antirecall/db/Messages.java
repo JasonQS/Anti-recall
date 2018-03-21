@@ -6,10 +6,6 @@
 
 package com.qsboy.antirecall.db;
 
-/**
- * Created by JasonQS
- */
-
 public class Messages {
 
     private int id;

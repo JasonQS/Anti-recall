@@ -15,10 +15,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.List;
 
-/**
- * Created by JasonQS
- */
-
 public class MainAccessibilityService extends AccessibilityService {
 
     private String TAG = "Accessibility Service";
