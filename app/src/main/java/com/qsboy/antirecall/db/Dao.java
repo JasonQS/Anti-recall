@@ -124,7 +124,7 @@ public class Dao {
         String message = cursor.getString(2);
         long time = cursor.getLong(3);
         close();
-        return new Messages(id, isWX, tableName, subName, message, time);
+        return new Messages(id, isWX, name, subName, message, time);
     }
 
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
@@ -135,6 +135,7 @@ public class Dao {
 
     public void addRecall(int originalID, String name, String subName, Boolean isWX, String message, long time,
                           String prevSubName, String prevMessage, String nextSubName, String nextMessage) {
+        Log.d(TAG, "addRecall() called with: originalID = [" + originalID + "], name = [" + name + "], subName = [" + subName + "], isWX = [" + isWX + "], message = [" + message + "], time = [" + time + "], prevSubName = [" + prevSubName + "], prevMessage = [" + prevMessage + "], nextSubName = [" + nextSubName + "], nextMessage = [" + nextMessage + "]");
         open();
         db.beginTransaction();
         try {

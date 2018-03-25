@@ -6,13 +6,18 @@
 
 package com.qsboy.antirecall;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
@@ -67,30 +72,21 @@ public class MainActivity extends AppCompatActivity {
         Date in = new Date();
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
 //        mTextMessage = findViewById(R.id.message);
 //        BottomNavigationView navigation = findViewById(R.id.navigation);
 //        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         if (!new CheckAuthority(this).checkAlertWindowPermission()) {
             Log.i(TAG, "authorized: show warning");
-            Toast.makeText(this, "为显示撤回的消息\n请授予悬浮窗权限", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "请授予悬浮窗权限\n为了能正常显示撤回的消息 谢谢", Toast.LENGTH_LONG).show();
         }
 
 //        prepareDataForTest();
-        Dao dao = new Dao(this);
-        dao.temp();
-//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 500);
-//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 4000);
-//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 8000);
-//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 12000);
-//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 16000);
-//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 20000);
-//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 500);
-//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 4000);
-//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 8000);
-//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 12000);
-//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 16000);
-//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 20000);
+//        Dao dao = new Dao(this);
+//        dao.temp();
 
         foldingCellAdapter = new FoldingCellAdapter(null, this);
         List<Messages> messages = foldingCellAdapter.prepareData();
@@ -109,6 +105,36 @@ public class MainActivity extends AppCompatActivity {
 
         Date out = new Date();
         Log.d(TAG, "onCreate: time: " + (out.getTime() - in.getTime()));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_service) {
+            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        recyclerView.setAdapter(foldingCellAdapter);
     }
 
     OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {

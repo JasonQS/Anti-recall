@@ -64,7 +64,9 @@ public class MainService extends AccessibilityService {
     private void onNotification(AccessibilityEvent event) {
         List<CharSequence> texts = event.getText();
         if (texts.isEmpty() || texts.size() == 0) {
-            GetNodes.show(root,TAG);
+            GetNodes.show(root, TAG);
+            //微信的登录通知的 text 是 null
+            autoLoginWX();
             return;
         }
         Log.i(TAG, "onNotification: " + texts);
@@ -115,6 +117,25 @@ public class MainService extends AccessibilityService {
                 GetNodes.show(root, TAG);
 
         }
+    }
+
+    private void autoLoginWX() {
+        Log.i(TAG, "autoLoginWX: ");
+        if (root.getChildCount() != 1)
+            return;
+        AccessibilityNodeInfo node = root.getChild(0);
+        if (node.getChildCount() != 5)
+            return;
+        //不直接判断字符串是因为多语言适应
+        AccessibilityNodeInfo loginBtn = node.getChild(3);
+        if (!loginBtn.isClickable())
+            return;
+        if (!node.getChild(0).isClickable())
+            return;
+        if (!node.getChild(4).isClickable())
+            return;
+        loginBtn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+        Log.i(TAG, "autoLoginWX: click");
     }
 
     @Override

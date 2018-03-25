@@ -6,15 +6,15 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#437dbf</color>
+    <color name="colorPrimaryDark">#2e6099</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="bgBackSideColor">#E6ECF2</color>
-    <color name="bgTitle">#7AA3CC</color>
-    <color name="bgName">#E5F2FF</color>
-    <color name="bgContent">#F5F7FA</color>
-    <color name="bgMain">#E7EDF3</color>
+    <color name="bgBackSideColor">#e6ecf2</color>
+    <color name="bgTitle">#6c9fd9</color>
+    <color name="bgName">#e6f1ff</color>
+    <color name="bgContent">#f5f7fa</color>
+    <color name="bgMain">#e6ecf2</color>
 
     <color name="text_color_title">#FFFFFF</color>
     <color name="text_color_name">#333333</color>

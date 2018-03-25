@@ -59,6 +59,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
 
+        Log.i(TAG, "convert: name: " + item.getName());
         List<Messages> messages = adapter.prepareData(item.getName(), item.isWX(), item.getId());
         final int[] top = {item.getId() - 3};
         final int[] bot = {item.getId() + 3};

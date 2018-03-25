@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
   ~ anti-recall.qsboy.com
   ~ All Rights Reserved
@@ -13,7 +12,28 @@
     android:layout_height="match_parent"
     tools:context="com.qsboy.antirecall.MainActivity">
 
-    <include layout="@layout/list_messages" />
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/appbar">
+
+        <include layout="@layout/list_messages" />
+    </android.support.constraint.ConstraintLayout>
 
     <!--<android.support.design.widget.BottomNavigationView-->
     <!--android:id="@+id/navigation"-->

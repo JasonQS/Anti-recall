@@ -228,9 +228,9 @@ public abstract class Client {
     public void addMsg(boolean force) {
         String temp = title + "-" + subName + ": " + message;
         if (!force)
-            if (added.equals(added = temp))
+            if (added.equals(temp))
                 return;
-
+        added = temp;
         Log.e(TAG, "Add message: " + temp);
         dao.addMessage(title, subName, isWX, message);
     }

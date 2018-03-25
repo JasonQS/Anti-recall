@@ -93,17 +93,20 @@ public class QQClient extends Client {
             Log.d(TAG, "init: chatView node is null, return");
             return false;
         }
-        if (!chatGroupViewNode.getViewIdResourceName().equals(IdChatGroupView)) {
+        if (!IdChatGroupView.equals(chatGroupViewNode.getViewIdResourceName())) {
             Log.d(TAG, "init: not chat view, return");
             return false;
         }
 
-        isOtherMsg = root.getChild(1).getViewIdResourceName().equals(IdOtherMsg);
+        isOtherMsg = IdOtherMsg.equals(root.getChild(1).getViewIdResourceName());
 
         return true;
     }
 
     protected void parser(AccessibilityNodeInfo group) {
+        subName = "";
+        message = "";
+        isRecalledMsg = false;
         for (int j = 0; j < group.getChildCount(); j++) {
             AccessibilityNodeInfo child = group.getChild(j);
             if (child == null) {
@@ -162,13 +165,19 @@ public class QQClient extends Client {
                     subName = child.getText().toString();
                     break;
                 case IdGrayBar:
-//                        if (!child.isClickable() && !child.isFocusable())
-                    // 撤回消息或者是有人加入
-                    // 撤回消息的是不可点击的
+                    if (!child.isClickable() && !child.isFocusable()) {
+                        message = child.getText().toString();
+                        int indexOfRecall = message.indexOf(RECALL);
+                        if (indexOfRecall >= 0) {
+                            isRecalledMsg = true;
+                            subName = message.substring(0, indexOfRecall);
+                            message = message.substring(indexOfRecall);
+                        }
+                    }
             }
         }
         //2人聊天 头像在消息右边
-        if (subName.equals(""))
+        if ("".equals(subName))
             if (messagePos < headIconPos)
                 subName = "我";
             else

@@ -96,6 +96,7 @@ public class TimClient extends Client {
                     chatGroupViewNode = child;
                     break;
                 case IdOtherMsg:
+                    otherMsgNode = child;
                     isOtherMsg = true;
                     break;
             }
@@ -180,7 +181,6 @@ public class TimClient extends Client {
                     // 接收文件和撤回消息一样
                     if (!child.isClickable() && !child.isFocusable()) {
                         message = child.getText().toString();
-
                         int indexOfRecall = message.indexOf(RECALL);
                         if (indexOfRecall >= 0) {
                             isRecalledMsg = true;
@@ -192,7 +192,7 @@ public class TimClient extends Client {
             }
         }
         //2人聊天 头像在消息右边
-        if (subName.equals(""))
+        if ("".equals(subName))
             if (messagePos < headIconPos)
                 subName = "我";
             else {
