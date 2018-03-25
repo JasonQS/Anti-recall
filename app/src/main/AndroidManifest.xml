@@ -9,8 +9,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.qsboy.antirecall">
 
-    <!-- To access Google+ APIs: -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
 
     <application
         android:allowBackup="false"
@@ -32,7 +35,7 @@
         </activity>
 
         <service
-            android:name=".access.MainAccessibilityService"
+            android:name=".access.MainService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/service_label"

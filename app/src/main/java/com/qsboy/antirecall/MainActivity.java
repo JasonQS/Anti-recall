@@ -77,22 +77,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
 //        prepareDataForTest();
-        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 500);
-        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 500);
-        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 4000);
-        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 4000);
-        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 8000);
-        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 8000);
-        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 12000);
-        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 12000);
-        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 16000);
-        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 16000);
-        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 20000);
-        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 20000);
+        Dao dao = new Dao(this);
+        dao.temp();
+//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 500);
+//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 4000);
+//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 8000);
+//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 12000);
+//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 16000);
+//        new Handler().postDelayed(() -> XToast.makeText(this, "hello").show(), 20000);
+//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 500);
+//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 4000);
+//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 8000);
+//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 12000);
+//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 16000);
+//        new Handler().postDelayed(() -> Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show(), 20000);
 
         foldingCellAdapter = new FoldingCellAdapter(null, this);
         List<Messages> messages = foldingCellAdapter.prepareData();
-        if (messages.size() != 0)
+        if (messages != null && messages.size() != 0)
             foldingCellAdapter.addData(messages);
         recyclerView = findViewById(R.id.main_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 //        foldingCellAdapter.setOnItemSwipeListener(onItemSwipeListener);
 
         Date out = new Date();
-        Log.i(TAG, "onCreate: time: " + (out.getTime() - in.getTime()));
+        Log.d(TAG, "onCreate: time: " + (out.getTime() - in.getTime()));
     }
 
     OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
@@ -150,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 calendar.add(Calendar.MINUTE, 3);
                 calendar.add(Calendar.SECOND, 3);
             }
-            dao.addRecall(i, "Jason", "qs", false, String.valueOf(i - 1), calendar.getTime().getTime());
+            dao.addRecall(i, "Jason", "qs", false, String.valueOf(i - 1), calendar.getTime().getTime(), null, null, null, null);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
         Date out = new Date();

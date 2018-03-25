@@ -15,23 +15,21 @@ public class GetNodes {
 
     private static int padding = 10;
 
-    private static String TAG = "GetNodes";
-
     static String border = getBorder();
 
-    public static void show(AccessibilityNodeInfo node) {
+    public static void show(AccessibilityNodeInfo node, String TAG) {
         log(border);
-        iter(node, 0, "v");
+        iter(node, TAG, 0, "v");
         log(border);
     }
 
-    public static void show(AccessibilityNodeInfo node, String level) {
-        log(level, border);
-        iter(node, 0, level);
-        log(level, border);
+    public static void show(AccessibilityNodeInfo node, String TAG, String level) {
+        log(level, TAG, border);
+        iter(node, TAG, 0, level);
+        log(level, TAG, border);
     }
 
-    private static String getBorder(){
+    private static String getBorder() {
         StringBuilder builder = new StringBuilder();
         builder.append("\t");
         for (int i = 0; i < padding; i++)
@@ -40,12 +38,12 @@ public class GetNodes {
         return builder.toString();
     }
 
-    private static void iter(AccessibilityNodeInfo node, int num, String level) {
+    private static void iter(AccessibilityNodeInfo node, String TAG, int num, String level) {
         if (node == null) return;
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            log(level, "\n\t" + addPadding(num) + i + addPadding(num, padding) + print(node.getChild(i)));
-            iter(node.getChild(i), num + 1, level);
+            log(level, TAG, "\n\t" + addPadding(num) + i + addPadding(num, padding) + print(node.getChild(i)));
+            iter(node.getChild(i), TAG, num + 1, level);
         }
     }
 
@@ -96,10 +94,10 @@ public class GetNodes {
     }
 
     private static void log(String msg) {
-        Log.v(TAG, msg);
+        Log.v("GetNodes", msg);
     }
 
-    private static void log(String level, String msg) {
+    private static void log(String level, String TAG, String msg) {
         switch (level) {
             case "v":
                 Log.v(TAG, msg);

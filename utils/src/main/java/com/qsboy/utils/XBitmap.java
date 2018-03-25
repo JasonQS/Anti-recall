@@ -43,7 +43,7 @@ public class XBitmap {
      */
     public static Bitmap getLocalBitmap(String name_time, Context context) {
         File_Image_Saved = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
-        File imageFile = new File(File_Image_Saved + name_time);
+        File imageFile = new File(File_Image_Saved + name_time + "_0");
         return getBitmap(imageFile);
     }
 

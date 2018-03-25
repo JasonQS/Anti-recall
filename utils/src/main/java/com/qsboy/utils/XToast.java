@@ -28,7 +28,9 @@ public class XToast {
     private Context context;
     private WindowManager wm;
     private View view;
-    private int y = 80;
+    private int y = 100;
+    private int offsetY = y;
+    private int pos;
 
 
     private XToast(Context context) {
@@ -47,21 +49,19 @@ public class XToast {
         if (Build.VERSION.SDK_INT >= 26)
             params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         else params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-
     }
 
     /**
      * 显示文字,如果传入的是图片,则去本地找到相应的图片显示
      */
-    public static XToast makeText(Context context, CharSequence text) {
+    public static XToast makeText(Context context, String text) {
         XToast toast = new XToast(context);
         View toastView = LayoutInflater.from(context).inflate(R.layout.toast, null);
         ImageView iv = toastView.findViewById(R.id.toast_iv);
         TextView tv = toastView.findViewById(R.id.toast_tv);
-        String s = text.toString();
-        if (s.startsWith("#image")) {
-            Log.w(TAG, "text : " + s);
-            String imageTime = s.substring(6, 19);
+        if (text.startsWith("#image")) {
+            Log.w(TAG, "text : " + text);
+            String imageTime = text.substring(6, 19);
             Bitmap bitmap = getLocalBitmap(imageTime, context);
             iv.setImageBitmap(bitmap);
             iv.setVisibility(View.VISIBLE);
@@ -72,17 +72,23 @@ public class XToast {
             Log.w(TAG, "显示的是: " + text);
         }
         toast.view = toastView;
+        toast.pos = 0;
 
         return toast;
     }
 
-    public void makePos(int pos){
-
+    public XToast setPos(int pos) {
+        this.pos = pos;
+        return this;
     }
 
     public void show() {
         if (view == null)
             return;
+        if (pos == 0)
+            offsetY = 0;
+        params.y += offsetY;
+        offsetY += params.height + dip2px(context, 20);
         wm.addView(view, params);
         int mDuration = 2500;
         new Handler().postDelayed(new Runnable() {

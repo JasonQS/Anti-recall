@@ -54,27 +54,7 @@ public class Dao {
      * @param message 消息记录
      */
     public void addMessage(String name, String subName, Boolean isWX, String message) {
-        String tableName = getTableName(name, isWX);
-        String sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-                Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                Column_SubName + " TEXT, " +
-                Column_Message + " TEXT NOT NULL, " +
-                Column_Time + " REAL NOT NULL)";
-
-        open();
-        db.beginTransaction();
-        try {
-            db.execSQL(sqlCreateTable);
-            ContentValues values = new ContentValues();
-            values.put(Column_SubName, subName);
-            values.put(Column_Message, message);
-            values.put(Column_Time, new Date().getTime());
-            db.insert(tableName, null, values);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-            close();
-        }
+        this.addMessage(name, subName, isWX, message, new Date().getTime());
     }
 
     public void addMessage(String name, String subName, Boolean isWX, String message, long time) {
@@ -86,6 +66,8 @@ public class Dao {
                 Column_Time + " REAL NOT NULL)";
 
         open();
+        if (subName == null || subName.equals(""))
+            subName = name;
         db.beginTransaction();
         try {
             db.execSQL(sqlCreateTable);
@@ -103,33 +85,28 @@ public class Dao {
 
     // TODO: 查找方式待重写
     // TODO: 如果只要id的话只查询id
-    public List<Messages> queryByMessage(String name, Boolean isWX, String subName, String message) {
+    public int queryByMessage(String name, Boolean isWX, String subName, String message) {
+        Log.d(TAG, "queryByMessage: name = " + name + " subName = " + subName + " message = " + message);
         String tableName = getTableName(name, isWX);
-        List<Messages> list = new ArrayList<>();
         // SELECT * FROM tableName WHERE Message = message
         open();
         cursor = db.query(
                 tableName,
-                null,
+                new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",
-                new String[]{message,subName},
+                new String[]{message, subName},
                 null,
                 null,
                 Column_ID + " desc");
         if (!cursor.moveToFirst())
-            return null;
-//     Log.i(TAG, "queryByMessage: cursor position: " + cursor.getPosition());
-        do {
-            Log.d(TAG, "queryByMessage: cursor position: " + cursor.getPosition());
-            int id = cursor.getInt(0);
-            long time = cursor.getLong(3);
-            list.add(new Messages(id, isWX, name, subName, message, time));
-        } while (cursor.moveToNext());
+            return 0;
+        int id = cursor.getInt(0);
         close();
-        return list;
+        return id;
     }
 
     public Messages queryById(String name, Boolean isWX, int id) {
+        Log.d(TAG, "queryById: name = " + name + " id = " + id);
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
         open();
@@ -150,7 +127,14 @@ public class Dao {
         return new Messages(id, isWX, tableName, subName, message, time);
     }
 
-    public void addRecall(int originalID, String name, String subName, Boolean isWX, String message, long time) {
+    public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
+        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.isWX(), messages.getMessage(), messages.getTime(),
+                prevSubName, prevMessage, nextSubName, nextMessage);
+
+    }
+
+    public void addRecall(int originalID, String name, String subName, Boolean isWX, String message, long time,
+                          String prevSubName, String prevMessage, String nextSubName, String nextMessage) {
         open();
         db.beginTransaction();
         try {
@@ -160,6 +144,10 @@ public class Dao {
             values.put(Column_SubName, subName);
             values.put(Column_Message, message);
             values.put(Column_Time, time);
+            values.put(Column_Prev_SubName, prevSubName);
+            values.put(Column_Prev_Message, prevMessage);
+            values.put(Column_Next_SubName, nextSubName);
+            values.put(Column_Next_Message, nextMessage);
             if (isWX)
                 values.put(Column_IsWX, 1);
             else
@@ -256,11 +244,49 @@ public class Dao {
         return id;
     }
 
+//    public List<String> getTables() {
+//        List<String> list = new ArrayList<>();
+//        cursor = db.rawQuery("SELECT 'name' FROM 'sqlite_master' WHERE type = 'table'", null);
+//        if (!cursor.moveToFirst())
+//            return list;
+//        do {
+//            String table = cursor.getString(0);
+//            list.add(table);
+//        } while (cursor.moveToNext());
+//        close();
+//        return list;
+//    }
+
     public static String getTableName(String name, Boolean isWX) {
         String tableName;
         if (isWX)
             tableName = Table_Prefix_WX + name;
         else tableName = Table_Prefix_QQ_And_Tim + name;
         return "\"" + tableName + "\"";
+    }
+
+    public void temp() {
+        String sql;
+        sql = "DROP TABLE " + Table_Recalled_Messages;
+        db.execSQL(sql);
+//        sql = "ALTER TABLE " + Table_Recalled_Messages + " RENAME TO " + Table_Recalled_Messages + "_";
+//        db.execSQL(sql);
+        sql = "CREATE TABLE IF NOT EXISTS " + Table_Recalled_Messages + " (" +
+                Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Column_Original_ID + " INTEGER NOT NULL, " +
+                Column_Name + " TEXT NOT NULL, " +
+                Column_SubName + " TEXT, " +
+                Column_Message + " TEXT NOT NULL, " +
+                Column_Time + " REAL NOT NULL, " +
+                Column_IsWX + " TEXT NOT NULL, " +
+                Column_Image + " TEXT, " +
+                Column_Prev_SubName + " TEXT, " +
+                Column_Prev_Message + " TEXT, " +
+                Column_Next_SubName + " TEXT, " +
+                Column_Next_Message + " TEXT)";
+        db.execSQL(sql);
+//        sql = "INSERT INTO " + Table_Recalled_Messages + " SELECT * FROM " + Table_Recalled_Messages + "_";
+//        db.execSQL(sql);
+
     }
 }

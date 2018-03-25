@@ -10,21 +10,18 @@ import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.antirecall.db.Dao;
-
-import java.util.Date;
 import java.util.List;
 
 public class TimClient extends Client {
 
     String TAG = "Tim";
 
-    final String IdName = "com.tencent.tim:id/title";
+    final String IdTitle = "com.tencent.tim:id/title";
     final String IdChatGroupView = "com.tencent.tim:id/listView1";
-    final String IdTimeStamp = "com.tencent.tim:id/chat_item_time_stamp";
     final String IdHeadIcon = "com.tencent.tim:id/chat_item_head_icon";
     final String IdChatItem = "com.tencent.tim:id/chat_item_content_layout";
     final String IdNickName = "com.tencent.tim:id/chat_item_nick_name";
+    final String IdOtherMsg = "com.tencent.tim:id/msgbox";
     final String IdGrayBar = "com.tencent.tim:id/graybar";
     final String IdInput = "com.tencent.tim:id/input";
     final String IdSend = "com.tencent.tim:id/fun_btn";
@@ -56,28 +53,25 @@ public class TimClient extends Client {
      */
     protected boolean init(AccessibilityNodeInfo root) {
         //16 是其他界面
-//        if (root.getChildCount() != 14 && root.getChildCount() != 15) {
-        Log.d(TAG, "init: root.childCount: " + root.getChildCount());
-        if (root.getChildCount() < 14) {
+        //14 是没有聊过天
+        //12 是发送完消息
+        if (root.getChildCount() < 12) {
+            Log.d(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
 
-        nameNode = root.getChild(1);
-        // 通过群的即时聊天
-        if (nameNode.getChildCount() == 2)
-            nameNode = nameNode.getChild(0);
-        if (!nameNode.getViewIdResourceName().equals(IdName)) {
-            Log.d(TAG, "init: 名字ID不对，return");
-            return false;
-        }
-        if (nameNode.getText() == null) {
-            Log.d(TAG, "init: name is null，return");
-            return false;
-        }
-        title = nameNode.getText().toString();
+        List<AccessibilityNodeInfo> titleList;
+        List<AccessibilityNodeInfo> inputList;
+        List<AccessibilityNodeInfo> sendList;
 
+        titleList = root.findAccessibilityNodeInfosByViewId(IdTitle);
         inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
         sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
+
+        if (titleList.size() == 0) {
+            Log.d(TAG, "init: title is null, return");
+            return false;
+        }
         if (inputList.size() == 0) {
             Log.d(TAG, "init: input is null, return");
             return false;
@@ -86,23 +80,39 @@ public class TimClient extends Client {
             Log.d(TAG, "init: send button is null, return");
             return false;
         }
+        titleNode = titleList.get(0);
         inputNode = inputList.get(0);
         sendBtnNode = sendList.get(0);
-
-        // 群的 node 位置在4 好友聊天在5
-        if ((chatGroupViewNode = root.getChild(4)).getViewIdResourceName().equals(IdChatGroupView))
-            isGroupMessage = true;
-        else if ((chatGroupViewNode = root.getChild(5)).getViewIdResourceName().equals(IdChatGroupView))
-            isGroupMessage = false;
-        else {
-            Log.d(TAG, "init: not chat view, return");
+        if (titleNode.getText() == null) {
+            Log.d(TAG, "init: name is null，return");
             return false;
         }
+        title = titleNode.getText().toString();
+
+        for (int i = 4; i < 7; i++) {
+            AccessibilityNodeInfo child = root.getChild(i);
+            switch (child.getViewIdResourceName()) {
+                case IdChatGroupView:
+                    chatGroupViewNode = child;
+                    break;
+                case IdOtherMsg:
+                    isOtherMsg = true;
+                    break;
+            }
+        }
+
+        if (chatGroupViewNode == null) {
+            Log.i(TAG, "init: chatGroupViewNode is null, return");
+            return false;
+        }
+
         return true;
     }
 
     protected void parser(AccessibilityNodeInfo group) {
-        isRecalledMessage = false;
+        subName = "";
+        message = "";
+        isRecalledMsg = false;
         int childCount = group.getChildCount();
 
         for (int j = 0; j < childCount; j++) {
@@ -117,9 +127,6 @@ public class TimClient extends Client {
                 continue;
             }
             switch (nodeId) {
-                case IdTimeStamp:
-                    //时间戳
-                    break;
                 case IdHeadIcon:
                     //头像图标
                     headIconPos = j;
@@ -150,6 +157,7 @@ public class TimClient extends Client {
                                 }
                             }
                             groupNode = child;
+                            // TODO: 组合消息
                             Log.d(TAG, "content_layout: 组合消息");
                         }
                         break;
@@ -175,22 +183,23 @@ public class TimClient extends Client {
 
                         int indexOfRecall = message.indexOf(RECALL);
                         if (indexOfRecall >= 0) {
-                            isRecalledMessage = true;
+                            isRecalledMsg = true;
                             subName = message.substring(0, indexOfRecall);
+                            message = message.substring(indexOfRecall);
                         }
                     }
 
             }
         }
         //2人聊天 头像在消息右边
-        Log.v(TAG, "parser: 群消息: " + isGroupMessage);
-        if (!isGroupMessage)
+        if (subName.equals(""))
             if (messagePos < headIconPos)
                 subName = "我";
             else {
-                subName = nameNode.getText().toString();
+                subName = title;
             }
 
-        Log.i(TAG, subName + " : " + message);
+        Log.i(TAG, "parser: " + title + " - " + subName + " : " + message);
     }
+
 }

@@ -9,15 +9,13 @@ package com.qsboy.antirecall.access;
 import android.accessibilityservice.AccessibilityService;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityEventSource;
-import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.List;
 
-public class MainAccessibilityService extends AccessibilityService {
+public class MainService extends AccessibilityService {
 
-    private String TAG = "Accessibility Service";
+    private String TAG = "Main Service";
     private AccessibilityNodeInfo root;
     private String packageName;
     final String pknTim = "com.tencent.tim";
@@ -45,7 +43,7 @@ public class MainAccessibilityService extends AccessibilityService {
 
         int eventType = event.getEventType();
         if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            Log.d(TAG, AccessibilityEvent.eventTypeToString(eventType));
+            Log.v(TAG, AccessibilityEvent.eventTypeToString(eventType));
         }
 
         switch (eventType) {
@@ -60,55 +58,26 @@ public class MainAccessibilityService extends AccessibilityService {
                 break;
 
         }
-    }
-
-
-    /**
-     * 把通知栏里截获的消息处理并写入本地
-     */
-    void getNotification(AccessibilityEvent event) {
-        Log.i(TAG, "Notification Changed");
-        List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0)
-            return;
-        for (CharSequence text : texts) {
-            if (text == null)
-                return;
-            String string = text.toString();
-            Log.w(TAG, "Notification Text:" + string);
-            if (string.equals("你的帐号在电脑登录"))
-                return;
-
-            String content;
-            String name;
-
-            int i = string.indexOf(':');
-            if (i < 1) {
-                Log.d(TAG, "Notification does not contains ':'");
-                return;
-            }
-            name = string.substring(0, i);
-            content = string.substring(i + 2);
-            //是QQ群消息
-//            if (!is_wx)
-//                if (subName.charAt(i - 1) == ')' && subName.contains("(")) {
-//                    content = string.substring(i + 1);
-//                    subName = subName.substring(subName.indexOf('(') + 1, subName.indexOf(')'));
-//                }
-//            long date = new Date().getTime();
-//            Log.w(TAG, "subName : " + subName + "    content : " + content + "    time : " + date);
-//            String line = content + date;
-//            tempMessage = content;
-//            xFile.writeFile(line, subName);
-        }
 
     }
 
     private void onNotification(AccessibilityEvent event) {
         List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0)
+        if (texts.isEmpty() || texts.size() == 0) {
+            GetNodes.show(root,TAG);
             return;
+        }
         Log.i(TAG, "onNotification: " + texts);
+        switch (packageName) {
+            case pknTim:
+//                new TimClient(this).onContentChanged(root);
+                new TimClient(this).onNotificationChanged(event);
+                break;
+            case pknQQ:
+//                new QQClient(this).onContentChanged(root);
+                new QQClient(this).onNotificationChanged(event);
+                break;
+        }
     }
 
     private void onContentChanged(AccessibilityEvent event) {
@@ -120,31 +89,33 @@ public class MainAccessibilityService extends AccessibilityService {
             return;
         CharSequence cs = event.getSource().getText();
 
-        // TODO: 只有当 changed content 为 "消息.*" 时才添加新消息
         switch (packageName) {
             case pknTim:
-                Log.w(TAG, "\nonContentChanged: " + cs);
-                new TimClient(this).addMessage(root);
+                Log.i(TAG, "\nonContentChanged: " + cs);
+                new TimClient(this).onContentChanged(root);
                 break;
             case pknQQ:
-                Log.w(TAG, "\nonContentChanged: " + cs);
-                new QQClient(this).addMessage(root);
+                Log.i(TAG, "\nonContentChanged: " + cs);
+                new QQClient(this).onContentChanged(root);
                 break;
         }
     }
 
     private void onClick(AccessibilityEvent event) {
+        Log.i(TAG, "onClick: ");
 //        GetNodes.show(root, "d");
         switch (packageName) {
             case pknTim:
-                new TimClient(this).getScreen(root);
+                new TimClient(this).findRecalls(root, event);
                 break;
             case pknQQ:
-                new QQClient(this).getScreen(root);
+                new QQClient(this).findRecalls(root, event);
                 break;
+            case pknWX:
+                GetNodes.show(root, TAG);
+
         }
     }
-
 
     @Override
     public void onInterrupt() {

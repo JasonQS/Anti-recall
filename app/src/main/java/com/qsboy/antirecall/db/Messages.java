@@ -18,6 +18,10 @@ public class Messages {
     private long time;
     private String[] images;
 
+    public Messages() {
+
+    }
+
     public Messages(int id, boolean isWX, String name, String subName, String message) {
         this.id = id;
         this.isWX = isWX;
@@ -45,32 +49,36 @@ public class Messages {
         return id;
     }
 
-    public void setId(int id) {
+    public Messages setId(int id) {
         this.id = id;
+        return this;
     }
 
     public int getRecalledID() {
         return recalledID;
     }
 
-    public void setRecalledID(int recalledID) {
+    public Messages setRecalledID(int recalledID) {
         this.recalledID = recalledID;
+        return this;
     }
 
     public boolean isWX() {
         return isWX;
     }
 
-    public void setWX(boolean WX) {
+    public Messages setWX(boolean WX) {
         isWX = WX;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Messages setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getSubName() {
@@ -80,32 +88,36 @@ public class Messages {
             return subName;
     }
 
-    public void setSubName(String subName) {
+    public Messages setSubName(String subName) {
         this.subName = subName;
+        return this;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public Messages setMessage(String message) {
         this.message = message;
+        return this;
     }
 
     public long getTime() {
         return time;
     }
 
-    public void setTime(long time) {
+    public Messages setTime(long time) {
         this.time = time;
+        return this;
     }
 
     public String[] getImages() {
         return images;
     }
 
-    public void setImages(String[] images) {
+    public Messages setImages(String[] images) {
         this.images = images;
+        return this;
     }
 
 }

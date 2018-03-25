@@ -10,21 +10,18 @@ import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.antirecall.db.Dao;
-
-import java.util.Date;
 import java.util.List;
 
-public class QQClient extends Client{
+public class QQClient extends Client {
 
     String TAG = "QQ";
 
-    final String IdName = "com.tencent.mobileqq:id/title";
+    final String IdTitle = "com.tencent.mobileqq:id/title";
     final String IdChatGroupView = "com.tencent.mobileqq:id/listView1";
-    final String IdTimeStamp = "com.tencent.mobileqq:id/chat_item_time_stamp";
     final String IdHeadIcon = "com.tencent.mobileqq:id/chat_item_head_icon";
     final String IdChatItem = "com.tencent.mobileqq:id/chat_item_content_layout";
     final String IdNickName = "com.tencent.mobileqq:id/chat_item_nick_name";
+    final String IdOtherMsg = "com.tencent.mobileqq:id/msgbox";
     final String IdGrayBar = "com.tencent.mobileqq:id/graybar";
     final String IdInput = "com.tencent.mobileqq:id/input";
     final String IdSend = "com.tencent.mobileqq:id/fun_btn";
@@ -56,42 +53,24 @@ public class QQClient extends Client{
      * 发送按钮   8-1
      */
     protected boolean init(AccessibilityNodeInfo root) {
-        if (root.getChildCount() != 13) {
-            // TODO: 非好友是10
+        if (root.getChildCount() < 10) {
+            // 正常是13
+            // 有其他消息是14
+            // 非好友是10
             Log.i(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
+        List<AccessibilityNodeInfo> titleList;
+        List<AccessibilityNodeInfo> inputList;
+        List<AccessibilityNodeInfo> sendList;
 
-        AccessibilityNodeInfo titleGroupViewNode = root.getChild(root.getChildCount() - 1);
-        if (titleGroupViewNode == null) {
-            Log.d(TAG, "init: subName node is null, return");
-            return false;
-        }
-        int titleNodeChildCount = titleGroupViewNode.getChildCount();
-        if (titleNodeChildCount != 5 && titleNodeChildCount != 6) {
-            Log.d(TAG, "init: titleGroupViewNode child count is not 5 or 6, return");
-            return false;
-        }
-        isGroupMessage = titleNodeChildCount == 6;
-
-        nameNode = titleGroupViewNode.getChild(2);
-        if (nameNode == null) {
-            Log.d(TAG, "init: subName node is null, return");
-            return false;
-        }
-        if (nameNode.getChildCount() > 0)
-            nameNode = nameNode.getChild(0);
-        if (!nameNode.getViewIdResourceName().equals(IdName)) {
-            Log.d(TAG, "init: 名字ID不对，return");
-            return false;
-        }
-        if (nameNode.getText() == null) {
-            Log.i(TAG, "init: subName is null");
-            return false;
-        }
-
+        titleList = root.findAccessibilityNodeInfosByViewId(IdTitle);
         inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
         sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
+        if (titleList.size() == 0) {
+            Log.d(TAG, "init: title is null, return");
+            return false;
+        }
         if (inputList.size() == 0) {
             Log.d(TAG, "init: input is null, return");
             return false;
@@ -100,27 +79,14 @@ public class QQClient extends Client{
             Log.d(TAG, "init: send button is null, return");
             return false;
         }
+        titleNode = titleList.get(0);
         inputNode = inputList.get(0);
         sendBtnNode = sendList.get(0);
-
-//        inputBoxNode = root.getChild(2);
-//        if (inputBoxNode == null || inputBoxNode.getChildCount() != 2)
-//            inputBoxNode = root.getChild(3);
-//        if (inputBoxNode == null || inputBoxNode.getChildCount() != 2) {
-//            Log.d(TAG, "init: inputBox is null, return");
-//            return false;
-//        }
-//
-//        inputNode = inputBoxNode.getChild(0);
-//        sendBtnNode = inputBoxNode.getChild(1);
-//        if (inputNode == null) {
-//            Log.d(TAG, "init: input node is null, return");
-//            return false;
-//        }
-//        if (sendBtnNode == null) {
-//            Log.d(TAG, "init: sendButton node is null, return");
-//            return false;
-//        }
+        if (titleNode.getText() == null) {
+            Log.d(TAG, "init: name is null，return");
+            return false;
+        }
+        title = titleNode.getText().toString();
 
         chatGroupViewNode = root.getChild(0);
         if (chatGroupViewNode == null) {
@@ -131,6 +97,9 @@ public class QQClient extends Client{
             Log.d(TAG, "init: not chat view, return");
             return false;
         }
+
+        isOtherMsg = root.getChild(1).getViewIdResourceName().equals(IdOtherMsg);
+
         return true;
     }
 
@@ -147,9 +116,6 @@ public class QQClient extends Client{
                 continue;
             }
             switch (nodeId) {
-                case IdTimeStamp:
-                    //时间戳
-                    break;
                 case IdHeadIcon:
                     //头像图标
                     headIconPos = j;
@@ -171,6 +137,7 @@ public class QQClient extends Client{
                             break;
                         case "android.widget.LinearLayout": {
                             if (child.getChildCount() == 2) {
+                                // TODO: 组合消息
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
                                 if (child1.getClassName() == "android.widget.TextView") {
@@ -201,11 +168,13 @@ public class QQClient extends Client{
             }
         }
         //2人聊天 头像在消息右边
-        if (!isGroupMessage)
+        if (subName.equals(""))
             if (messagePos < headIconPos)
                 subName = "我";
             else
-                subName = nameNode.getText().toString();
+                subName = titleNode.getText().toString();
         Log.i(TAG, subName + " : " + message);
     }
+
+
 }

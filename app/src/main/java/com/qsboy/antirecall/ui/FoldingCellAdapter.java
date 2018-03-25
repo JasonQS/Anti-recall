@@ -60,12 +60,12 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         helper.setText(R.id.cell_message_text, item.getMessage());
 
         List<Messages> messages = adapter.prepareData(item.getName(), item.isWX(), item.getId());
-        final int[] top = {item.getId() - 2};
-        final int[] bot = {item.getId() + 2};
+        final int[] top = {item.getId() - 3};
+        final int[] bot = {item.getId() + 3};
         int max = dao.getMaxID(item.getName(), item.isWX());
         if (messages.size() != 0)
             adapter.addData(messages);
-        adapter.setStartUpFetchPosition(2);
+        adapter.setStartUpFetchPosition(3);
         adapter.setUpFetchEnable(true);
         adapter.setPreLoadNumber(4);
         adapter.setEnableLoadMore(true);
