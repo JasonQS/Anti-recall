@@ -7,14 +7,19 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
+import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
@@ -25,6 +30,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import javax.crypto.AEADBadTagException;
 
 import static java.util.Calendar.*;
 
@@ -39,6 +46,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
 
     SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    long down = 0;
 
     public FoldingCellAdapter(@Nullable List<Messages> data, Context context) {
         super(R.layout.cell, data);
@@ -48,18 +56,17 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
 
     @Override
     protected void convert(BaseViewHolder helper, Messages item) {
-        Log.v(TAG, "convert: " + item.getMessage());
-        FoldingCell fc = helper.getView(R.id.folding_cell);
+        Log.v(TAG, "convert: " + item.getMessage() + " id: " + item.getId());
+        MyFoldingCell fc = helper.getView(R.id.folding_cell);
         RecyclerView recyclerView = helper.getView(R.id.cell_recycler_view);
         MultiMessagesAdapter adapter = new MultiMessagesAdapter(null, context);
 
-        fc.setOnClickListener(v -> fc.toggle(false));
-        helper.setText(R.id.cell_title, item.getName());
+        helper.setText(R.id.cell_title_fold, item.getName());
+        helper.setText(R.id.cell_title_unfold, item.getName());
         helper.setText(R.id.cell_name, item.getSubName());
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
 
-        Log.i(TAG, "convert: name: " + item.getName());
         List<Messages> messages = adapter.prepareData(item.getName(), item.isWX(), item.getId());
         final int[] top = {item.getId() - 3};
         final int[] bot = {item.getId() + 3};
@@ -93,18 +100,56 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         recyclerView.setAdapter(adapter);
 
         // TODO: 滑动删除
-//        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
-//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
-//        itemTouchHelper.attachToRecyclerView(recyclerView);
+        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         // 开启拖拽
 //        adapter.enableDragItem(itemTouchHelper, R.id.textView, true);
 //        adapter.setOnItemDragListener(onItemDragListener);
 
         // 开启滑动删除
-//        adapter.enableSwipeItem();
-//        adapter.setOnItemSwipeListener(onItemSwipeListener);
+        adapter.enableSwipeItem();
+        adapter.setOnItemSwipeListener(new OnItemSwipeListener() {
+            @Override
+            public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
+            }
 
+            @Override
+            public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
+            }
+
+            @Override
+            public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+                Log.i(TAG, "onItemSwiped: pos: " + pos);
+                Dao dao = new Dao(context);
+                dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
+            }
+
+            @Override
+            public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
+            }
+        });
+
+        fc.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    down = new Date().getTime();
+                    fc.getParent().requestDisallowInterceptTouchEvent(true);
+                    return true;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    long downTime = new Date().getTime() - down;
+                    if (downTime < 200)
+                        fc.toggle(false);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    downTime = new Date().getTime() - down;
+                    if (downTime > 200)
+                        fc.getParent().requestDisallowInterceptTouchEvent(fc.isUnfolded());
+            }
+            return fc.isUnfolded();
+        });
     }
 
     public List<Messages> prepareData() {

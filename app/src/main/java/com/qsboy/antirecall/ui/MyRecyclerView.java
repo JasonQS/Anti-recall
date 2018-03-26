@@ -10,7 +10,9 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
 public class MyRecyclerView extends RecyclerView {
 
@@ -28,6 +30,12 @@ public class MyRecyclerView extends RecyclerView {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
-        return false;
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                super.onInterceptTouchEvent(e);
+                return false;
+            default:
+                return true;
+        }
     }
 }

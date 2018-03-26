@@ -13,7 +13,7 @@
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="10dp">
 
-    <com.ramotion.foldingcell.FoldingCell xmlns:folding-cell="http://schemas.android.com/apk/res-auto"
+    <com.qsboy.antirecall.ui.MyFoldingCell xmlns:folding-cell="http://schemas.android.com/apk/res-auto"
         android:id="@+id/folding_cell"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,5 +26,5 @@
 
         <include layout="@layout/cell_fold" />
 
-    </com.ramotion.foldingcell.FoldingCell>
+    </com.qsboy.antirecall.ui.MyFoldingCell>
 </android.support.v7.widget.CardView>

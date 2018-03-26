@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
   ~ anti-recall.qsboy.com
   ~ All Rights Reserved
@@ -21,10 +20,10 @@
         android:baselineAligned="false">
 
         <!--name-->
-        <ScrollView
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:background="@color/bgName">
 
             <TextView
@@ -38,13 +37,13 @@
                 android:textColor="@color/text_color_name"
                 android:textSize="@dimen/text_size_name" />
 
-        </ScrollView>
+        </FrameLayout>
 
         <!--message-->
-        <ScrollView
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="3">
+            android:layout_weight="5">
 
             <TextView
                 android:id="@+id/cell_message_text"
@@ -62,7 +61,7 @@
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content"-->
             <!--tools:ignore="ContentDescription" />-->
-        </ScrollView>
+        </FrameLayout>
     </LinearLayout>
 
     <!--time-->

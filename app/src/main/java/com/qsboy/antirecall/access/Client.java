@@ -60,6 +60,7 @@ public abstract class Client {
     protected abstract void parser(AccessibilityNodeInfo group);
 
     public void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
+        // TODO:  没找到 再根据 subName 找最后一个
         CharSequence cs = event.getSource().getText();
         if (cs == null)
             return;
@@ -76,7 +77,6 @@ public abstract class Client {
         Log.i(TAG, "findRecalls: unknownRecalls: " + unknownRecalls + " prevMsg: " + prevMessage + " nextMsg: " + nextMessage);
         if (prevMessage == null && nextMessage == null) {
             XToast.makeText(context, "不能全屏撤回哦").show();
-            // TODO: toast: 不能全屏的撤回
             return;
         }
 

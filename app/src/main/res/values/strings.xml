@@ -6,12 +6,12 @@
 
 <resources>
     <string name="app_name">Anti-recall</string>
+    <string name="service_label">Anti-recall</string>
     <string name="title_home">防撤回</string>
     <string name="title_monitor">特别关心</string>
     <string name="title_setting">设置</string>
-    <string name="service_label">Anti-recall</string>
 
-    <string name="title">Jason</string>
+    <string name="title">Title</string>
     <string name="name">name</string>
     <string name="message">Hello world</string>
     <string name="time">10:10\n12/22</string>

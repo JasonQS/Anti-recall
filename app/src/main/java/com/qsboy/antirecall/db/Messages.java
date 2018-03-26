@@ -10,7 +10,6 @@ public class Messages {
 
     private int id;
     private int recalledID;
-
     private boolean isWX;
     private String name;
     private String subName;
