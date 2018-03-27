@@ -41,6 +41,7 @@ public abstract class Client {
 
     //    public static List<String> tables;
     Dao dao;
+    XToast toast;
     private Context context;
 
     String nextMessage;
@@ -52,6 +53,7 @@ public abstract class Client {
 
     public Client(Context context) {
         dao = new Dao(context);
+        toast = new XToast(context);
         this.context = context;
     }
 
@@ -76,7 +78,7 @@ public abstract class Client {
 
         Log.i(TAG, "findRecalls: unknownRecalls: " + unknownRecalls + " prevMsg: " + prevMessage + " nextMsg: " + nextMessage);
         if (prevMessage == null && nextMessage == null) {
-            XToast.makeText(context, "不能全屏撤回哦").show();
+            toast.build(context, "不能全屏撤回哦").show();
             return;
         }
 
@@ -87,14 +89,14 @@ public abstract class Client {
             for (int i = 0; i < unknownRecalls; i++) {
                 Messages messages = dao.queryById(title, isWX, prevPos + 1 + i);
                 dao.addRecall(messages, prevSubName, prevMessage, nextSubName, nextMessage);
-                XToast.makeText(context, messages.getSubName() + ": " + messages.getMessage()).setPos(i).show();
+                toast.build(context, messages.getSubName() + ": " + messages.getMessage()).setPos(i).show();
             }
         } else {
             nextPos = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
             for (int i = unknownRecalls - 1; i >= 0; i--) {
                 Messages messages = dao.queryById(title, isWX, nextPos - 1 - i);
                 dao.addRecall(messages, prevSubName, prevMessage, nextSubName, nextMessage);
-                XToast.makeText(context, messages.getSubName() + ": " + messages.getMessage()).setPos(i).show();
+                toast.build(context, messages.getSubName() + ": " + messages.getMessage()).setPos(i).show();
             }
         }
 

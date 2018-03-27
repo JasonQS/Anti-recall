@@ -28,14 +28,22 @@ public class XToast {
     private Context context;
     private WindowManager wm;
     private View view;
+    private ImageView iv;
+    private TextView tv;
+    private int duration = 2500;
     private int y = 100;
     private int offsetY = y;
     private int pos;
+    Handler handler;
 
 
-    private XToast(Context context) {
+    public XToast(Context context) {
         this.context = context.getApplicationContext();
         wm = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
+        view = LayoutInflater.from(context).inflate(R.layout.toast, null);
+        iv = view.findViewById(R.id.toast_iv);
+        tv = view.findViewById(R.id.toast_tv);
+        handler = new Handler();
 
         params = new WindowManager.LayoutParams();
         params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
@@ -54,11 +62,7 @@ public class XToast {
     /**
      * 显示文字,如果传入的是图片,则去本地找到相应的图片显示
      */
-    public static XToast makeText(Context context, String text) {
-        XToast toast = new XToast(context);
-        View toastView = LayoutInflater.from(context).inflate(R.layout.toast, null);
-        ImageView iv = toastView.findViewById(R.id.toast_iv);
-        TextView tv = toastView.findViewById(R.id.toast_tv);
+    public XToast build(Context context, String text) {
         if (text.startsWith("#image")) {
             Log.w(TAG, "text : " + text);
             String imageTime = text.substring(6, 19);
@@ -71,10 +75,9 @@ public class XToast {
             iv.setVisibility(View.GONE);
             Log.w(TAG, "显示的是: " + text);
         }
-        toast.view = toastView;
-        toast.pos = 0;
+        pos = 0;
 
-        return toast;
+        return this;
     }
 
     public XToast setPos(int pos) {
@@ -90,8 +93,7 @@ public class XToast {
         params.y += offsetY;
         offsetY += params.height + dip2px(context, 20);
         wm.addView(view, params);
-        int mDuration = 2500;
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (view != null) {
@@ -100,7 +102,7 @@ public class XToast {
                     wm = null;
                 }
             }
-        }, mDuration);
+        }, duration);
     }
 
     /**

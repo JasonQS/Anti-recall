@@ -137,16 +137,11 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
                     down = new Date().getTime();
                     fc.getParent().requestDisallowInterceptTouchEvent(true);
                     return true;
-                case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
                     long downTime = new Date().getTime() - down;
                     if (downTime < 200)
                         fc.toggle(false);
                     break;
-                case MotionEvent.ACTION_MOVE:
-                    downTime = new Date().getTime() - down;
-                    if (downTime > 200)
-                        fc.getParent().requestDisallowInterceptTouchEvent(fc.isUnfolded());
             }
             return fc.isUnfolded();
         });
