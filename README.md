@@ -10,12 +10,3 @@
 
 双击撤回的地方则是 如果显示错误 需要重新查找
 
-```flow
-st=>start: Start
-op=>operation: Your Operation
-cond=>condition: Yes or No?
-e=>end
-st->op->cond
-cond(yes)->e
-cond(no)->op
-```
