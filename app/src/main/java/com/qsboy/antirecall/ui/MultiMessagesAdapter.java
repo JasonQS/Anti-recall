@@ -41,30 +41,15 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     public MultiMessagesAdapter(List<Messages> data, Context context) {
         super(R.layout.item_message, data);
         this.context = context;
-        dao = new Dao(context);
+        dao = Dao.getInstance(context);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, Messages item) {
-        Log.v(TAG, "convert: " + item.getMessage());
+        Log.v(TAG, "convert: " + item.getMessage() + " id: " + item.getId());
         helper.setText(R.id.cell_name, item.getSubName());
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
-    }
-
-    public List<Messages> prepareData(String name, boolean isWX, int id) {
-        List<Messages> list = new ArrayList<>();
-        for (int i = id - 3; i < id + 4; i++) {
-            Messages messages = fetchData(name, isWX, i);
-            if (messages != null)
-                list.add(messages);
-        }
-        return list;
-    }
-
-    public Messages fetchData(String name, boolean isWX, int id) {
-        Log.v(TAG, "fetch data: " + id);
-        return dao.queryById(name, isWX, id);
     }
 
     private String formatTime(long time) {

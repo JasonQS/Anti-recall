@@ -13,7 +13,6 @@
     <dimen name="height_content_fold">48dp</dimen>
     <dimen name="height_content_unfold">240dp</dimen>
     <dimen name="height_item_fold">80dp</dimen>
-    <dimen name="height_item_unfold">372dp</dimen>
 
     <dimen name="text_size_title">16sp</dimen>
     <dimen name="text_size_time">12sp</dimen>

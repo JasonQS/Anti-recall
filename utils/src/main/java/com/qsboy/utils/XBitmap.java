@@ -31,9 +31,6 @@ public class XBitmap {
 
     private static String File_Image_Saved;
 
-    public final static int QQ = 1;
-    public final static int Tim = 2;
-
     /**
      * 从已经缓存下来的图片里找到图片
      * 为的是Toast.makeText能解析图片
@@ -73,13 +70,13 @@ public class XBitmap {
      * @param time 图片的创建时间
      * @return 是否找到了图片
      */
-    public static boolean searchImageFile(long time, int client) {
+    public static boolean searchImageFile(long time, String client) {
         String path = Environment.getExternalStorageDirectory() + "/Tencent/";
         switch (client) {
-            case QQ:
+            case "QQ":
                 path += "MobileQQ/diskcache";
                 break;
-            case Tim:
+            case "Tim":
                 path += "Tim/diskcache";
                 break;
         }

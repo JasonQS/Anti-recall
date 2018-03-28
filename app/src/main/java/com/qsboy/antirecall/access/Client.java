@@ -8,14 +8,18 @@ package com.qsboy.antirecall.access;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Message;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
+import com.qsboy.utils.XBitmap;
 import com.qsboy.utils.XToast;
 
+import java.util.Date;
 import java.util.List;
 
 public abstract class Client {
@@ -41,7 +45,6 @@ public abstract class Client {
 
     //    public static List<String> tables;
     Dao dao;
-    XToast toast;
     private Context context;
 
     String nextMessage;
@@ -52,8 +55,7 @@ public abstract class Client {
     int nextPos;
 
     public Client(Context context) {
-        dao = new Dao(context);
-        toast = new XToast(context);
+        dao = Dao.getInstance(context);
         this.context = context;
     }
 
@@ -62,7 +64,8 @@ public abstract class Client {
     protected abstract void parser(AccessibilityNodeInfo group);
 
     public void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
-        // TODO:  没找到 再根据 subName 找最后一个
+        // TODO: 通知栏收到的表情 聊天框收到的表情 乱码 根据 utf 位置判断
+        // TODO: 没找到 再根据 subName 找最后一个
         CharSequence cs = event.getSource().getText();
         if (cs == null)
             return;
@@ -76,27 +79,34 @@ public abstract class Client {
 
         initContext(event);
 
-        Log.i(TAG, "findRecalls: unknownRecalls: " + unknownRecalls + " prevMsg: " + prevMessage + " nextMsg: " + nextMessage);
+        Log.w(TAG, "findRecalls: unknownRecalls: " + unknownRecalls + " prevMsg: " + prevMessage + " nextMsg: " + nextMessage);
         if (prevMessage == null && nextMessage == null) {
-            toast.build(context, "不能全屏撤回哦").show();
+            XToast.build(context, "不能全屏撤回哦").show();
             return;
         }
 
+        // TODO: 如果前后都没找到 就输出最后一个subName的消息
+        // TODO: 查找到的要和subName做比较 如果不对要继续找
+        Messages messages;
         if (prevMessage != null) {
             if (nextMessage != null)
                 nextPos = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
             prevPos = dao.queryByMessage(title, isWX, prevSubName, prevMessage);
             for (int i = 0; i < unknownRecalls; i++) {
-                Messages messages = dao.queryById(title, isWX, prevPos + 1 + i);
+                while ((messages = dao.queryById(title, isWX, prevPos + 1 + i)) == null) {
+                    prevPos++;
+                }
                 dao.addRecall(messages, prevSubName, prevMessage, nextSubName, nextMessage);
-                toast.build(context, messages.getSubName() + ": " + messages.getMessage()).setPos(i).show();
+                XToast.build(context, messages.getSubName() + ": " + messages.getMessage()).show();
             }
         } else {
             nextPos = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
             for (int i = unknownRecalls - 1; i >= 0; i--) {
-                Messages messages = dao.queryById(title, isWX, nextPos - 1 - i);
+                while ((messages = dao.queryById(title, isWX, nextPos - 1 - i)) == null) {
+                    nextPos--;
+                }
                 dao.addRecall(messages, prevSubName, prevMessage, nextSubName, nextMessage);
-                toast.build(context, messages.getSubName() + ": " + messages.getMessage()).setPos(i).show();
+                XToast.build(context, messages.getSubName() + ": " + messages.getMessage()).show();
             }
         }
 
@@ -181,6 +191,7 @@ public abstract class Client {
             message = string.substring(i + 2);
             subName = title;
             //是群消息
+            // TODO: 特别关心
             // TODO: 当前是 QQ 群 微信群待测试
             int j = title.indexOf('(');
             if (j > 0 && title.charAt(i - 1) == ')') {
@@ -195,13 +206,6 @@ public abstract class Client {
 
     /**
      * 判断是否是在其他人的聊天界面收到了消息
-     * 为了在 QQ-不是当前联系人-发来消息 时检查是否出现过这个人
-     * QQ比较重,会在当前屏幕生成一个内部的弹窗
-     * 这种消息我截下来和普通消息一样,只是内容是这样的形式:
-     * "Name" + ' : ' + "Message"
-     * 我根据这里是否存在冒号
-     * 然后判断Name是否在NameList中来区分 QQ-普通消息和别人发的消息
-     * 但微信不一样,只要是不在当前聊天窗口发来的消息都会给Notification
      */
     private void onOtherMsg() {
         String string = otherMsgNode.getText().toString();
@@ -221,11 +225,9 @@ public abstract class Client {
 //            }
         } else {
             title = string.substring(0, i);
-            //如果人名在tables. 出现过
             addMsg(false);
         }
     }
-
 
     public void addMsg(boolean force) {
         String temp = title + "-" + subName + ": " + message;
@@ -235,5 +237,10 @@ public abstract class Client {
         added = temp;
         Log.e(TAG, "Add message: " + temp);
         dao.addMessage(title, subName, isWX, message);
+    }
+
+    public void addRecall() {
+//        if ("[图片]".equals(message))
+//            if (XBitmap.searchImageFile(new Date().getTime(),TAG))
     }
 }

@@ -9,6 +9,7 @@ package com.qsboy.antirecall;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.ui.FoldingCellAdapter;
 import com.qsboy.utils.CheckAuthority;
+import com.qsboy.utils.XLogcat;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -44,11 +46,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        XLogcat.getInstance().start();
         Date in = new Date();
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .penaltyLog()
+                .penaltyDeath()
+                .build());
+
 
 //        BottomNavigationView navigation = findViewById(R.id.navigation);
 //        navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
@@ -113,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
             = item -> {
         switch (item.getItemId()) {
@@ -140,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
             Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Dao dao = new Dao(getApplicationContext());
+            Dao dao = Dao.getInstance(getApplicationContext());
             dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
             Log.i(TAG, "clearView: " + adapter.getData());
         }
@@ -154,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
     // TODO: for test
     public void prepareDataForTest() {
         Date in = new Date();
-        Dao dao = new Dao(this);
+        Dao dao = Dao.getInstance(this);
 //        dao.deleteAll();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -9);

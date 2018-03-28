@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -46,12 +47,15 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
 
     SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    static DividerItemDecoration decor;
     long down = 0;
+    boolean waiting;
 
     public FoldingCellAdapter(@Nullable List<Messages> data, Context context) {
         super(R.layout.cell, data);
         this.context = context;
-        dao = new Dao(context);
+        dao = Dao.getInstance(context);
+        decor = new DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL);
     }
 
     @Override
@@ -67,48 +71,64 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
 
-        List<Messages> messages = adapter.prepareData(item.getName(), item.isWX(), item.getId());
-        final int[] top = {item.getId() - 3};
-        final int[] bot = {item.getId() + 3};
+        final int[] top = {item.getId(), 1};
+        final int[] bot = {item.getId(), 1};
         int max = dao.getMaxID(item.getName(), item.isWX());
-        if (messages.size() != 0)
-            adapter.addData(messages);
+        adapter.addData(item);
         adapter.setStartUpFetchPosition(3);
         adapter.setUpFetchEnable(true);
         adapter.setPreLoadNumber(4);
         adapter.setEnableLoadMore(true);
+        //刚载入时会同时出发多次 load more 第二位是锁
         adapter.setUpFetchListener(() -> recyclerView.post(() -> {
-            if (top[0] <= 1)
+            Log.v(TAG, "convert: UpFetch");
+            if (top[1] == 0)
+                try {
+                    Log.i(TAG, "convert: up fetch wait");
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            if (top[0] <= 1) {
                 adapter.setUpFetchEnable(false);
-            Messages data = adapter.fetchData(item.getName(), item.isWX(), --top[0]);
+                return;
+            }
+            top[1] = 0;
+            Messages data = dao.queryById(item.getName(), item.isWX(), --top[0]);
             if (data != null)
                 adapter.addData(0, data);
-            Log.v(TAG, "convert: UpFetch");
+            top[1] = 1;
         }));
         adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
-            Messages data = adapter.fetchData(item.getName(), item.isWX(), ++bot[0]);
-            if (bot[0] >= max)
+            Log.v(TAG, "convert: OnLoadMore");
+            if (bot[1] == 0)
+                try {
+                    Log.i(TAG, "convert: load more wait");
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            if (bot[0] >= max) {
                 adapter.loadMoreEnd();
+                return;
+            }
+            bot[1] = 0;
+            Messages data = dao.queryById(item.getName(), item.isWX(), ++bot[0]);
             if (data != null) {
                 adapter.addData(data);
-                adapter.loadMoreComplete();
             }
-            Log.v(TAG, "convert: OnLoadMore");
+            adapter.loadMoreComplete();
+            top[1] = 1;
         }), recyclerView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.addItemDecoration(decor);
         recyclerView.setAdapter(adapter);
 
-        // TODO: 滑动删除
+        // 滑动删除
         ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        // 开启拖拽
-//        adapter.enableDragItem(itemTouchHelper, R.id.textView, true);
-//        adapter.setOnItemDragListener(onItemDragListener);
-
-        // 开启滑动删除
         adapter.enableSwipeItem();
         adapter.setOnItemSwipeListener(new OnItemSwipeListener() {
             @Override
@@ -122,8 +142,9 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
                 Log.i(TAG, "onItemSwiped: pos: " + pos);
-                Dao dao = new Dao(context);
-                dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
+                Dao dao = Dao.getInstance(context);
+                Messages msg = adapter.getData().get(pos);
+                dao.deleteMessage(msg.getName(), msg.isWX(), msg.getId());
             }
 
             @Override

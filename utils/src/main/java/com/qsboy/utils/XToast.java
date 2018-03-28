@@ -24,25 +24,19 @@ import static com.qsboy.utils.XBitmap.getLocalBitmap;
 public class XToast {
 
     private static String TAG = "X-Toast";
-    WindowManager.LayoutParams params;
+    private WindowManager.LayoutParams params;
     private Context context;
     private WindowManager wm;
     private View view;
-    private ImageView iv;
-    private TextView tv;
     private int duration = 2500;
     private int y = 100;
-    private int offsetY = y;
-    private int pos;
-    Handler handler;
+    private static int offsetY = 0;
+    private Handler handler;
 
 
-    public XToast(Context context) {
+    private XToast(Context context) {
         this.context = context.getApplicationContext();
         wm = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
-        view = LayoutInflater.from(context).inflate(R.layout.toast, null);
-        iv = view.findViewById(R.id.toast_iv);
-        tv = view.findViewById(R.id.toast_tv);
         handler = new Handler();
 
         params = new WindowManager.LayoutParams();
@@ -62,7 +56,11 @@ public class XToast {
     /**
      * 显示文字,如果传入的是图片,则去本地找到相应的图片显示
      */
-    public XToast build(Context context, String text) {
+    public static XToast build(Context context, String text) {
+        XToast toast = new XToast(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.toast, null);
+        ImageView iv = view.findViewById(R.id.toast_iv);
+        TextView tv = view.findViewById(R.id.toast_tv);
         if (text.startsWith("#image")) {
             Log.w(TAG, "text : " + text);
             String imageTime = text.substring(6, 19);
@@ -75,29 +73,28 @@ public class XToast {
             iv.setVisibility(View.GONE);
             Log.w(TAG, "显示的是: " + text);
         }
-        pos = 0;
-
-        return this;
+        toast.view = view;
+        return toast;
     }
 
-    public XToast setPos(int pos) {
-        this.pos = pos;
-        return this;
-    }
-
+    /**
+     * 支持多条消息同时显示 中间间隔10dp
+     */
     public void show() {
         if (view == null)
             return;
-        if (pos == 0)
-            offsetY = 0;
+
         params.y += offsetY;
-        offsetY += params.height + dip2px(context, 20);
+        view.measure(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        offsetY += view.getMeasuredHeight() + dip2px(context, 10);
+
         wm.addView(view, params);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (view != null) {
                     wm.removeView(view);
+                    offsetY = 0;
                     view = null;
                     wm = null;
                 }
@@ -107,12 +104,9 @@ public class XToast {
 
     /**
      * dip到px单位转换
-     *
-     * @param dipValue dip 的值
-     * @return px值
      */
     private static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dipValue * scale + 0.5f);
+        return (int) (dipValue * scale);
     }
 }

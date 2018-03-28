@@ -1,0 +1,41 @@
+# Test Files #
+log_tim
+log_qq
+log_wx
+
+# Java compiled classes #
+*.class
+
+# Package Files #
+# *.apk
+# *.ap_
+
+# IDEA Project files #
+*.iws
+*.iml
+*.ipr
+.idea/
+captures/
+
+# Build directory #
+target/
+build/
+
+# Generated files #
+bin/
+gen/
+
+# Local props file #
+local.properties
+
+# Gradle cache #
+.gradle
+
+# OSX files #
+.DS_Store
+
+# NDK #
+obj/
+
+# files for the dex VM #
+*.dex

@@ -12,6 +12,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.qsboy.utils.XBitmap;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,14 +25,21 @@ public class Dao {
 
     private String TAG = "Dao";
     private DBHelper dbHelper;
+    private static Dao instance = null;
 
     SQLiteDatabase db = null;
     Cursor cursor = null;
 
-    public Dao(Context context) {
+    private Dao(Context context) {
         dbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
         db = dbHelper.getWritableDatabase();
         // TODO: 获取db对象方式待优化 可以多次读完再一起close
+    }
+
+    public static Dao getInstance(Context context) {
+        if (instance == null)
+            instance = new Dao(context);
+        return instance;
     }
 
     private void open() {
@@ -39,12 +48,10 @@ public class Dao {
     }
 
     private void close() {
-        if (cursor != null) {
+        if (cursor != null)
             cursor.close();
-        }
-        if (db != null) {
+        if (db != null)
             db.close();
-        }
     }
 
     /**
@@ -83,50 +90,6 @@ public class Dao {
         }
     }
 
-    // TODO: 查找方式待重写
-    // TODO: 如果只要id的话只查询id
-    public int queryByMessage(String name, Boolean isWX, String subName, String message) {
-        Log.d(TAG, "queryByMessage: name = " + name + " subName = " + subName + " message = " + message);
-        String tableName = getTableName(name, isWX);
-        // SELECT * FROM tableName WHERE Message = message
-        open();
-        cursor = db.query(
-                tableName,
-                new String[]{Column_ID},
-                Column_Message + " = ? and " + Column_SubName + " = ?",
-                new String[]{message, subName},
-                null,
-                null,
-                Column_ID + " desc");
-        if (!cursor.moveToFirst())
-            return 0;
-        int id = cursor.getInt(0);
-        close();
-        return id;
-    }
-
-    public Messages queryById(String name, Boolean isWX, int id) {
-        Log.d(TAG, "queryById: name = " + name + " id = " + id);
-        String tableName = getTableName(name, isWX);
-        // SELECT * FROM tableName WHERE Id = id
-        open();
-        cursor = db.query(tableName,
-                null,
-                Column_ID + " = ?",
-                new String[]{String.valueOf(id)},
-                null,
-                null,
-                null);
-        if (!cursor.moveToFirst())
-            return null;
-//        Log.i(TAG, "queryById: id: " + id);
-        String subName = cursor.getString(1);
-        String message = cursor.getString(2);
-        long time = cursor.getLong(3);
-        close();
-        return new Messages(id, isWX, name, subName, message, time);
-    }
-
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
         this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.isWX(), messages.getMessage(), messages.getTime(),
                 prevSubName, prevMessage, nextSubName, nextMessage);
@@ -137,6 +100,10 @@ public class Dao {
                           String prevSubName, String prevMessage, String nextSubName, String nextMessage) {
         Log.d(TAG, "addRecall() called with: originalID = [" + originalID + "], name = [" + name + "], subName = [" + subName + "], isWX = [" + isWX + "], message = [" + message + "], time = [" + time + "], prevSubName = [" + prevSubName + "], prevMessage = [" + prevMessage + "], nextSubName = [" + nextSubName + "], nextMessage = [" + nextMessage + "]");
         open();
+        if (message.equals("[图片]")) {
+//            XBitmap.searchImageFile()
+            // TODO: 27/03/2018
+        }
         db.beginTransaction();
         try {
             ContentValues values = new ContentValues();
@@ -162,6 +129,58 @@ public class Dao {
         }
     }
 
+    // TODO: 查找方式待重写
+    // TODO: 如果只要id的话只查询id
+    public int queryByMessage(String name, Boolean isWX, String subName, String message) {
+        Log.d(TAG, "queryByMessage: name = " + name + " subName = " + subName + " message = " + message);
+        String tableName = getTableName(name, isWX);
+        // SELECT * FROM tableName WHERE Message = message
+        open();
+        cursor = db.query(
+                tableName,
+                new String[]{Column_ID},
+                Column_Message + " = ? and " + Column_SubName + " = ?",
+                new String[]{message, subName},
+                null,
+                null,
+                Column_ID + " desc");
+        if (!cursor.moveToFirst()) {
+            close();
+            return 0;
+        }
+        int id = cursor.getInt(0);
+        close();
+        return id;
+    }
+
+    public Messages queryById(String name, Boolean isWX, int id) {
+        Log.d(TAG, "queryById: name = " + name + " id = " + id);
+        String tableName = getTableName(name, isWX);
+        // SELECT * FROM tableName WHERE Id = id
+        open();
+        cursor = db.query(tableName,
+                null,
+                Column_ID + " = ?",
+                new String[]{String.valueOf(id)},
+                null,
+                null,
+                null);
+        if (!cursor.moveToFirst()) {
+            close();
+            return null;
+        }
+//        Log.i(TAG, "queryById: id: " + id);
+        String subName = cursor.getString(1);
+        String message = cursor.getString(2);
+        long time = cursor.getLong(3);
+        close();
+        return new Messages(id, isWX, name, subName, message, time);
+    }
+
+//    public boolean queryRecall(Messages messages) {
+//
+//    }
+
     public List<Messages> queryAllRecalls() {
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM Table_Recalled_Messages
@@ -173,8 +192,10 @@ public class Dao {
                 null,
                 null,
                 Column_ID + " DESC");
-        if (!cursor.moveToFirst())
+        if (!cursor.moveToFirst()) {
+            close();
             return null;
+        }
         do {
             int recalledID = cursor.getInt(0);
             int id = cursor.getInt(1);
@@ -238,8 +259,10 @@ public class Dao {
         // SELECT * FROM tableName WHERE Id = id
         open();
         cursor = db.rawQuery("SELECT MAX(id) FROM " + tableName, null);
-        if (!cursor.moveToFirst())
+        if (!cursor.moveToFirst()) {
+            close();
             return 0;
+        }
         int id = cursor.getInt(0);
         close();
         return id;
