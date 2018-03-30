@@ -32,6 +32,7 @@ public class QQClient extends Client {
     public QQClient(Context context) {
         super(context);
         isWX = false;
+        client = "QQ";
     }
 
 
@@ -172,6 +173,10 @@ public class QQClient extends Client {
                             isRecalledMsg = true;
                             subName = message.substring(0, indexOfRecall);
                             message = message.substring(indexOfRecall);
+                            if ("对方".equals(subName))
+                                subName = title;
+                            else if ("你".equals(subName))
+                                subName = "我";
                         }
                     }
             }
@@ -181,7 +186,7 @@ public class QQClient extends Client {
             if (messagePos < headIconPos)
                 subName = "我";
             else
-                subName = titleNode.getText().toString();
+                subName = title;
         Log.i(TAG, subName + " : " + message);
     }
 

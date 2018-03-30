@@ -16,6 +16,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
+import com.qsboy.utils.ImageHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,7 +50,12 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         Log.v(TAG, "convert: " + item.getMessage() + " id: " + item.getId());
         helper.setText(R.id.cell_name, item.getSubName());
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
-        helper.setText(R.id.cell_message_text, item.getMessage());
+        // TODO: image之后改成可以左右滑动的
+        if (item.getImages() != null && item.getImages().length() != 0) {
+            helper.setImageBitmap(R.id.cell_message_image, ImageHelper.getBitmap(item.getImages()));
+            helper.setText(R.id.cell_message_text, "");
+        } else
+            helper.setText(R.id.cell_message_text, item.getMessage());
     }
 
     private String formatTime(long time) {

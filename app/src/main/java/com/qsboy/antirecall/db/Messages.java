@@ -15,7 +15,7 @@ public class Messages {
     private String subName;
     private String message;
     private long time;
-    private String[] images;
+    private String images;
 
     public Messages() {
 
@@ -34,7 +34,7 @@ public class Messages {
         this.time = time;
     }
 
-    public Messages(int id, boolean isWX, String name, String subName, String message, long time, String[] images) {
+    public Messages(int id, boolean isWX, String name, String subName, String message, long time, String images) {
         this(id, isWX, name, subName, message, time);
         this.images = images;
     }
@@ -110,12 +110,28 @@ public class Messages {
         return this;
     }
 
-    public String[] getImages() {
+    public String getImages() {
         return images;
     }
 
     public Messages setImages(String[] images) {
-        this.images = images;
+        StringBuilder builder = new StringBuilder();
+        if (images != null && images.length != 0) {
+            for (String image : images) {
+                builder.append(image);
+                builder.append(" ");
+            }
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        this.images = builder.toString();
+        return this;
+    }
+
+    public Messages setImages(String images) {
+        if (images == null)
+            this.images = "";
+        else
+            this.images = images;
         return this;
     }
 

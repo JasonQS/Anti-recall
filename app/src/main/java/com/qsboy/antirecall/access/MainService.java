@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.qsboy.utils.NodesInfo;
+
 import java.util.List;
 
 public class MainService extends AccessibilityService {
@@ -24,8 +26,9 @@ public class MainService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        // TODO: 加一段 服务运行时间段 记录第一次成功启动服务到最后一次收到 event
         if (event.getPackageName() == null) {
-            Log.d(TAG, "onAccessibilityEvent: package subName is null, return");
+            Log.d(TAG, "onAccessibilityEvent: package name is null, return");
             return;
         }
         packageName = event.getPackageName().toString();
@@ -64,7 +67,7 @@ public class MainService extends AccessibilityService {
     private void onNotification(AccessibilityEvent event) {
         List<CharSequence> texts = event.getText();
         if (texts.isEmpty() || texts.size() == 0) {
-            GetNodes.show(root, TAG);
+            NodesInfo.show(root, TAG);
             //微信的登录通知的 text 是 null
             autoLoginWX();
             return;
@@ -93,19 +96,19 @@ public class MainService extends AccessibilityService {
 
         switch (packageName) {
             case pknTim:
-                Log.i(TAG, "\nonContentChanged: " + cs);
+                Log.d(TAG, "\nonContentChanged: " + cs);
                 new TimClient(this).onContentChanged(root);
                 break;
             case pknQQ:
-                Log.i(TAG, "\nonContentChanged: " + cs);
+                Log.d(TAG, "\nonContentChanged: " + cs);
                 new QQClient(this).onContentChanged(root);
                 break;
         }
     }
 
     private void onClick(AccessibilityEvent event) {
-        Log.i(TAG, "onClick: ");
-//        GetNodes.show(root, "d");
+        Log.i(TAG, "onClick");
+//        NodesInfo.show(root, "d");
         switch (packageName) {
             case pknTim:
                 new TimClient(this).findRecalls(root, event);
@@ -114,13 +117,13 @@ public class MainService extends AccessibilityService {
                 new QQClient(this).findRecalls(root, event);
                 break;
             case pknWX:
-                GetNodes.show(root, TAG);
+                NodesInfo.show(root, TAG);
 
         }
     }
 
     private void autoLoginWX() {
-        Log.i(TAG, "autoLoginWX: ");
+        Log.v(TAG, "autoLoginWX");
         if (root.getChildCount() != 1)
             return;
         AccessibilityNodeInfo node = root.getChild(0);

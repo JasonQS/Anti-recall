@@ -32,6 +32,7 @@ public class TimClient extends Client {
     public TimClient(Context context) {
         super(context);
         isWX = false;
+        client = "Tim";
     }
 
     /**
@@ -56,7 +57,7 @@ public class TimClient extends Client {
         //14 是没有聊过天
         //12 是发送完消息
         if (root.getChildCount() < 12) {
-            Log.d(TAG, "init: root.childCount: " + root.getChildCount());
+            Log.v(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
 
@@ -153,6 +154,7 @@ public class TimClient extends Client {
                                 AccessibilityNodeInfo child2 = child.getChild(1);
                                 if (child1.getClassName() == "android.widget.TextView") {
                                     if (child2.getClassName() == "android.widget.TextView") {
+                                        // TODO: 这里去掉回复 只留下内容 和通知栏一样
                                         message = "回复 " + child1.getText() + ": \n" + child2.getText();
                                     }
                                 }
@@ -186,6 +188,10 @@ public class TimClient extends Client {
                             isRecalledMsg = true;
                             subName = message.substring(0, indexOfRecall);
                             message = message.substring(indexOfRecall);
+                            if ("对方".equals(subName))
+                                subName = title;
+                            else if ("你".equals(subName))
+                                subName = "我";
                         }
                     }
 
@@ -198,6 +204,7 @@ public class TimClient extends Client {
             else {
                 subName = title;
             }
+
 
         Log.i(TAG, "parser: " + title + " - " + subName + " : " + message);
     }

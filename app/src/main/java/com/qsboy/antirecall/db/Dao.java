@@ -12,11 +12,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.qsboy.utils.XBitmap;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.namespace.NamespaceContext;
 
 import static com.qsboy.antirecall.db.DBHelper.*;
 
@@ -48,10 +48,10 @@ public class Dao {
     }
 
     private void close() {
-        if (cursor != null)
-            cursor.close();
-        if (db != null)
-            db.close();
+//        if (cursor != null)
+//            cursor.close();
+//        if (db != null)
+//            db.close();
     }
 
     /**
@@ -72,7 +72,7 @@ public class Dao {
                 Column_Message + " TEXT NOT NULL, " +
                 Column_Time + " REAL NOT NULL)";
 
-        open();
+//        open();
         if (subName == null || subName.equals(""))
             subName = name;
         db.beginTransaction();
@@ -86,24 +86,21 @@ public class Dao {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
-            close();
+//            close();
         }
     }
 
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
-        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.isWX(), messages.getMessage(), messages.getTime(),
+        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getMessage(), messages.isWX(), messages.getTime(), messages.getImages(),
                 prevSubName, prevMessage, nextSubName, nextMessage);
 
     }
 
-    public void addRecall(int originalID, String name, String subName, Boolean isWX, String message, long time,
+    public void addRecall(int originalID, String name, String subName, String message, Boolean isWX, long time, String images,
                           String prevSubName, String prevMessage, String nextSubName, String nextMessage) {
         Log.d(TAG, "addRecall() called with: originalID = [" + originalID + "], name = [" + name + "], subName = [" + subName + "], isWX = [" + isWX + "], message = [" + message + "], time = [" + time + "], prevSubName = [" + prevSubName + "], prevMessage = [" + prevMessage + "], nextSubName = [" + nextSubName + "], nextMessage = [" + nextMessage + "]");
-        open();
-        if (message.equals("[图片]")) {
-//            XBitmap.searchImageFile()
-            // TODO: 27/03/2018
-        }
+//        open();
+
         db.beginTransaction();
         try {
             ContentValues values = new ContentValues();
@@ -112,6 +109,7 @@ public class Dao {
             values.put(Column_SubName, subName);
             values.put(Column_Message, message);
             values.put(Column_Time, time);
+            values.put(Column_Image, images);
             values.put(Column_Prev_SubName, prevSubName);
             values.put(Column_Prev_Message, prevMessage);
             values.put(Column_Next_SubName, nextSubName);
@@ -125,19 +123,18 @@ public class Dao {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
-            close();
+//            close();
         }
     }
 
     // TODO: 查找方式待重写
     // TODO: 如果只要id的话只查询id
-    public int queryByMessage(String name, Boolean isWX, String subName, String message) {
+    public ArrayList<Integer> queryByMessage(String name, Boolean isWX, String subName, String message) {
         Log.d(TAG, "queryByMessage: name = " + name + " subName = " + subName + " message = " + message);
-        String tableName = getTableName(name, isWX);
-        // SELECT * FROM tableName WHERE Message = message
-        open();
+        ArrayList<Integer> list = new ArrayList<>();
+//        open();
         cursor = db.query(
-                tableName,
+                getTableName(name, isWX),
                 new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",
                 new String[]{message, subName},
@@ -145,19 +142,21 @@ public class Dao {
                 null,
                 Column_ID + " desc");
         if (!cursor.moveToFirst()) {
-            close();
-            return 0;
+//            close();
+            return list;
         }
-        int id = cursor.getInt(0);
-        close();
-        return id;
+        do {
+            list.add(cursor.getInt(0));
+        }while (cursor.moveToNext());
+//        close();
+        return list;
     }
 
     public Messages queryById(String name, Boolean isWX, int id) {
         Log.d(TAG, "queryById: name = " + name + " id = " + id);
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
-        open();
+//        open();
         cursor = db.query(tableName,
                 null,
                 Column_ID + " = ?",
@@ -166,25 +165,21 @@ public class Dao {
                 null,
                 null);
         if (!cursor.moveToFirst()) {
-            close();
+//            close();
             return null;
         }
 //        Log.i(TAG, "queryById: id: " + id);
         String subName = cursor.getString(1);
         String message = cursor.getString(2);
         long time = cursor.getLong(3);
-        close();
+//        close();
         return new Messages(id, isWX, name, subName, message, time);
     }
-
-//    public boolean queryRecall(Messages messages) {
-//
-//    }
 
     public List<Messages> queryAllRecalls() {
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM Table_Recalled_Messages
-        open();
+//        open();
         cursor = db.query(Table_Recalled_Messages,
                 null,
                 null,
@@ -193,7 +188,7 @@ public class Dao {
                 null,
                 Column_ID + " DESC");
         if (!cursor.moveToFirst()) {
-            close();
+//            close();
             return null;
         }
         do {
@@ -207,14 +202,72 @@ public class Dao {
             String image = cursor.getString(7);
             Messages messages = new Messages(id, isWX, name, subName, message, time);
             messages.setRecalledID(recalledID);
-            if (image != null) {
-                String[] images = image.split(" ");
-                messages.setImages(images);
-            }
+            messages.setImages(image);
             list.add(messages);
         } while (cursor.moveToNext());
-        close();
+//        close();
         return list;
+    }
+
+    public boolean existMessage(String title, boolean isWX, String message, String prevMessage, String subName, String prevSubName) {
+//        open();
+        if (prevMessage == null)
+            return false;
+        int idMsg;
+        int idPreMsg;
+        // TODO: 29/03/2018 加 sub name
+        cursor = db.query(getTableName(title, isWX),
+                new String[]{Column_ID},
+                Column_Message + " = ? and " + Column_SubName + " = ?",
+                new String[]{message, subName},
+                null, null,
+                Column_ID + " DESC");
+        if (!cursor.moveToFirst()) {
+//            close();
+            Log.i(TAG, "existMessage: id msg return");
+            return false;
+        }
+        idMsg = cursor.getInt(0);
+        cursor = db.query(getTableName(title, isWX),
+                new String[]{Column_ID},
+                Column_Message + " = ? and " + Column_SubName + " = ?",
+                new String[]{prevMessage, prevSubName},
+                null, null,
+                Column_ID + " DESC");
+
+        if (!cursor.moveToFirst()) {
+//            close();
+            Log.i(TAG, "existMessage: id pre msg return");
+            return false;
+        }
+        idPreMsg = cursor.getInt(0);
+//        close();
+        return idMsg - idPreMsg == 1;
+    }
+
+    public boolean existRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
+//        open();
+        int i;
+        if (messages.isWX()) i = 1;
+        else i = 0;
+        cursor = db.query(Table_Recalled_Messages,
+                null,
+                Column_Original_ID + " = ? and " +
+                        Column_Name + " = ? and " +
+                        Column_SubName + " = ? and " +
+                        Column_Message + " = ? and " +
+                        Column_IsWX + " = ? and " +
+                        Column_Time + " = ? and " +
+                        Column_Prev_SubName + " = ? and " +
+                        Column_Prev_Message + " = ? and " +
+                        Column_Next_SubName + " = ? and " +
+                        Column_Next_Message + " = ?",
+                new String[]{String.valueOf(messages.getId()), messages.getName(), messages.getSubName(), messages.getMessage(), String.valueOf(i), String.valueOf(messages.getTime()),
+                        prevSubName, prevMessage, nextSubName, nextMessage},
+                null, null, null);
+        boolean b = cursor.moveToFirst();
+//        close();
+        return b;
     }
 
 //    public Messages queryRecallsMyId(String name, Boolean isWX, int id) {
@@ -225,22 +278,22 @@ public class Dao {
         String tableName = getTableName(name, isWX);
         String selection = Column_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-        open();
+//        open();
         db.delete(tableName, selection, selectionArgs);
-        close();
+//        close();
     }
 
     public void deleteRecall(int id) {
         String selection = Column_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-        open();
+//        open();
         db.delete(Table_Recalled_Messages, selection, selectionArgs);
-        close();
+//        close();
     }
 
     public void deleteAll() {
         String tableName = getTableName("Jason", false);
-        open();
+//        open();
         try {
             int delete1 = db.delete(Table_Recalled_Messages, null, null);
             int delete2 = db.delete("sqlite_sequence", null, null);
@@ -251,20 +304,20 @@ public class Dao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        close();
+//        close();
     }
 
     public int getMaxID(String name, Boolean isWX) {
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
-        open();
+//        open();
         cursor = db.rawQuery("SELECT MAX(id) FROM " + tableName, null);
         if (!cursor.moveToFirst()) {
-            close();
+//            close();
             return 0;
         }
         int id = cursor.getInt(0);
-        close();
+//        close();
         return id;
     }
 
@@ -277,7 +330,7 @@ public class Dao {
 //            String table = cursor.getString(0);
 //            list.add(table);
 //        } while (cursor.moveToNext());
-//        close();
+////        close();
 //        return list;
 //    }
 

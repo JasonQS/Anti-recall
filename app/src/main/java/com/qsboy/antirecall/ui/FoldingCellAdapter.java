@@ -32,8 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.crypto.AEADBadTagException;
-
 import static java.util.Calendar.*;
 
 public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
@@ -49,7 +47,6 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
     static DividerItemDecoration decor;
     long down = 0;
-    boolean waiting;
 
     public FoldingCellAdapter(@Nullable List<Messages> data, Context context) {
         super(R.layout.cell, data);
@@ -142,8 +139,13 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
                 Log.i(TAG, "onItemSwiped: pos: " + pos);
+                List<Messages> data = adapter.getData();
+                if (data.size() <= pos){
+                    Log.i(TAG, "onItemSwiped: size is too small");
+                    return;
+                }
                 Dao dao = Dao.getInstance(context);
-                Messages msg = adapter.getData().get(pos);
+                Messages msg = data.get(pos);
                 dao.deleteMessage(msg.getName(), msg.isWX(), msg.getId());
             }
 

@@ -4,15 +4,16 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.access;
+package com.qsboy.utils;
 
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-public class GetNodes {
+public class NodesInfo {
 
+    // TODO: 自动遍历出最深的点
     private static int padding = 10;
 
     static String border = getBorder();
@@ -94,7 +95,7 @@ public class GetNodes {
     }
 
     private static void log(String msg) {
-        Log.v("GetNodes", msg);
+        Log.v("NodesInfo", msg);
     }
 
     private static void log(String level, String TAG, String msg) {

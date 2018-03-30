@@ -19,7 +19,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import static com.qsboy.utils.XBitmap.getLocalBitmap;
+import static com.qsboy.utils.ImageHelper.getBitmap;
 
 public class XToast {
 
@@ -28,7 +28,8 @@ public class XToast {
     private Context context;
     private WindowManager wm;
     private View view;
-    private int duration = 2500;
+    // TODO: 持续时间设置
+    private int duration = 3000;
     private int y = 100;
     private static int offsetY = 0;
     private Handler handler;
@@ -61,10 +62,11 @@ public class XToast {
         View view = LayoutInflater.from(context).inflate(R.layout.toast, null);
         ImageView iv = view.findViewById(R.id.toast_iv);
         TextView tv = view.findViewById(R.id.toast_tv);
-        if (text.startsWith("#image")) {
+        int i = text.indexOf("[图片]");
+        if (i > 0) {
             Log.w(TAG, "text : " + text);
-            String imageTime = text.substring(6, 19);
-            Bitmap bitmap = getLocalBitmap(imageTime, context);
+            String imageName = text.substring(i + 4);
+            Bitmap bitmap = getBitmap(imageName);
             iv.setImageBitmap(bitmap);
             iv.setVisibility(View.VISIBLE);
             Log.w(TAG, "显示的是图片");

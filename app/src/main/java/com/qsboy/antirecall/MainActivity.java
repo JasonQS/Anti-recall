@@ -28,7 +28,7 @@ import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.ui.FoldingCellAdapter;
 import com.qsboy.utils.CheckAuthority;
-import com.qsboy.utils.XLogcat;
+import com.qsboy.utils.LogcatHelper;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -46,19 +46,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        XLogcat.getInstance().start();
+        LogcatHelper.getInstance().start();
         Date in = new Date();
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectLeakedSqlLiteObjects()
-                .detectLeakedClosableObjects()
-                .penaltyLog()
-                .penaltyDeath()
-                .build());
+//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//                .detectLeakedSqlLiteObjects()
+//                .detectLeakedClosableObjects()
+//                .penaltyLog()
+//                .penaltyDeath()
+//                .build());
 
 
 //        BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -116,10 +116,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.i(TAG, "onResume");
         if (!new CheckAuthority(this).checkAlertWindowPermission()) {
             Log.i(TAG, "authorized: show warning");
             Toast.makeText(this, "请授予悬浮窗权限\n为了能正常显示撤回的消息 谢谢", Toast.LENGTH_LONG).show();
         }
+        List<Messages> messages = adapter.prepareData();
+        if (messages != null && messages.size() != 0)
+            if (adapter.getData().size() != messages.size()) {
+                adapter.getData().clear();
+                adapter.addData(messages);
+            }
+        adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
         super.onResume();
     }
@@ -180,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 calendar.add(Calendar.MINUTE, 3);
                 calendar.add(Calendar.SECOND, 3);
             }
-            dao.addRecall(i, "Jason", "qs", false, String.valueOf(i - 1), calendar.getTime().getTime(), null, null, null, null);
+            dao.addRecall(i, "Jason", "qs", String.valueOf(i - 1), false, calendar.getTime().getTime(), null, null, null, null, null);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
         Date out = new Date();

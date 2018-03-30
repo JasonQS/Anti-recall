@@ -29,24 +29,28 @@
         android:textSize="@dimen/text_size_name" />
 
     <!--message-->
-    <TextView
-        android:id="@+id/cell_message_text"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="5"
-        android:gravity="center_vertical"
-        android:minHeight="@dimen/height_content_fold"
-        android:paddingEnd="@dimen/margin_half"
-        android:paddingStart="@dimen/margin_half"
-        android:text="@string/message"
-        android:textColor="@color/text_color_message"
-        android:textSize="@dimen/text_size_message" />
+        android:padding="@dimen/margin_half">
 
-    <ImageView
-        android:id="@+id/cell_message_image"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:minHeight="@dimen/height_content_fold" />
+        <TextView
+            android:id="@+id/cell_message_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/height_content_fold"
+            android:text="@string/message"
+            android:textColor="@color/text_color_message"
+            android:textSize="@dimen/text_size_message" />
+
+        <ImageView
+            android:id="@+id/cell_message_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="@dimen/height_content_fold" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/cell_time"

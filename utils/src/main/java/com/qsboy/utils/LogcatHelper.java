@@ -19,9 +19,9 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class XLogcat {
+public class LogcatHelper {
 
-    private static XLogcat INSTANCE = null;
+    private static LogcatHelper INSTANCE = null;
     private static String PATH_LOGCAT;
     private LogDumper logDumper = null;
     private int pid;
@@ -42,14 +42,14 @@ public class XLogcat {
 
     }
 
-    public static XLogcat getInstance() {
+    public static LogcatHelper getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new XLogcat();
+            INSTANCE = new LogcatHelper();
         }
         return INSTANCE;
     }
 
-    private XLogcat() {
+    private LogcatHelper() {
         init();
         pid = android.os.Process.myPid();
     }
