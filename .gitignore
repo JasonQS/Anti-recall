@@ -7,8 +7,8 @@ log_wx
 *.class
 
 # Package Files #
-# *.apk
-# *.ap_
+*.apk
+*.ap_
 
 # IDEA Project files #
 *.iws
