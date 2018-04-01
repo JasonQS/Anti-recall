@@ -101,8 +101,6 @@ public abstract class Client {
             }
 
             // TODO: 如果前后都没找到 就输出最后一个subName的消息
-            // TODO: 查找到的要和subName做比较 如果不对要继续找
-            // TODO: 前后确认
 
             Messages messages;
             ArrayList<Integer> prevList;
@@ -303,10 +301,11 @@ public abstract class Client {
                 return;
             }
             title = string.substring(0, i);
+            if (title.startsWith("[特别关心]"))
+                title = title.substring(title.indexOf("[特别关心]") + 6);
             message = string.substring(i + 2);
             subName = title;
             //是群消息
-            // TODO: 特别关心
             // TODO: 当前是 QQ 群 微信群待测试
             int j = title.indexOf('(');
             if (j > 0 && title.charAt(i - 1) == ')') {
@@ -324,24 +323,23 @@ public abstract class Client {
      */
     private void onOtherMsg() {
         String string = otherMsgNode.getText().toString();
+        Log.i(TAG, "onOtherMsg: " + string);
         int i = string.indexOf(":");
-        int j = string.lastIndexOf("-");
         //如果在联系人列表里出现过的,那么就是在其他人的聊天界面
         message = string.substring(i + 1);
         //包含"-" 可能是群
-        if (j > 0) {
+        for (int k = 0, j = string.indexOf("-", k); j > 0; k++) {
+            if (i <= j)
+                break;
             title = string.substring(0, j);
             subName = string.substring(j + 1, i);
+            if (!dao.existTable(title, isWX))
+                continue;
             addMsg(false);
-            // TODO 也可能不是群
-//            if (tables.contains(DBHelper.Table_Prefix_QQ_And_Tim + string.substring(0, i))) {
-//                addMsg(false);
-//                return;
-//            }
-        } else {
-            title = string.substring(0, i);
-            addMsg(false);
+            return;
         }
+        title = string.substring(0, i);
+        addMsg(false);
     }
 
     public void addMsg(boolean force) {

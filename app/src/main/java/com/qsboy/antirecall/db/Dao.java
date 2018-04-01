@@ -33,7 +33,6 @@ public class Dao {
     private Dao(Context context) {
         dbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
         db = dbHelper.getWritableDatabase();
-        // TODO: 获取db对象方式待优化 可以多次读完再一起close
     }
 
     public static Dao getInstance(Context context) {
@@ -147,7 +146,7 @@ public class Dao {
         }
         do {
             list.add(cursor.getInt(0));
-        }while (cursor.moveToNext());
+        } while (cursor.moveToNext());
 //        close();
         return list;
     }
@@ -209,13 +208,17 @@ public class Dao {
         return list;
     }
 
+    public boolean existTable(String title, boolean isWX) {
+        cursor = db.rawQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = ?", new String[]{getTableName(title,isWX)});
+        return cursor.getInt(0) != 0;
+    }
+
     public boolean existMessage(String title, boolean isWX, String message, String prevMessage, String subName, String prevSubName) {
 //        open();
         if (prevMessage == null)
             return false;
         int idMsg;
         int idPreMsg;
-        // TODO: 29/03/2018 加 sub name
         cursor = db.query(getTableName(title, isWX),
                 new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",

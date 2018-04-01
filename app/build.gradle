@@ -34,7 +34,7 @@ android {
 dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation 'com.ramotion.foldingcell:folding-cell:1.2.1'
-//    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     //    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation project(':utils')
     implementation fileTree(include: ['*.jar'], dir: 'libs')

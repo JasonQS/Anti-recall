@@ -95,7 +95,7 @@ public class LogcatHelper {
              * 显示当前mPID程序的 E和W等级的日志.
              *
              */
-            cmd = "logcat *:e *:v | grep \"(" + this.pid + ")\"";
+            cmd = "logcat *:e *:d | grep \"(" + this.pid + ")\"";
 //            cmd = "logcat -s";
 
         }

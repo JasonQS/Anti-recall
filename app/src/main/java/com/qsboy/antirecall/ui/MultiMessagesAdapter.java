@@ -54,8 +54,10 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         if (item.getImages() != null && item.getImages().length() != 0) {
             helper.setImageBitmap(R.id.cell_message_image, ImageHelper.getBitmap(item.getImages()));
             helper.setText(R.id.cell_message_text, "");
-        } else
+        } else {
+            helper.setImageBitmap(R.id.cell_message_image, null);
             helper.setText(R.id.cell_message_text, item.getMessage());
+        }
     }
 
     private String formatTime(long time) {

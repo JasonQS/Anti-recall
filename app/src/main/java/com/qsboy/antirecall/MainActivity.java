@@ -6,6 +6,7 @@
 
 package com.qsboy.antirecall;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.ui.FoldingCellAdapter;
 import com.qsboy.utils.CheckAuthority;
 import com.qsboy.utils.LogcatHelper;
+import com.qsboy.utils.UpdateHelper;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         // 开启滑动删除
         adapter.enableSwipeItem();
         adapter.setOnItemSwipeListener(onItemSwipeListener);
+
 
         Date out = new Date();
         Log.d(TAG, "onCreate: time: " + (out.getTime() - in.getTime()));
@@ -174,6 +177,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    private void checkUpdate() {
+        //wifi环境下检查更新
+        UpdateHelper helper = new UpdateHelper(this, Activity.class);
+        if (helper.isWifi())
+            helper.checkUpdate();
+    }
 
     // TODO: for test
     public void prepareDataForTest() {

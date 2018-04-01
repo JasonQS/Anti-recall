@@ -72,7 +72,7 @@ public class MainService extends AccessibilityService {
             autoLoginWX();
             return;
         }
-        Log.i(TAG, "onNotification: " + texts);
+        Log.i(TAG, "onNotification: " + packageName + " | " + texts);
         switch (packageName) {
             case pknTim:
 //                new TimClient(this).onContentChanged(root);
