@@ -51,6 +51,7 @@ public class UpdateHelper {
     private File apkFile;
     boolean needUpdate = true;
 
+    // TODO: 02/04/2018
     public UpdateHelper(Context context, Class<Activity> mainActivity) {
 
         this.context = context;

@@ -156,7 +156,7 @@ public class QQClient extends Client {
                         break;
                         case "android.widget.TextView": {
                             message = child.getText().toString();
-                            Log.d(TAG, "content_layout: 普通文本");
+                            Log.v(TAG, "content_layout: 普通文本");
                         }
                         break;
                     }
