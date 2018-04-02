@@ -152,16 +152,16 @@ public class TimClient extends Client {
                             if (child.getChildCount() == 2) {
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
-                                if (child1.getClassName() == "android.widget.TextView") {
-                                    if (child2.getClassName() == "android.widget.TextView") {
+                                if ("android.widget.TextView".equals(child1.getClassName())) {
+                                    if ("android.widget.TextView".equals(child2.getClassName())) {
                                         // TODO: 这里去掉回复 只留下内容 和通知栏一样
-                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
+//                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
+                                        message = child2.getText().toString();
                                     }
                                 }
                             }
-                            groupNode = child;
                             // TODO: 组合消息
-                            Log.d(TAG, "content_layout: 组合消息");
+                            Log.d(TAG, "content_layout: 回复消息");
                         }
                         break;
                         case "android.widget.TextView": {

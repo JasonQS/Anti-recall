@@ -31,7 +31,6 @@ public abstract class Client {
 
     AccessibilityNodeInfo titleNode;
     AccessibilityNodeInfo chatGroupViewNode;
-    AccessibilityNodeInfo groupNode;
     AccessibilityNodeInfo redPegNode;
     AccessibilityNodeInfo otherMsgNode;
     AccessibilityNodeInfo inputNode;

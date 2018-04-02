@@ -97,6 +97,7 @@ public class MainService extends AccessibilityService {
         switch (packageName) {
             case pknTim:
                 Log.d(TAG, "\nonContentChanged: " + cs);
+                // TODO: 01/04/2018 当 cs = "" 时似乎会 crash
                 new TimClient(this).onContentChanged(root);
                 break;
             case pknQQ:

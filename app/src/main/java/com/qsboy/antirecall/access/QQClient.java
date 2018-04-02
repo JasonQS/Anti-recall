@@ -144,14 +144,14 @@ public class QQClient extends Client {
                                 // TODO: 组合消息
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
-                                if (child1.getClassName() == "android.widget.TextView") {
-                                    if (child2.getClassName() == "android.widget.TextView") {
-                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
+                                if ("android.widget.RelativeLayout".equals(child1.getClassName())) {
+                                    if ("android.widget.TextView".equals(child2.getClassName())) {
+//                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
+                                        message = child2.getText().toString();
                                     }
                                 }
                             }
-                            groupNode = child;
-                            Log.d(TAG, "content_layout: 组合消息");
+                            Log.d(TAG, "content_layout: 回复消息");
                         }
                         break;
                         case "android.widget.TextView": {

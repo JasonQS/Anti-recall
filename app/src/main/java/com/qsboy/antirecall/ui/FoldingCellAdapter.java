@@ -40,6 +40,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
 
     Context context;
     Dao dao;
+    Messages data;
     Calendar now = Calendar.getInstance();
     Calendar calendar = Calendar.getInstance();
 
@@ -68,7 +69,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
 
-        final int[] top = {item.getId(), 1};
+        final int[] top = {item.getId()};
         final int[] bot = {item.getId(), 1};
         int max = dao.getMaxID(item.getName(), item.isWX());
         adapter.addData(item);
@@ -76,26 +77,17 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         adapter.setUpFetchEnable(true);
         adapter.setPreLoadNumber(4);
         adapter.setEnableLoadMore(true);
-        //刚载入时会同时出发多次 load more 第二位是锁
         adapter.setUpFetchListener(() -> recyclerView.post(() -> {
             Log.v(TAG, "convert: UpFetch");
-            if (top[1] == 0)
-                try {
-                    Log.i(TAG, "convert: up fetch wait");
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             if (top[0] <= 1) {
                 adapter.setUpFetchEnable(false);
                 return;
             }
-            top[1] = 0;
-            Messages data = dao.queryById(item.getName(), item.isWX(), --top[0]);
-            if (data != null)
-                adapter.addData(0, data);
-            top[1] = 1;
+            while ((data = dao.queryById(item.getName(), item.isWX(), --top[0])) == null) ;
+            adapter.addData(0, data);
+            adapter.setUpFetching(false);
         }));
+        //刚载入时会同时出发多次 load more 第二位是锁
         adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
             Log.v(TAG, "convert: OnLoadMore");
             if (bot[1] == 0)
@@ -110,12 +102,10 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
                 return;
             }
             bot[1] = 0;
-            Messages data = dao.queryById(item.getName(), item.isWX(), ++bot[0]);
-            if (data != null) {
-                adapter.addData(data);
-            }
+            while ((data = dao.queryById(item.getName(), item.isWX(), ++bot[0])) == null) ;
+            adapter.addData(data);
             adapter.loadMoreComplete();
-            top[1] = 1;
+            bot[1] = 1;
         }), recyclerView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -140,7 +130,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
                 Log.i(TAG, "onItemSwiped: pos: " + pos);
                 List<Messages> data = adapter.getData();
-                if (data.size() <= pos){
+                if (data.size() <= pos) {
                     Log.i(TAG, "onItemSwiped: size is too small");
                     return;
                 }

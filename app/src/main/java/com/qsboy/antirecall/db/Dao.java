@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.namespace.NamespaceContext;
-
 import static com.qsboy.antirecall.db.DBHelper.*;
 
 //@SuppressWarnings({"unused"})
@@ -71,22 +69,14 @@ public class Dao {
                 Column_Message + " TEXT NOT NULL, " +
                 Column_Time + " REAL NOT NULL)";
 
-//        open();
         if (subName == null || subName.equals(""))
             subName = name;
-        db.beginTransaction();
-        try {
-            db.execSQL(sqlCreateTable);
-            ContentValues values = new ContentValues();
-            values.put(Column_SubName, subName);
-            values.put(Column_Message, message);
-            values.put(Column_Time, time);
-            db.insert(tableName, null, values);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-//            close();
-        }
+        db.execSQL(sqlCreateTable);
+        ContentValues values = new ContentValues();
+        values.put(Column_SubName, subName);
+        values.put(Column_Message, message);
+        values.put(Column_Time, time);
+        db.insert(tableName, null, values);
     }
 
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
@@ -98,32 +88,24 @@ public class Dao {
     public void addRecall(int originalID, String name, String subName, String message, Boolean isWX, long time, String images,
                           String prevSubName, String prevMessage, String nextSubName, String nextMessage) {
         Log.d(TAG, "addRecall() called with: originalID = [" + originalID + "], name = [" + name + "], subName = [" + subName + "], isWX = [" + isWX + "], message = [" + message + "], time = [" + time + "], prevSubName = [" + prevSubName + "], prevMessage = [" + prevMessage + "], nextSubName = [" + nextSubName + "], nextMessage = [" + nextMessage + "]");
-//        open();
 
-        db.beginTransaction();
-        try {
-            ContentValues values = new ContentValues();
-            values.put(Column_Original_ID, originalID);
-            values.put(Column_Name, name);
-            values.put(Column_SubName, subName);
-            values.put(Column_Message, message);
-            values.put(Column_Time, time);
-            values.put(Column_Image, images);
-            values.put(Column_Prev_SubName, prevSubName);
-            values.put(Column_Prev_Message, prevMessage);
-            values.put(Column_Next_SubName, nextSubName);
-            values.put(Column_Next_Message, nextMessage);
-            if (isWX)
-                values.put(Column_IsWX, 1);
-            else
-                values.put(Column_IsWX, 0);
-            // TODO: 把查找到的图片也加进去 list用空格分割
-            db.insert(Table_Recalled_Messages, null, values);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-//            close();
-        }
+        ContentValues values = new ContentValues();
+        values.put(Column_Original_ID, originalID);
+        values.put(Column_Name, name);
+        values.put(Column_SubName, subName);
+        values.put(Column_Message, message);
+        values.put(Column_Time, time);
+        values.put(Column_Image, images);
+        values.put(Column_Prev_SubName, prevSubName);
+        values.put(Column_Prev_Message, prevMessage);
+        values.put(Column_Next_SubName, nextSubName);
+        values.put(Column_Next_Message, nextMessage);
+        if (isWX)
+            values.put(Column_IsWX, 1);
+        else
+            values.put(Column_IsWX, 0);
+        // TODO: 把查找到的图片也加进去 list用空格分割
+        db.insert(Table_Recalled_Messages, null, values);
     }
 
     // TODO: 查找方式待重写
@@ -131,7 +113,6 @@ public class Dao {
     public ArrayList<Integer> queryByMessage(String name, Boolean isWX, String subName, String message) {
         Log.d(TAG, "queryByMessage: name = " + name + " subName = " + subName + " message = " + message);
         ArrayList<Integer> list = new ArrayList<>();
-//        open();
         cursor = db.query(
                 getTableName(name, isWX),
                 new String[]{Column_ID},
@@ -147,7 +128,6 @@ public class Dao {
         do {
             list.add(cursor.getInt(0));
         } while (cursor.moveToNext());
-//        close();
         return list;
     }
 
@@ -155,7 +135,6 @@ public class Dao {
         Log.d(TAG, "queryById: name = " + name + " id = " + id);
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
-//        open();
         cursor = db.query(tableName,
                 null,
                 Column_ID + " = ?",
@@ -171,14 +150,12 @@ public class Dao {
         String subName = cursor.getString(1);
         String message = cursor.getString(2);
         long time = cursor.getLong(3);
-//        close();
         return new Messages(id, isWX, name, subName, message, time);
     }
 
     public List<Messages> queryAllRecalls() {
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM Table_Recalled_Messages
-//        open();
         cursor = db.query(Table_Recalled_Messages,
                 null,
                 null,
@@ -204,18 +181,22 @@ public class Dao {
             messages.setImages(image);
             list.add(messages);
         } while (cursor.moveToNext());
-//        close();
         return list;
     }
 
     public boolean existTable(String title, boolean isWX) {
-        cursor = db.rawQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = ?", new String[]{getTableName(title,isWX)});
-        return cursor.getInt(0) != 0;
+        cursor = db.query(getTableName(title, isWX),
+                new String[]{Column_ID},
+                null,
+                null,
+                null,
+                null,
+                null);
+        return cursor.moveToFirst();
     }
 
     public boolean existMessage(String title, boolean isWX, String message, String prevMessage, String subName, String prevSubName) {
-//        open();
-        if (prevMessage == null)
+        if (prevMessage == null || prevSubName == null)
             return false;
         int idMsg;
         int idPreMsg;
@@ -244,17 +225,23 @@ public class Dao {
             return false;
         }
         idPreMsg = cursor.getInt(0);
-//        close();
         return idMsg - idPreMsg == 1;
     }
 
-    public boolean existRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
-//        open();
+    public boolean existRecall(Messages messages, String prevSubName, String prevMessage, String nextSubName, String nextMessage) {
         int i;
         if (messages.isWX()) i = 1;
         else i = 0;
+        if (prevSubName == null)
+            prevSubName = "";
+        if (prevMessage == null)
+            prevMessage = "";
+        if (nextSubName == null)
+            nextSubName = "";
+        if (nextMessage == null)
+            nextMessage = "";
         cursor = db.query(Table_Recalled_Messages,
-                null,
+                new String[]{Column_ID},
                 Column_Original_ID + " = ? and " +
                         Column_Name + " = ? and " +
                         Column_SubName + " = ? and " +
@@ -265,38 +252,36 @@ public class Dao {
                         Column_Prev_Message + " = ? and " +
                         Column_Next_SubName + " = ? and " +
                         Column_Next_Message + " = ?",
-                new String[]{String.valueOf(messages.getId()), messages.getName(), messages.getSubName(), messages.getMessage(), String.valueOf(i), String.valueOf(messages.getTime()),
-                        prevSubName, prevMessage, nextSubName, nextMessage},
+                new String[]{String.valueOf(
+                        messages.getId()),
+                        messages.getName(),
+                        messages.getSubName(),
+                        messages.getMessage(),
+                        String.valueOf(i),
+                        String.valueOf(messages.getTime()),
+                        prevSubName,
+                        prevMessage,
+                        nextSubName,
+                        nextMessage},
                 null, null, null);
-        boolean b = cursor.moveToFirst();
-//        close();
-        return b;
+        return cursor.moveToFirst();
     }
-
-//    public Messages queryRecallsMyId(String name, Boolean isWX, int id) {
-//
-//    }
 
     public void deleteMessage(String name, Boolean isWX, int id) {
         String tableName = getTableName(name, isWX);
         String selection = Column_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-//        open();
         db.delete(tableName, selection, selectionArgs);
-//        close();
     }
 
     public void deleteRecall(int id) {
         String selection = Column_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-//        open();
         db.delete(Table_Recalled_Messages, selection, selectionArgs);
-//        close();
     }
 
     public void deleteAll() {
         String tableName = getTableName("Jason", false);
-//        open();
         try {
             int delete1 = db.delete(Table_Recalled_Messages, null, null);
             int delete2 = db.delete("sqlite_sequence", null, null);
@@ -307,21 +292,17 @@ public class Dao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        close();
     }
 
     public int getMaxID(String name, Boolean isWX) {
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
-//        open();
         cursor = db.rawQuery("SELECT MAX(id) FROM " + tableName, null);
         if (!cursor.moveToFirst()) {
 //            close();
             return 0;
         }
-        int id = cursor.getInt(0);
-//        close();
-        return id;
+        return cursor.getInt(0);
     }
 
 //    public List<String> getTables() {
@@ -333,7 +314,6 @@ public class Dao {
 //            String table = cursor.getString(0);
 //            list.add(table);
 //        } while (cursor.moveToNext());
-////        close();
 //        return list;
 //    }
 
