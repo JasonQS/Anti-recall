@@ -100,8 +100,7 @@ public abstract class Client {
             }
 
             // TODO: 如果前后都没找到 就输出最后一个subName的消息
-
-            Messages messages;
+            // TODO: 如果上一条是图片 name 根据上上条找
             ArrayList<Integer> prevList;
             ArrayList<Integer> nextList;
             // 有上下文
@@ -110,13 +109,22 @@ public abstract class Client {
                 nextList = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
                 Log.d(TAG, "findRecalls: prevList: " + prevList);
                 Log.d(TAG, "findRecalls: nextList: " + nextList);
+                //撤回的时候没有 next 找的时候有
+                if (nextList.size() == 0) {
+                    for (Integer p : prevList) {
+                        prevPos = p;
+                        //找到最近的
+                        if (!findRecallByPrev(true))
+                            return;
+                    }
+                }
                 for (Integer p : prevList) {
                     for (Integer n : nextList) {
                         if (n - p == 2) {
                             prevPos = p;
                             nextPos = n;
                             Log.d(TAG, "findRecalls: prevPos: " + prevPos);
-                            findRecallByPrev();
+                            findRecallByPrev(false);
                             return;
                         }
                     }
@@ -128,7 +136,7 @@ public abstract class Client {
                     prevList = dao.queryByMessage(title, isWX, prevSubName, prevMessage);
                     prevPos = prevList.get(0);
                     Log.d(TAG, "findRecalls: prevPos: " + prevPos);
-                    findRecallByPrev();
+                    findRecallByPrev(false);
                 } else {
                     // 有下文
                     nextList = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
@@ -138,7 +146,11 @@ public abstract class Client {
                 }
         }
 
-        private void findRecallByPrev() {
+        /**
+         * @param force 只在下一个找
+         * @return 是否要继续找
+         */
+        private boolean findRecallByPrev(boolean force) {
             Messages messages;
             int maxID = dao.getMaxID(title, isWX);
             for (int i = 0; i < unknownRecalls; i++) {
@@ -146,20 +158,25 @@ public abstract class Client {
                     prevPos++;
                     if (prevPos >= maxID) {
                         notFound();
-                        return;
+                        return false;
                     }
                     //删除了中间某条消息
                     if ((messages = dao.queryById(title, isWX, prevPos + i)) == null)
                         continue;
+                    //正常的查找 否则不看 subName
                     String sn = subNameArray.get(i);
                     Log.i(TAG, "findRecalls: sub name: " + sn);
                     // 确认是这个人撤回的
                     if (!messages.getSubName().equals(sn))
-                        continue;
+                        if (force)
+                            return true;
+                        else
+                            continue;
                     break;
                 }
                 addRecall(messages);
             }
+            return false;
         }
 
         private void findRecallByNext() {
@@ -265,13 +282,18 @@ public abstract class Client {
             return;
         }
 
-        AccessibilityNodeInfo group = chatGroupViewNode.getChild(chatGroupViewNode.getChildCount() - 2);
-        if (group == null)
-            return;
-        parser(group);
-        // 记录上一条 防止重复加
-        pMessage = message;
-        pSubName = subName;
+        int index = chatGroupViewNode.getChildCount() - 2;
+        AccessibilityNodeInfo group;
+        // 如果屏幕内有大于1条消息的话 根据上下两条消息查重
+        if (index > 0) {
+            group = chatGroupViewNode.getChild(index);
+            if (group == null)
+                return;
+            parser(group);
+            // 记录上一条 防止重复加
+            pMessage = message;
+            pSubName = subName;
+        }
 
         group = chatGroupViewNode.getChild(chatGroupViewNode.getChildCount() - 1);
         if (group == null)
@@ -324,16 +346,20 @@ public abstract class Client {
         String string = otherMsgNode.getText().toString();
         Log.i(TAG, "onOtherMsg: " + string);
         int i = string.indexOf(":");
+        int k = string.lastIndexOf("-");
         //如果在联系人列表里出现过的,那么就是在其他人的聊天界面
         message = string.substring(i + 1);
         //包含"-" 可能是群
-        for (int k = 0, j = string.indexOf("-", k); j > 0; k++) {
-            if (i <= j)
+        for (int l = 0, j = string.indexOf("-", l); ; l++) {
+            // "-"存在, l 不大于 lastIndex, - 在 : 前面
+            if (j < 0 || l > k || k > i)
                 break;
             title = string.substring(0, j);
             subName = string.substring(j + 1, i);
-            if (!dao.existTable(title, isWX))
+            if (!dao.existTable(title, isWX)) {
+                Log.i(TAG, "onOtherMsg: " + title + " " + subName);
                 continue;
+            }
             addMsg(false);
             return;
         }
@@ -343,10 +369,10 @@ public abstract class Client {
 
     public void addMsg(boolean force) {
         String temp = title + "-" + subName + ": " + message;
+        if (added.equals(temp))
+            return;
         if (!force) {
-            if (added.equals(temp))
-                return;
-            Log.d(TAG, "addRecall: message: " + message + "\t prevMessage: " + pMessage);
+            Log.d(TAG, "Add message: message: " + message + "\t prevMessage: " + pMessage);
             if (dao.existMessage(title, isWX, message, pMessage, subName, pSubName)) {
                 Log.d(TAG, "addMsg: already exits");
                 return;

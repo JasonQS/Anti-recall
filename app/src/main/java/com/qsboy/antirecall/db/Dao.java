@@ -18,7 +18,6 @@ import java.util.List;
 
 import static com.qsboy.antirecall.db.DBHelper.*;
 
-//@SuppressWarnings({"unused"})
 public class Dao {
 
     private String TAG = "Dao";
@@ -39,16 +38,14 @@ public class Dao {
         return instance;
     }
 
-    private void open() {
-        if (db != null)
-            db = dbHelper.getWritableDatabase();
-    }
+    private void createTableIfNotExists(String name, boolean isWX) {
+        String sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + getTableName(name, isWX) + " (" +
+                Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Column_SubName + " TEXT, " +
+                Column_Message + " TEXT NOT NULL, " +
+                Column_Time + " REAL NOT NULL)";
 
-    private void close() {
-//        if (cursor != null)
-//            cursor.close();
-//        if (db != null)
-//            db.close();
+        db.execSQL(sqlCreateTable);
     }
 
     /**
@@ -62,21 +59,14 @@ public class Dao {
     }
 
     public void addMessage(String name, String subName, Boolean isWX, String message, long time) {
-        String tableName = getTableName(name, isWX);
-        String sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
-                Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                Column_SubName + " TEXT, " +
-                Column_Message + " TEXT NOT NULL, " +
-                Column_Time + " REAL NOT NULL)";
-
         if (subName == null || subName.equals(""))
             subName = name;
-        db.execSQL(sqlCreateTable);
+        createTableIfNotExists(name, isWX);
         ContentValues values = new ContentValues();
         values.put(Column_SubName, subName);
         values.put(Column_Message, message);
         values.put(Column_Time, time);
-        db.insert(tableName, null, values);
+        db.insert(getTableName(name, isWX), null, values);
     }
 
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
@@ -122,7 +112,6 @@ public class Dao {
                 null,
                 Column_ID + " desc");
         if (!cursor.moveToFirst()) {
-//            close();
             return list;
         }
         do {
@@ -143,10 +132,8 @@ public class Dao {
                 null,
                 null);
         if (!cursor.moveToFirst()) {
-//            close();
             return null;
         }
-//        Log.i(TAG, "queryById: id: " + id);
         String subName = cursor.getString(1);
         String message = cursor.getString(2);
         long time = cursor.getLong(3);
@@ -164,7 +151,6 @@ public class Dao {
                 null,
                 Column_ID + " DESC");
         if (!cursor.moveToFirst()) {
-//            close();
             return null;
         }
         do {
@@ -185,33 +171,29 @@ public class Dao {
     }
 
     public boolean existTable(String title, boolean isWX) {
-        cursor = db.query(getTableName(title, isWX),
-                new String[]{Column_ID},
-                null,
-                null,
-                null,
-                null,
-                null);
-        return cursor.moveToFirst();
+        cursor = db.rawQuery("select count(*) from sqlite_master where type = 'table' and name = " + getTableName(title, isWX), null);
+        if (!cursor.moveToFirst()) return false;
+        int count = cursor.getInt(0);
+        return count > 0;
     }
 
     public boolean existMessage(String title, boolean isWX, String message, String prevMessage, String subName, String prevSubName) {
+        if (!existTable(title, isWX))
+            return false;
         if (prevMessage == null || prevSubName == null)
             return false;
-        int idMsg;
-        int idPreMsg;
         cursor = db.query(getTableName(title, isWX),
                 new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",
                 new String[]{message, subName},
                 null, null,
                 Column_ID + " DESC");
+        // 如果不存在上一条
         if (!cursor.moveToFirst()) {
-//            close();
             Log.i(TAG, "existMessage: id msg return");
             return false;
         }
-        idMsg = cursor.getInt(0);
+        int idMsg = cursor.getInt(0);
         cursor = db.query(getTableName(title, isWX),
                 new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",
@@ -220,11 +202,10 @@ public class Dao {
                 Column_ID + " DESC");
 
         if (!cursor.moveToFirst()) {
-//            close();
             Log.i(TAG, "existMessage: id pre msg return");
             return false;
         }
-        idPreMsg = cursor.getInt(0);
+        int idPreMsg = cursor.getInt(0);
         return idMsg - idPreMsg == 1;
     }
 
@@ -299,23 +280,10 @@ public class Dao {
         // SELECT * FROM tableName WHERE Id = id
         cursor = db.rawQuery("SELECT MAX(id) FROM " + tableName, null);
         if (!cursor.moveToFirst()) {
-//            close();
             return 0;
         }
         return cursor.getInt(0);
     }
-
-//    public List<String> getTables() {
-//        List<String> list = new ArrayList<>();
-//        cursor = db.rawQuery("SELECT 'name' FROM 'sqlite_master' WHERE type = 'table'", null);
-//        if (!cursor.moveToFirst())
-//            return list;
-//        do {
-//            String table = cursor.getString(0);
-//            list.add(table);
-//        } while (cursor.moveToNext());
-//        return list;
-//    }
 
     public static String getTableName(String name, Boolean isWX) {
         String tableName;

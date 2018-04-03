@@ -92,7 +92,10 @@ public class TimClient extends Client {
 
         for (int i = 4; i < 7; i++) {
             AccessibilityNodeInfo child = root.getChild(i);
-            switch (child.getViewIdResourceName()) {
+            String name = child.getViewIdResourceName();
+            if (name == null)
+                continue;
+            switch (name) {
                 case IdChatGroupView:
                     chatGroupViewNode = child;
                     break;
