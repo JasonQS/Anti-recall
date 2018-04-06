@@ -107,8 +107,8 @@ public abstract class Client {
             if (prevMessage != null && nextMessage != null) {
                 prevList = dao.queryByMessage(title, isWX, prevSubName, prevMessage);
                 nextList = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
-                Log.d(TAG, "findRecalls: prevList: " + prevList);
-                Log.d(TAG, "findRecalls: nextList: " + nextList);
+                Log.i(TAG, "findRecalls: prevList: " + prevList);
+                Log.i(TAG, "findRecalls: nextList: " + nextList);
                 //撤回的时候没有 next 找的时候有
                 if (nextList.size() == 0) {
                     for (Integer p : prevList) {
@@ -120,7 +120,7 @@ public abstract class Client {
                 }
                 for (Integer p : prevList) {
                     for (Integer n : nextList) {
-                        if (n - p == 2) {
+                        if (n - p == unknownRecalls + 1) {
                             prevPos = p;
                             nextPos = n;
                             Log.d(TAG, "findRecalls: prevPos: " + prevPos);
@@ -132,6 +132,7 @@ public abstract class Client {
                 notFound();
             } else
                 // 有上文
+                // TODO: 04/04/2018 列表循环找 到不到输出最后一条
                 if (prevMessage != null) {
                     prevList = dao.queryByMessage(title, isWX, prevSubName, prevMessage);
                     prevPos = prevList.get(0);
@@ -208,11 +209,7 @@ public abstract class Client {
             Log.i(TAG, "addRecall: " + messages.getMessage());
             if ("[图片]".equals(messages.getMessage())) {
                 messages.setImages(searchImageFile(context, messages.getTime(), client));
-                String image;
-                if (messages.getImages().contains(" "))
-                    image = messages.getImages().split("")[0];
-                else image = messages.getImages();
-                XToast.build(context, messages.getSubName() + ": [图片]" + image).show();
+                XToast.build(context, messages.getSubName() + ": [图片]" + messages.getImage()).show();
             } else {
                 XToast.build(context, messages.getSubName() + ": " + messages.getMessage()).show();
             }
@@ -273,6 +270,10 @@ public abstract class Client {
         }
     }
 
+    private class recallList extends ArrayList{
+
+    }
+
     public void onContentChanged(AccessibilityNodeInfo root) {
         if (!init(root))
             return;
@@ -282,15 +283,14 @@ public abstract class Client {
             return;
         }
 
-        int index = chatGroupViewNode.getChildCount() - 2;
         AccessibilityNodeInfo group;
+        int index = chatGroupViewNode.getChildCount() - 2;
         // 如果屏幕内有大于1条消息的话 根据上下两条消息查重
         if (index > 0) {
             group = chatGroupViewNode.getChild(index);
             if (group == null)
                 return;
             parser(group);
-            // 记录上一条 防止重复加
             pMessage = message;
             pSubName = subName;
         }
@@ -370,6 +370,9 @@ public abstract class Client {
     public void addMsg(boolean force) {
         String temp = title + "-" + subName + ": " + message;
         if (added.equals(temp))
+            return;
+        // 不添加"撤回了一条消息"
+        if (RECALL.equals(message))
             return;
         if (!force) {
             Log.d(TAG, "Add message: message: " + message + "\t prevMessage: " + pMessage);

@@ -4,19 +4,19 @@
   ~ All Rights Reserved
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@android:color/white"
     android:fitsSystemWindows="false"
-    tools:context="com.qsboy.launch.LaunchActivity">
+    android:theme="@style/LaunchTheme"
+    tools:context="com.qsboy.antirecall.LaunchActivity">
 
     <ImageView
+        android:layout_centerInParent="true"
         android:id="@+id/img_launch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:src="@drawable/start" />
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

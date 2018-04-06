@@ -108,7 +108,7 @@ public class MainService extends AccessibilityService {
     }
 
     private void onClick(AccessibilityEvent event) {
-        Log.i(TAG, "onClick");
+        Log.i(TAG, "onClick " + event.getText());
 //        NodesInfo.show(root, "d");
         switch (packageName) {
             case pknTim:
@@ -124,6 +124,7 @@ public class MainService extends AccessibilityService {
     }
 
     private void autoLoginWX() {
+        // TODO: 06/04/2018 生成标志位 在之后的10次 content change都去检查微信登录
         Log.v(TAG, "autoLoginWX");
         if (root.getChildCount() != 1)
             return;

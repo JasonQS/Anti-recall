@@ -22,6 +22,7 @@ public class XNotification extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private final String TAG = "X-Notification";
     private final String ChannelID = "qsboy";
+    private final String title = "Anti-recall";
 
     public XNotification(Context context, Class<Activity> activity) {
         this.context = context;
@@ -43,8 +44,8 @@ public class XNotification extends AppCompatActivity {
         manager.cancel(10);             //删除原先的通知
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, ChannelID)
-//                .setSmallIcon(R.mipmap.icon)
-                .setContentTitle("Message Captor")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
                 .setContentText(text)
                 .setAutoCancel(true);
         manager.notify(10, mBuilder.build());
@@ -55,15 +56,13 @@ public class XNotification extends AppCompatActivity {
 
     public void printSuccess() {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, ChannelID)
-//                .setSmallIcon(R.mipmap.icon)
-                .setContentTitle("Message Captor")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
                 .setContentText("软件已经可以使用了! excited !")
                 .setAutoCancel(true);
         manager.notify(1, mBuilder.build());
 
         Log.w(TAG, "show Success Notification");
-
-//        new XFile(context).setNotShowCheckedNotice();
 
     }
 
@@ -72,7 +71,7 @@ public class XNotification extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, ChannelID);
         builder.setAutoCancel(true);
 //        builder.setSmallIcon(R.mipmap.icon);
-        builder.setContentTitle("MessageCaptor");
+        builder.setContentTitle(title);
         builder.setContentText("软件有更新,点击安装");
         builder.setContentIntent(pendingIntent);
         context.getSystemService(Context.NOTIFICATION_SERVICE);

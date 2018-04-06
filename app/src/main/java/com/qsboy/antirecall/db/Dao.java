@@ -189,10 +189,8 @@ public class Dao {
                 null, null,
                 Column_ID + " DESC");
         // 如果不存在上一条
-        if (!cursor.moveToFirst()) {
-            Log.i(TAG, "existMessage: id msg return");
+        if (!cursor.moveToFirst())
             return false;
-        }
         int idMsg = cursor.getInt(0);
         cursor = db.query(getTableName(title, isWX),
                 new String[]{Column_ID},
@@ -201,10 +199,8 @@ public class Dao {
                 null, null,
                 Column_ID + " DESC");
 
-        if (!cursor.moveToFirst()) {
-            Log.i(TAG, "existMessage: id pre msg return");
+        if (!cursor.moveToFirst())
             return false;
-        }
         int idPreMsg = cursor.getInt(0);
         return idMsg - idPreMsg == 1;
     }

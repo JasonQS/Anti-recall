@@ -144,11 +144,11 @@ public class TimClient extends Client {
                                     redPegNode = child;
                                     message = "红包";
                                     // TODO: 红包或者是分享
-                                    Log.d(TAG, "content_layout: 红包");
+                                    Log.v(TAG, "content_layout: 红包");
                                 }
                             } else {
                                 message = "[图片]";
-                                Log.d(TAG, "content_layout: 图片");
+                                Log.v(TAG, "content_layout: 图片");
                             }
                             break;
                         case "android.widget.LinearLayout": {
@@ -164,7 +164,7 @@ public class TimClient extends Client {
                                 }
                             }
                             // TODO: 组合消息
-                            Log.d(TAG, "content_layout: 回复消息");
+                            Log.v(TAG, "content_layout: 回复消息");
                         }
                         break;
                         case "android.widget.TextView": {
@@ -209,7 +209,7 @@ public class TimClient extends Client {
             }
 
 
-        Log.i(TAG, "parser: " + title + " - " + subName + " : " + message);
+        Log.d(TAG, "parser: " + title + " - " + subName + " : " + message);
     }
 
 }

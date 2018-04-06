@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.launch;
+package com.qsboy.antirecall;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -15,11 +15,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-
-import com.qsboy.utils.ImageHelper;
 
 public class LaunchActivity extends AppCompatActivity {
 

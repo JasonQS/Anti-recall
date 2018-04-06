@@ -4,4 +4,4 @@
  * All Rights Reserved
  */
 
-include ':app', ':utils', ':launch'
+include ':app', ':utils'

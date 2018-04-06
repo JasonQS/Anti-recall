@@ -52,7 +52,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         // TODO: image之后改成可以左右滑动的
         if (item.getImages() != null && item.getImages().length() != 0) {
-            helper.setImageBitmap(R.id.cell_message_image, ImageHelper.getBitmap(item.getImages()));
+            helper.setImageBitmap(R.id.cell_message_image, ImageHelper.getBitmap(item.getImage()));
             helper.setText(R.id.cell_message_text, "");
         } else {
             helper.setImageBitmap(R.id.cell_message_image, null);

@@ -110,6 +110,12 @@ public class Messages {
         return this;
     }
 
+    public String getImage() {
+        if (images.contains(" "))
+            return images.split(" ")[0];
+        else return images;
+    }
+
     public String getImages() {
         return images;
     }

@@ -60,7 +60,7 @@ public class UpdateHelper {
 
         appName = "anti-recall.apk";
         PATH =
-                "http://anti-recall.qsboy.com/version";
+                "https://anti-recall.qsboy.com/version.json";
 //                "http://www.qsboy.com/MessageCaptor/version.html";
     }
 

@@ -53,7 +53,7 @@ public class ImageHelper {
             FileInputStream fis = new FileInputStream(file);
             return BitmapFactory.decodeStream(fis);
         } catch (FileNotFoundException e) {
-            Log.w(TAG, "getBitmap: file not found");
+            Log.w(TAG, "getBitmap: file not found: " + file);
             return null;
         }
     }
@@ -83,7 +83,8 @@ public class ImageHelper {
                 //文件修改时间
                 long modifiedTime = f.lastModified();
 //                Log.v(TAG, "accept: time: " + modifiedTime);
-                return modifiedTime == mTime;
+                long diff = modifiedTime - mTime;
+                return diff < 10000 && diff >= 0;
             }
         };
 

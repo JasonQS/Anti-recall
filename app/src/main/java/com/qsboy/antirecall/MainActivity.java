@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.enableSwipeItem();
         adapter.setOnItemSwipeListener(onItemSwipeListener);
 
+        checkUpdate();
 
         Date out = new Date();
         Log.d(TAG, "onCreate: time: " + (out.getTime() - in.getTime()));
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkUpdate() {
         //wifi环境下检查更新
         UpdateHelper helper = new UpdateHelper(this, Activity.class);
-        if (helper.isWifi())
+//        if (helper.isWifi())
             helper.checkUpdate();
     }
 
