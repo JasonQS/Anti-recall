@@ -6,7 +6,7 @@
 
 <resources>
     <string name="app_name">Anti-recall</string>
-    <string name="service_label">Anti-recall</string>
+    <string name="service_label">开启之后就能看到撤回消息啦\n别让它被系统关了哦</string>
     <string name="title_home">防撤回</string>
     <string name="title_monitor">特别关心</string>
     <string name="title_setting">设置</string>
