@@ -10,6 +10,6 @@
     android:accessibilityFlags="flagReportViewIds"
     android:canRetrieveWindowContent="true"
     android:description="@string/service_label"
-    android:notificationTimeout="200" />
+    android:notificationTimeout="100" />
     <!--android:packageNames="com.tencent.mobileqq,com.tencent.mm" -->
 

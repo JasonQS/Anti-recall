@@ -7,6 +7,8 @@
 package com.qsboy.antirecall.access;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.Notification;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -23,6 +25,7 @@ public class MainService extends AccessibilityService {
     final String pknTim = "com.tencent.tim";
     final String pknQQ = "com.tencent.mobileqq";
     final String pknWX = "com.tencent.mm";
+    WXAutoLogin autoLogin;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -31,11 +34,9 @@ public class MainService extends AccessibilityService {
             Log.d(TAG, "onAccessibilityEvent: package name is null, return");
             return;
         }
-        packageName = event.getPackageName().toString();
+        packageName = event.getPackageName() + "";
 
-//        if (!packageName.equals(pknTim) &&
-//                !packageName.equals(pknQQ) &&
-//                !packageName.equals(pknWX))
+//        if (!(packageName.equals(pknTim) || packageName.equals(pknQQ) || packageName.equals(pknWX)))
 //            return;
 
         root = getRootInActiveWindow();
@@ -54,35 +55,16 @@ public class MainService extends AccessibilityService {
                 onNotification(event);
                 break;
             case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                autoLogin.autoLoginWX();
                 onContentChanged(event);
                 break;
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
+                autoLogin.autoLoginWX();
                 onClick(event);
                 break;
 
         }
 
-    }
-
-    private void onNotification(AccessibilityEvent event) {
-        List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0) {
-            NodesInfo.show(root, TAG);
-            //微信的登录通知的 text 是 null
-            autoLoginWX();
-            return;
-        }
-        Log.i(TAG, "onNotification: " + packageName + " | " + texts);
-        switch (packageName) {
-            case pknTim:
-//                new TimClient(this).onContentChanged(root);
-                new TimClient(this).onNotificationChanged(event);
-                break;
-            case pknQQ:
-//                new QQClient(this).onContentChanged(root);
-                new QQClient(this).onNotificationChanged(event);
-                break;
-        }
     }
 
     private void onContentChanged(AccessibilityEvent event) {
@@ -123,24 +105,66 @@ public class MainService extends AccessibilityService {
         }
     }
 
-    private void autoLoginWX() {
-        // TODO: 06/04/2018 生成标志位 在之后的10次 content change都去检查微信登录
-        Log.v(TAG, "autoLoginWX");
-        if (root.getChildCount() != 1)
+    private void onNotification(AccessibilityEvent event) {
+        List<CharSequence> texts = event.getText();
+        if (texts.isEmpty() || texts.size() == 0) {
+            NodesInfo.show(root, TAG);
+            //微信的登录通知的 text 是 null
+            autoLogin.flagEnable();
             return;
-        AccessibilityNodeInfo node = root.getChild(0);
-        if (node.getChildCount() != 5)
-            return;
-        //不直接判断字符串是因为多语言适应
-        AccessibilityNodeInfo loginBtn = node.getChild(3);
-        if (!loginBtn.isClickable())
-            return;
-        if (!node.getChild(0).isClickable())
-            return;
-        if (!node.getChild(4).isClickable())
-            return;
-        loginBtn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-        Log.i(TAG, "autoLoginWX: click");
+        }
+        Log.i(TAG, "onNotification: " + packageName + " | " + texts);
+        switch (packageName) {
+            case pknTim:
+//                new TimClient(this).onContentChanged(root);
+                new TimClient(this).onNotificationChanged(event);
+                break;
+            case pknQQ:
+//                new QQClient(this).onContentChanged(root);
+                new QQClient(this).onNotificationChanged(event);
+                break;
+        }
+    }
+
+    /**
+     * 在检测到空通知体的时候 enable flag
+     * 在之后的10次 onContentChange 都去检查微信登录
+     */
+    private class WXAutoLogin {
+        private int time = 0;
+
+        public void flagEnable() {
+            time = 10;
+        }
+
+        private void autoLoginWX() {
+            while (time > 0) {
+                time--;
+                Log.v(TAG, "autoLoginWX");
+                if (root.getChildCount() != 1)
+                    return;
+                AccessibilityNodeInfo node = root.getChild(0);
+                if (node.getChildCount() != 5)
+                    return;
+                //不直接判断字符串是因为多语言适应
+                AccessibilityNodeInfo loginBtn = node.getChild(3);
+                if (!loginBtn.isClickable())
+                    return;
+                if (!node.getChild(0).isClickable())
+                    return;
+                if (!node.getChild(4).isClickable())
+                    return;
+                loginBtn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                Log.i(TAG, "autoLoginWX: click");
+                time = 0;
+            }
+        }
+    }
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        autoLogin = new WXAutoLogin();
     }
 
     @Override

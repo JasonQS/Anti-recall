@@ -88,7 +88,7 @@ public class TimClient extends Client {
             Log.d(TAG, "init: name is null，return");
             return false;
         }
-        title = titleNode.getText().toString();
+        title = titleNode.getText() + "";
 
         for (int i = 4; i < 7; i++) {
             AccessibilityNodeInfo child = root.getChild(i);
@@ -137,7 +137,7 @@ public class TimClient extends Client {
                     headIconPos = j;
                     break;
                 case IdChatItem:
-                    switch (child.getClassName().toString()) {
+                    switch (child.getClassName() + "") {
                         case "android.widget.RelativeLayout":
                             if (child.getChildCount() != 0) {
                                 if (child.getContentDescription() != null) {
@@ -159,7 +159,7 @@ public class TimClient extends Client {
                                     if ("android.widget.TextView".equals(child2.getClassName())) {
                                         // TODO: 这里去掉回复 只留下内容 和通知栏一样
 //                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
-                                        message = child2.getText().toString();
+                                        message = child2.getText() + "";
                                     }
                                 }
                             }
@@ -168,7 +168,7 @@ public class TimClient extends Client {
                         }
                         break;
                         case "android.widget.TextView": {
-                            message = child.getText().toString();
+                            message = child.getText() + "";
                             Log.v(TAG, "content_layout: 普通文本");
                         }
                         break;
@@ -177,7 +177,7 @@ public class TimClient extends Client {
                     break;
                 case IdNickName:
                     //群聊头像上面的群昵称最后有一个冒号
-                    subName = child.getText().toString();
+                    subName = child.getText() + "";
                     subName = subName.substring(0, subName.length() - 1);
                     break;
                 case IdGrayBar:
@@ -185,7 +185,7 @@ public class TimClient extends Client {
                     // 撤回消息的是不可点击的
                     // 接收文件和撤回消息一样
                     if (!child.isClickable() && !child.isFocusable()) {
-                        message = child.getText().toString();
+                        message = child.getText() + "";
                         int indexOfRecall = message.indexOf(RECALL);
                         if (indexOfRecall >= 0) {
                             isRecalledMsg = true;

@@ -74,7 +74,7 @@ public class XToast {
         } else {
             tv.setText(text);
             iv.setVisibility(View.GONE);
-            Log.w(TAG, "显示的是: " + text);
+            Log.w(TAG, "show: " + text);
         }
         toast.view = view;
         return toast;

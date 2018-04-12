@@ -4,9 +4,8 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall;
+package com.qsboy.antirecall.ui;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,10 +17,11 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.qsboy.antirecall.R;
+
 public class LaunchActivity extends AppCompatActivity {
 
     String TAG = "Launch";
-    BitmapFactory.Options opts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +31,20 @@ public class LaunchActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
+        new Handler().postDelayed(() -> {
+            Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+            startActivity(intent);
+            LaunchActivity.this.finish();
+        }, 2000);
 
+    }
+
+    private void setImg() {
+        BitmapFactory.Options opts;
         opts = new BitmapFactory.Options();
         // 不读取像素数组到内存中，仅读取图片的信息如高宽
         opts.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), R.drawable.start, opts);
+        BitmapFactory.decodeResource(getResources(), R.drawable.launch, opts);
         // 从Options中获取图片的分辨率
         int imageHeight = opts.outHeight;
         int imageWidth = opts.outWidth;
@@ -50,17 +59,7 @@ public class LaunchActivity extends AppCompatActivity {
         // 计算采样率
         int scaleX = imageWidth / size.x;
         int scaleY = imageHeight / size.y;
-        int scale = 1;
-        // 采样率依照最大的方向为准
-//        if (scaleX > scaleY && scaleY >= 1) {
-//            scale = scaleX;
-//        }
-//        if (scaleX < scaleY && scaleX >= 1) {
-//            scale = scaleY;
-//        }
-
-//        scale = scaleX < scaleY ? scaleX : scaleY;
-        scale = scaleX;
+        int scale = scaleX;
 
         // false表示读取图片像素数组到内存中，依照设定的采样率
         // 采样率
@@ -68,7 +67,7 @@ public class LaunchActivity extends AppCompatActivity {
         opts.inJustDecodeBounds = false;
 
         Bitmap bitmap =
-                BitmapFactory.decodeResource(getResources(), R.drawable.start, opts);
+                BitmapFactory.decodeResource(getResources(), R.drawable.launch, opts);
 //                ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.start, size.x, size.y);
 
         ImageView img = findViewById(R.id.img_launch);
@@ -83,17 +82,5 @@ public class LaunchActivity extends AppCompatActivity {
         Log.i(TAG, "scale        :\t" + scale);
         Log.i(TAG, "final-height :\t" + bitmap.getHeight());
         Log.i(TAG, "final-width  :\t" + bitmap.getWidth());
-
-        Handler handler = new Handler(); //当计时结束时，跳转至主界面
-        handler.postDelayed(() -> {
-//            Intent intent = new Intent(LaunchActivity.this, com.qsboy.antirecall.MainActivity.class);
-            Intent i = new Intent();
-            ComponentName name = new ComponentName("com.qsboy.antirecall", "com.qsboy.antirecall.MainActivity");
-            i.setComponent(name);
-            startActivity(i);
-//            overridePendingTransition(R.anim.activity_enter, 0);
-            LaunchActivity.this.finish();
-        }, 2000);
-
     }
 }

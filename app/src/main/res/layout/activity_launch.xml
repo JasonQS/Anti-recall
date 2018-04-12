@@ -11,12 +11,12 @@
     android:background="@android:color/white"
     android:fitsSystemWindows="false"
     android:theme="@style/LaunchTheme"
-    tools:context="com.qsboy.antirecall.LaunchActivity">
+    tools:context="com.qsboy.antirecall.ui.LaunchActivity">
 
     <ImageView
         android:layout_centerInParent="true"
         android:id="@+id/img_launch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/start" />
+        android:src="@drawable/launch" />
 </RelativeLayout>

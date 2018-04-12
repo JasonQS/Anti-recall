@@ -83,7 +83,7 @@ public abstract class Client {
             CharSequence cs = event.getSource().getText();
             if (cs == null)
                 return;
-            String string = cs.toString();
+            String string = cs + "";
             if (!string.contains(RECALL))
                 return;
 
@@ -93,7 +93,7 @@ public abstract class Client {
 
             initContext(event);
 
-            Log.w(TAG, "findRecalls: unknownRecalls: " + unknownRecalls + " prevMsg: " + prevMessage + " nextMsg: " + nextMessage);
+            Log.w(TAG, "findRecalls: \nunknown Recalls: " + unknownRecalls + " \nprev Msg: " + prevMessage + " \nnext Msg: " + nextMessage);
             if (prevMessage == null && nextMessage == null) {
                 XToast.build(context, "不能全屏撤回哦").show();
                 return;
@@ -152,6 +152,7 @@ public abstract class Client {
          * @return 是否要继续找
          */
         private boolean findRecallByPrev(boolean force) {
+            Log.i(TAG, "findRecallByPrev");
             Messages messages;
             int maxID = dao.getMaxID(title, isWX);
             for (int i = 0; i < unknownRecalls; i++) {
@@ -181,6 +182,7 @@ public abstract class Client {
         }
 
         private void findRecallByNext() {
+            Log.i(TAG, "findRecallByNext");
             Messages messages;
             for (int i = unknownRecalls - 1; i >= 0; i--) {
                 while (true) {
@@ -309,9 +311,7 @@ public abstract class Client {
         if (texts.isEmpty() || texts.size() == 0)
             return;
         for (CharSequence text : texts) {
-            if (text == null)
-                return;
-            String string = text.toString();
+            String string = text + "";
             Log.w(TAG, "Notification text: " + string);
             if (string.equals("你的帐号在电脑登录"))
                 return;
@@ -343,7 +343,7 @@ public abstract class Client {
      * 判断是否是在其他人的聊天界面收到了消息
      */
     private void onOtherMsg() {
-        String string = otherMsgNode.getText().toString();
+        String string = otherMsgNode.getText() + "";
         Log.i(TAG, "onOtherMsg: " + string);
         int i = string.indexOf(":");
         int k = string.lastIndexOf("-");

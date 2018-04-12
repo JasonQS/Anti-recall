@@ -87,7 +87,7 @@ public class QQClient extends Client {
             Log.d(TAG, "init: name is null，return");
             return false;
         }
-        title = titleNode.getText().toString();
+        title = titleNode.getText() + "";
 
         chatGroupViewNode = root.getChild(0);
         if (chatGroupViewNode == null) {
@@ -125,7 +125,7 @@ public class QQClient extends Client {
                     headIconPos = j;
                     break;
                 case IdChatItem:
-                    switch (child.getClassName().toString()) {
+                    switch (child.getClassName() + "") {
                         case "android.widget.RelativeLayout":
                             if (child.getChildCount() != 0) {
                                 if (child.getContentDescription() != null) {
@@ -147,7 +147,7 @@ public class QQClient extends Client {
                                 if ("android.widget.RelativeLayout".equals(child1.getClassName())) {
                                     if ("android.widget.TextView".equals(child2.getClassName())) {
 //                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
-                                        message = child2.getText().toString();
+                                        message = child2.getText() + "";
                                     }
                                 }
                             }
@@ -155,7 +155,7 @@ public class QQClient extends Client {
                         }
                         break;
                         case "android.widget.TextView": {
-                            message = child.getText().toString();
+                            message = child.getText() + "";
                             Log.v(TAG, "content_layout: 普通文本");
                         }
                         break;
@@ -163,11 +163,11 @@ public class QQClient extends Client {
                     messagePos = j;
                     break;
                 case IdNickName:
-                    subName = child.getText().toString();
+                    subName = child.getText() + "";
                     break;
                 case IdGrayBar:
                     if (!child.isClickable() && !child.isFocusable()) {
-                        message = child.getText().toString();
+                        message = child.getText() + "";
                         int indexOfRecall = message.indexOf(RECALL);
                         if (indexOfRecall >= 0) {
                             isRecalledMsg = true;

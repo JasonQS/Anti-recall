@@ -12,7 +12,7 @@ android {
         applicationId "com.qsboy.antirecall"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 1
+        versionCode 4
         versionName '1.0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

@@ -10,7 +10,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.qsboy.antirecall.MainActivity">
+    tools:context="com.qsboy.antirecall.ui.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
