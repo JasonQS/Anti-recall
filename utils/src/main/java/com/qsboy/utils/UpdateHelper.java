@@ -44,12 +44,11 @@ import java.util.Date;
 public class UpdateHelper {
 
     private Context context;
-    private MyHandler handler;
+    //    private MyHandler handler;
+//    private Intent intent;
     private String TAG = "X-Update";
-    private Intent intent;
-    private final String PATH;
-    private final String appName;
-    //    private final String savePath;
+    private final String PATH = "https://anti-recall.qsboy.com/version.json";
+    private final String appName = "anti-recall.apk";
     private String code;
     private String desc;
     private String path;
@@ -60,14 +59,9 @@ public class UpdateHelper {
     public UpdateHelper(Context context, Class<Activity> mainActivity) {
 
         this.context = context;
-        intent = new Intent(this.context.getApplicationContext(), mainActivity.getClass());
-//        savePath = context.getExternalCacheDir() + File.separator + "Anti-recall";
-        appName = "anti-recall.apk";
-        apkFile = new File(context.getExternalCacheDir(), appName);
-        handler = new MyHandler(this);
-        PATH =
-                "https://anti-recall.qsboy.com/version.json";
-//                "http://www.qsboy.com/MessageCaptor/version.html";
+        apkFile = new File(context.getExternalFilesDir("apk"), appName);
+//        intent = new Intent(this.context.getApplicationContext(), mainActivity.getClass());
+//        handler = new MyHandler(this);
     }
 
     public void checkUpdate() {
@@ -170,7 +164,8 @@ public class UpdateHelper {
                     }
                     fos.close();
                     is.close();
-                    handler.sendEmptyMessage(1);
+                    showNoticeDialog();
+//                    handler.sendEmptyMessage(1);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -178,42 +173,24 @@ public class UpdateHelper {
         }).start();
     }
 
-    //    private void showInstall() {
-//        String ChannelID = "qsboy";
-//        String title = "anti-recall";
+//    private static class MyHandler extends Handler {
 //
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, ChannelID);
-//        builder.setAutoCancel(true);
-//        builder.setSmallIcon(R.mipmap.ic_launcher);
-//        builder.setContentTitle(title);
-//        builder.setContentText("软件有更新,点击安装");
-//        builder.setContentIntent(pendingIntent);
-//        context.getSystemService(Context.NOTIFICATION_SERVICE);
-//        manager.notify(2, builder.build());
+//        WeakReference reference;
 //
-//        Log.w(TAG, "show Update Notification");
+//        MyHandler(UpdateHelper updateHelper) {
+//            reference = new WeakReference<>(updateHelper);
+//        }
 //
+//        @Override
+//        public void handleMessage(Message msg) {
+//            UpdateHelper helper = (UpdateHelper) reference.get();
+//            switch (msg.what) {
+//                case 1:
+//                    new XNotification(helper.context, helper.intent).showInstall();
+//                    break;
+//            }
+//        }
 //    }
-//
-    private static class MyHandler extends Handler {
-
-        WeakReference reference;
-
-        MyHandler(UpdateHelper updateHelper) {
-            reference = new WeakReference<>(updateHelper);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            UpdateHelper helper = (UpdateHelper) reference.get();
-            switch (msg.what) {
-                case 1:
-                    new XNotification(helper.context, helper.intent).showInstall();
-                    break;
-            }
-        }
-
-    }
 
     private void showNoticeDialog() {
         Builder builder = new Builder(context);
@@ -238,66 +215,22 @@ public class UpdateHelper {
         builder.create().show();
     }
 
-    private static Uri getUriForFile(Context context, File file) {
-        if (context == null || file == null) {
-            throw new NullPointerException();
-        }
-        Uri uri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", file);
-        } else {
-            uri = Uri.fromFile(file);
-        }
-        return uri;
-    }
-
-    private void installAPK() {
-        if (!apkFile.exists()) {
-            Log.w(TAG, "apk isn't exists");
-            return;
-        }
-//        Log.w(TAG, "install apk");
-//        Intent intent = new Intent(Intent.ACTION_VIEW);
-//        Uri uri = Uri.parse("content://" + apkFile.toString());
-//        intent.setDataAndType(uri, "application/vnd.android.package-archive");
-//        context.startActivity(intent);
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                apkFile.delete();
-//                Log.w(TAG, "Apk has been deleted");
-//            }
-//        }, 600000);                             //十分钟后删除安装包
-
-
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
-        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);//增加读写权限
-        intent.setDataAndType(getUriForFile(context, apkFile), "application/vnd.android.package-archive");
-        if (!(context instanceof Activity)) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        context.startActivity(intent);
-
-    }
-
     void update() {
         if (!apkFile.exists()) {
             Log.w(TAG, "apk isn't exists");
             return;
         }
+        Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_VIEW);
-        //检查手机版本号，如果是Android7.0将采用应用共享方法
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {// android.os.FileUriExposedException
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            Uri installURI = FileProvider.getUriForFile(context, "com.qsboy.provider", apkFile);
-            intent.setDataAndType(installURI, "application/vnd.android.package-archive");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Uri uri = FileProvider.getUriForFile(context, "com.qsboy.provider", apkFile);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(uri, "application/vnd.android.package-archive");
         } else {//其他版本直接调用
             intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
         }
         context.startActivity(intent);
     }
-
 
 }

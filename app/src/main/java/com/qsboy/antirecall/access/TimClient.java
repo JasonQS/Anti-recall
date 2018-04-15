@@ -138,6 +138,7 @@ public class TimClient extends Client {
                     break;
                 case IdChatItem:
                     switch (child.getClassName() + "") {
+                        // TODO: 16/04/2018 签到
                         case "android.widget.RelativeLayout":
                             if (child.getChildCount() != 0) {
                                 if (child.getContentDescription() != null) {
