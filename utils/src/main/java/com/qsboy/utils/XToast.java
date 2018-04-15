@@ -63,7 +63,6 @@ public class XToast {
         ImageView iv = view.findViewById(R.id.toast_iv);
         TextView tv = view.findViewById(R.id.toast_tv);
         int i = text.indexOf("[图片]");
-        Log.i(TAG, "build: text: " + text);
         if (i >= 0 && text.length() > i + 4) {
             Log.w(TAG, "text : " + text);
             String imageName = text.substring(i + 4);

@@ -94,15 +94,14 @@ public class Dao {
             values.put(Column_IsWX, 1);
         else
             values.put(Column_IsWX, 0);
-        // TODO: 把查找到的图片也加进去 list用空格分割
         db.insert(Table_Recalled_Messages, null, values);
     }
 
-    // TODO: 查找方式待重写
-    // TODO: 如果只要id的话只查询id
     public ArrayList<Integer> queryByMessage(String name, Boolean isWX, String subName, String message) {
         Log.d(TAG, "queryByMessage: name = " + name + " subName = " + subName + " message = " + message);
         ArrayList<Integer> list = new ArrayList<>();
+        if (message == null || subName == null || name == null)
+            return list;
         cursor = db.query(
                 getTableName(name, isWX),
                 new String[]{Column_ID},
@@ -121,7 +120,7 @@ public class Dao {
     }
 
     public Messages queryById(String name, Boolean isWX, int id) {
-        Log.d(TAG, "queryById: name = " + name + " id = " + id);
+        Log.d(TAG, "queryById: query: " + id + " - " + name);
         String tableName = getTableName(name, isWX);
         // SELECT * FROM tableName WHERE Id = id
         cursor = db.query(tableName,
@@ -137,6 +136,7 @@ public class Dao {
         String subName = cursor.getString(1);
         String message = cursor.getString(2);
         long time = cursor.getLong(3);
+        Log.d(TAG, "queryById: >>>>>> " + id + " : " + subName + " - " + message);
         return new Messages(id, isWX, name, subName, message, time);
     }
 
@@ -205,18 +205,11 @@ public class Dao {
         return idMsg - idPreMsg == 1;
     }
 
-    public boolean existRecall(Messages messages, String prevSubName, String prevMessage, String nextSubName, String nextMessage) {
+    public boolean existRecall(Messages messages) {
         int i;
-        if (messages.isWX()) i = 1;
+        if (messages.isWX())
+            i = 1;
         else i = 0;
-        if (prevSubName == null)
-            prevSubName = "";
-        if (prevMessage == null)
-            prevMessage = "";
-        if (nextSubName == null)
-            nextSubName = "";
-        if (nextMessage == null)
-            nextMessage = "";
         cursor = db.query(Table_Recalled_Messages,
                 new String[]{Column_ID},
                 Column_Original_ID + " = ? and " +
@@ -224,22 +217,14 @@ public class Dao {
                         Column_SubName + " = ? and " +
                         Column_Message + " = ? and " +
                         Column_IsWX + " = ? and " +
-                        Column_Time + " = ? and " +
-                        Column_Prev_SubName + " = ? and " +
-                        Column_Prev_Message + " = ? and " +
-                        Column_Next_SubName + " = ? and " +
-                        Column_Next_Message + " = ?",
+                        Column_Time + " = ?",
                 new String[]{String.valueOf(
                         messages.getId()),
                         messages.getName(),
                         messages.getSubName(),
                         messages.getMessage(),
                         String.valueOf(i),
-                        String.valueOf(messages.getTime()),
-                        prevSubName,
-                        prevMessage,
-                        nextSubName,
-                        nextMessage},
+                        String.valueOf(messages.getTime())},
                 null, null, null);
         return cursor.moveToFirst();
     }

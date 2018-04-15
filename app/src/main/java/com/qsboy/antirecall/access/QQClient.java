@@ -141,11 +141,10 @@ public class QQClient extends Client {
                             break;
                         case "android.widget.LinearLayout": {
                             if (child.getChildCount() == 2) {
-                                // TODO: 组合消息
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
-                                if ("android.widget.RelativeLayout".equals(child1.getClassName())) {
-                                    if ("android.widget.TextView".equals(child2.getClassName())) {
+                                if (child1 != null && "android.widget.RelativeLayout".equals(child1.getClassName())) {
+                                    if (child2 != null && "android.widget.TextView".equals(child2.getClassName())) {
 //                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
                                         message = child2.getText() + "";
                                     }

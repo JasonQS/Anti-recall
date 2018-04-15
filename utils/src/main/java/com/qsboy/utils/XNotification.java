@@ -70,7 +70,7 @@ public class XNotification extends AppCompatActivity {
     public void showInstall() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, ChannelID);
         builder.setAutoCancel(true);
-//        builder.setSmallIcon(R.mipmap.icon);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentTitle(title);
         builder.setContentText("软件有更新,点击安装");
         builder.setContentIntent(pendingIntent);

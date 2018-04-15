@@ -12,23 +12,26 @@ android {
         applicationId "com.qsboy.antirecall"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 5
+        versionCode 1
         versionName '5.0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
         }
     }
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "anti-recall-${defaultConfig.versionName}.apk"
+        }
     }
     productFlavors {
     }

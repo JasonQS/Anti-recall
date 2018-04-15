@@ -13,7 +13,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class NodesInfo {
 
-    // TODO: 自动遍历出最深的点
     private static int padding = 10;
 
     static String border = getBorder();

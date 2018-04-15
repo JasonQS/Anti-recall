@@ -59,7 +59,6 @@ public class MainService extends AccessibilityService {
                 onContentChanged(event);
                 break;
             case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                autoLogin.autoLoginWX();
                 onClick(event);
                 break;
 
@@ -79,7 +78,6 @@ public class MainService extends AccessibilityService {
         switch (packageName) {
             case pknTim:
                 Log.d(TAG, "\nonContentChanged: " + cs);
-                // TODO: 01/04/2018 未知原因 crash
                 new TimClient(this).onContentChanged(root);
                 break;
             case pknQQ:
@@ -106,6 +104,7 @@ public class MainService extends AccessibilityService {
     }
 
     private void onNotification(AccessibilityEvent event) {
+        Log.i(TAG, "onNotification: " + packageName);
         List<CharSequence> texts = event.getText();
         if (texts.isEmpty() || texts.size() == 0) {
             NodesInfo.show(root, TAG);

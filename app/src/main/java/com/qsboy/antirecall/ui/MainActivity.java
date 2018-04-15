@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     FoldingCellAdapter adapter;
 
-    //todo 查找的时候加个program bar提示
-
     // TODO: 09/04/2018 加一个看聊天记录的
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 //        navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
 
 
-        // TODO: test
+        //test
 //        prepareDataForTest();
 //        Dao dao = new Dao(this);
 //        dao.temp();
@@ -188,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             helper.checkUpdate();
     }
 
-    // TODO: for test
+    // for test
     public void prepareDataForTest() {
         Date in = new Date();
         Dao dao = Dao.getInstance(this);
