@@ -53,10 +53,9 @@ public class UpdateHelper {
     private String desc;
     private String path;
     private File apkFile;
-    boolean needUpdate = true;
 
     // TODO: 02/04/2018
-    public UpdateHelper(Context context, Class<Activity> mainActivity) {
+    public UpdateHelper(Context context) {
 
         this.context = context;
         apkFile = new File(context.getExternalFilesDir("apk"), appName);
@@ -129,7 +128,6 @@ public class UpdateHelper {
         Log.d(TAG, "local version code : " + localVersion);
         Log.d(TAG, "need update?    " + b);
 
-        needUpdate = b;
         return b;
     }
 

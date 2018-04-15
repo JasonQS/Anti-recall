@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkUpdate() {
         //wifi环境下检查更新
-        UpdateHelper helper = new UpdateHelper(this, Activity.class);
+        UpdateHelper helper = new UpdateHelper(this);
 //        if (helper.isWifi())
             helper.checkUpdate();
     }
