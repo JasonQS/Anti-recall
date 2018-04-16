@@ -12,8 +12,8 @@ android {
         applicationId "com.qsboy.antirecall"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 1
-        versionName '5.0'
+        versionCode 3
+        versionName '5.0.2'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -40,7 +40,8 @@ android {
 dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.36'
     implementation 'com.ramotion.foldingcell:folding-cell:1.2.1'
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+//    implementation 'devlight.io:navigationtabbar:1.2.5'
+//    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     //    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation project(':utils')
     implementation fileTree(include: ['*.jar'], dir: 'libs')

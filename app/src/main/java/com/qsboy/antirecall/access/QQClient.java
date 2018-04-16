@@ -180,13 +180,13 @@ public class QQClient extends Client {
                     }
             }
         }
-        //2人聊天 头像在消息右边
-        if ("".equals(subName))
-            if (messagePos < headIconPos)
-                subName = "我";
-            else
-                subName = title;
-        Log.i(TAG, subName + " : " + message);
+        if (messagePos < headIconPos)
+            // 消息在头像左边
+            subName = "我";
+        else if ("".equals(subName))
+            // 两人聊天时 没有subName
+            subName = title;
+        Log.d(TAG, "parser: " + title + " - " + subName + " : " + message);
     }
 
 

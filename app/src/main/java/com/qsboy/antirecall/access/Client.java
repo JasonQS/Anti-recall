@@ -144,7 +144,7 @@ public abstract class Client {
 
             for (int i = 0, j = 0, k = 0; k < 10; k++) {
                 String subName = subNameArray.get(i);
-                Log.i(TAG, "findRecallByContext: [" + i + " " + j + "] - " + subName);
+                Log.i(TAG, "findRecallByContext: [" + i + " " + j + "] - " + " [" + (prevPos + i) + " " + (nextPos - j) + "]" + subName);
                 Messages msgPrev = findNext(prevPos + i, subName);
                 Messages msgNext = findNext(nextPos - j, subName);
                 if (msgPrev != null) {
@@ -157,8 +157,8 @@ public abstract class Client {
                 }
                 if (msgNext != null) {
                     int index = unknownRecalls - j;
-                    if (list.size() <= index || list.get(index) != null)
-                        list.add(index, msgNext);
+                    if (list.size() <= index - 1 || list.get(index) != null)
+                        list.add(index - 1, msgNext);
                     j++;
                     Log.i(TAG, "list: " + list);
                     if (j == unknownRecalls)
@@ -204,7 +204,7 @@ public abstract class Client {
             int maxID = dao.getMaxID(title, isWX);
             for (int i = 0; i < 20; i++) {
                 prevPos++;
-                if (prevPos >= maxID) {
+                if (prevPos > maxID) {
                     Log.i(TAG, "findNext: to the end: " + maxID);
                     return null;
                 }
@@ -360,14 +360,21 @@ public abstract class Client {
             if (string.equals("你的帐号在电脑登录"))
                 return;
 
+            StringBuilder builder = new StringBuilder(string);
+            int i1 = string.indexOf("[特别关注]");
+            int i2 = string.indexOf("[有新回复]");
+            if (i1 != -1 && i1 + 6 < string.length())
+                builder.delete(i1, i1 + 6);
+            if (i2 != -1 && i2 + 6 < string.length())
+                builder.delete(i2, i2 + 6);
+            string = builder.toString();
+
             int i = string.indexOf(':');
             if (i < 1) {
                 Log.d(TAG, "Notification does not contains ':'");
                 return;
             }
             title = string.substring(0, i);
-            if (title.startsWith("[特别关心]"))
-                title = title.substring(title.indexOf("[特别关心]") + 6);
             message = string.substring(i + 2);
             subName = title;
             //是群消息
