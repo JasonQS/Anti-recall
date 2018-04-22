@@ -6,7 +6,6 @@
 
 package com.qsboy.antirecall.access;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.Log;
@@ -19,7 +18,9 @@ import com.qsboy.utils.NodesInfo;
 import com.qsboy.utils.XToast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.qsboy.utils.ImageHelper.searchImageFile;
 
@@ -94,6 +95,11 @@ public abstract class Client {
                     " \nprev Msg: " + prevSubName + " - " + prevMessage +
                     " \nnext Msg: " + nextSubName + " - " + nextMessage);
 
+            if (prevMessage == null && nextMessage == null) {
+                XToast.build(context, "不能全屏撤回哦").show();
+                return;
+            }
+
             // TODO: 如果上一条是图片 name 根据上上条找
             ArrayList<Integer> prevList = dao.queryByMessage(title, isWX, prevSubName, prevMessage);
             ArrayList<Integer> nextList = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
@@ -104,7 +110,9 @@ public abstract class Client {
                 // 没有下文
                 if (prevList.size() == 0)
                     // 没有上下文
-                    XToast.build(context, "不能全屏撤回哦").show();
+                    notFound();
+                    // TODO: 查找上一条
+//                    XToast.build(context, "不能全屏撤回哦").show();
                 else
                     // 只有上文
                     findRecallByPrev(prevList.get(0));
@@ -140,7 +148,7 @@ public abstract class Client {
                 }
             }
             Log.i(TAG, "findRecallByContext: [ " + prevPos + " - " + nextPos + " ]");
-            ArrayList<Messages> list = new ArrayList<>(unknownRecalls);
+            Map<Integer, Messages> map = new HashMap<>();
 
             for (int i = 0, j = 0, k = 0; k < 10; k++) {
                 String subName = subNameArray.get(i);
@@ -148,29 +156,30 @@ public abstract class Client {
                 Messages msgPrev = findNext(prevPos + i, subName);
                 Messages msgNext = findNext(nextPos - j, subName);
                 if (msgPrev != null) {
-                    if (list.size() <= i || list.get(i) != null)
-                        list.add(i, msgPrev);
+                    if (!map.containsKey(i))
+                        map.put(i, msgPrev);
                     i++;
-                    Log.i(TAG, "list: " + list);
+                    Log.i(TAG, "map: " + map);
                     if (i == unknownRecalls)
                         break;
                 }
                 if (msgNext != null) {
+                    // TODO: 改用其他数据结构
                     int index = unknownRecalls - j;
-                    if (list.size() <= index - 1 || list.get(index) != null)
-                        list.add(index - 1, msgNext);
+                    if (!map.containsKey(index))
+                        map.put(index, msgNext);
                     j++;
-                    Log.i(TAG, "list: " + list);
+                    Log.i(TAG, "map: " + map);
                     if (j == unknownRecalls)
                         break;
                 }
             }
-            Log.i(TAG, "final list: " + list);
-            if (list.size() == 0)
+            Log.i(TAG, "final map: " + map);
+            if (map.size() == 0)
                 notFound();
             else
-                for (Messages messages : list)
-                    addRecall(messages);
+                for (int i = 0; i < unknownRecalls; i++)
+                    addRecall(map.get(i));
 
         }
 
@@ -179,10 +188,7 @@ public abstract class Client {
                 String subName = subNameArray.get(i);
                 Log.i(TAG, "findRecallByPrev: " + prevPos + " - " + subName);
                 Messages messages = findNext(prevPos + i, subName);
-                if (messages == null)
-                    notFound();
-                else
-                    addRecall(messages);
+                addRecall(messages);
             }
         }
 
@@ -191,10 +197,7 @@ public abstract class Client {
                 String subName = subNameArray.get(i);
                 Log.i(TAG, "findRecallByNext: " + nextPos + " - " + subName);
                 Messages messages = findPrev(nextPos - i, subName);
-                if (messages == null)
-                    notFound();
-                else
-                    addRecall(messages);
+                addRecall(messages);
             }
         }
 
@@ -253,6 +256,10 @@ public abstract class Client {
         }
 
         private void addRecall(Messages messages) {
+            if (messages == null) {
+                notFound();
+                return;
+            }
             Log.w(TAG, "addRecall: " + messages.getMessage());
             if ("[图片]".equals(messages.getMessage())) {
                 messages.setImages(searchImageFile(context, messages.getTime(), client));
@@ -394,6 +401,8 @@ public abstract class Client {
      * 判断是否是在其他人的聊天界面收到了消息
      */
     private void onOtherMsg() {
+        if (otherMsgNode == null)
+            return;
         String string = otherMsgNode.getText() + "";
         Log.i(TAG, "onOtherMsg: " + string);
         int i = string.indexOf(":");

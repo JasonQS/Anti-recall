@@ -89,6 +89,7 @@ public class TimClient extends Client {
             return false;
         }
         title = titleNode.getText() + "";
+        isOtherMsg = false;
 
         for (int i = 4; i < 7; i++) {
             AccessibilityNodeInfo child = root.getChild(i);

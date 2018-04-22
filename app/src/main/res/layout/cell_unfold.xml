@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
   ~ anti-recall.qsboy.com
   ~ All Rights Reserved
@@ -17,16 +16,28 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_title"
-        android:background="@color/bgTitle"
-        android:gravity="center">
+        android:background="@color/bgTitle">
 
         <TextView
             android:id="@+id/cell_title_unfold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:text="@string/title"
             android:textColor="@color/text_color_title"
             android:textSize="@dimen/text_size_title" />
+
+        <TextView
+            android:id="@+id/cell_title_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/text_size_title_date"
+            android:paddingEnd="@dimen/margin_threeQuarter"
+            android:paddingStart="@dimen/margin_threeQuarter"
+            android:text="@string/title_date"
+            android:textColor="@color/text_color_title_date" />
     </RelativeLayout>
 
     <include layout="@layout/list_multi_messages" />

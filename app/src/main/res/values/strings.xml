@@ -12,7 +12,9 @@
     <string name="title_setting">设置</string>
 
     <string name="title">Title</string>
+    <string name="title_date">12.22</string>
     <string name="name">name</string>
     <string name="message">Hello world</string>
     <string name="time">10:10\n12/22</string>
+
 </resources>

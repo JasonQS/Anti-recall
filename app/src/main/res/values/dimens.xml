@@ -7,6 +7,7 @@
 <resources>
 
     <dimen name="margin_default">16dp</dimen>
+    <dimen name="margin_threeQuarter">12dp</dimen>
     <dimen name="margin_half">8dp</dimen>
 
     <dimen name="height_title">32dp</dimen>
@@ -15,6 +16,7 @@
     <dimen name="height_item_fold">80dp</dimen>
 
     <dimen name="text_size_title">16sp</dimen>
+    <dimen name="text_size_title_date">14sp</dimen>
     <dimen name="text_size_time">12sp</dimen>
     <dimen name="text_size_name">14sp</dimen>
     <dimen name="text_size_message">14sp</dimen>

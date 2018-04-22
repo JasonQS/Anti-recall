@@ -7,8 +7,6 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
@@ -19,7 +17,6 @@ import com.qsboy.antirecall.db.Messages;
 import com.qsboy.utils.ImageHelper;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -35,9 +32,10 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     Dao dao;
     int day;
     Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat sdfSec = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+    SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
 
-    SimpleDateFormat sdfL = new SimpleDateFormat("MM - dd\nHH:mm:ss", Locale.getDefault());
-    SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+    OnDateChangeListener onDateChangeListener;
 
     public MultiMessagesAdapter(List<Messages> data, Context context) {
         super(R.layout.item_message, data);
@@ -49,7 +47,8 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     protected void convert(BaseViewHolder helper, Messages item) {
         Log.v(TAG, "convert: " + item.getMessage() + " id: " + item.getId());
         helper.setText(R.id.cell_name, item.getSubName());
-        helper.setText(R.id.cell_time, formatTime(item.getTime()));
+        helper.setText(R.id.cell_time, sdfSec.format(item.getTime()));
+        formatTime(item.getTime());
         // TODO: image之后改成可以左右滑动的
         if (item.getImages() != null && item.getImages().length() != 0) {
             helper.setImageBitmap(R.id.cell_message_image, ImageHelper.getBitmap(item.getImage()));
@@ -60,14 +59,18 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         }
     }
 
-    private String formatTime(long time) {
-        String string;
+    interface OnDateChangeListener {
+        void onDateChange(long date);
+    }
+
+    public void setOnDateChangeListener(OnDateChangeListener onDateChangeListener) {
+        this.onDateChangeListener = onDateChangeListener;
+    }
+
+    private void formatTime(long time) {
         Date date = new Date(time);
         calendar.setTime(date);
-        if (day == (day = calendar.get(DAY_OF_YEAR)))
-            string = sdfS.format(date);
-        else
-            string = sdfL.format(date);
-        return string;
+        if (day != (day = calendar.get(DAY_OF_YEAR)))
+            onDateChangeListener.onDateChange(time);
     }
 }

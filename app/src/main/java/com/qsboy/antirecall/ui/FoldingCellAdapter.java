@@ -44,6 +44,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
     Calendar now = Calendar.getInstance();
     Calendar calendar = Calendar.getInstance();
 
+    SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
     SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
     static DividerItemDecoration decor;
@@ -77,6 +78,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
         adapter.setUpFetchEnable(true);
         adapter.setPreLoadNumber(4);
         adapter.setEnableLoadMore(true);
+        adapter.setOnDateChangeListener(date -> helper.setText(R.id.cell_title_date, formatDate(date)));
         adapter.setUpFetchListener(() -> recyclerView.post(() -> {
             Log.v(TAG, "convert: UpFetch");
             if (top[0] <= 1) {
@@ -180,6 +182,27 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
                 break;
             default:
                 string = sdfL.format(date);
+                break;
+        }
+        return string;
+    }
+
+    private String formatDate(long time) {
+        String string;
+        Date date = new Date(time);
+        calendar.setTime(date);
+        switch (now.get(DAY_OF_YEAR) - calendar.get(DAY_OF_YEAR)) {
+            case 0:
+                string = "今天";
+                break;
+            case 1:
+                string = "昨天";
+                break;
+            case 2:
+                string = "前天";
+                break;
+            default:
+                string = sdfDate.format(date);
                 break;
         }
         return string;

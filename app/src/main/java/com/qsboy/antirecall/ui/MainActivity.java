@@ -6,43 +6,41 @@
 
 package com.qsboy.antirecall.ui;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.provider.Settings;
-import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
-import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
-import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.ui.FoldingCellAdapter;
 import com.qsboy.utils.CheckAuthority;
 import com.qsboy.utils.LogcatHelper;
 import com.qsboy.utils.UpdateHelper;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+
+import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
 
     final String TAG = "Main Activity";
 
-    RecyclerView recyclerView;
-    FoldingCellAdapter adapter;
+    Page1 page1;
+    Page2 page2;
+    Page3 page3;
 
     // TODO: 09/04/2018 加一个看聊天记录的
     @Override
@@ -50,49 +48,155 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         LogcatHelper.getInstance().start();
         Date in = new Date();
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_horizontal_coordinator_ntb);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+//        final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar);
+//        collapsingToolbarLayout.setExpandedTitleColor(Color.parseColor("#009F90AF"));
+//        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
 
-//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-//                .detectLeakedSqlLiteObjects()
-//                .detectLeakedClosableObjects()
-//                .penaltyLog()
-//                .penaltyDeath()
-//                .build());
-
-
-//        BottomNavigationView navigation = findViewById(R.id.navigation);
-//        navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
-
-
-        //test
-//        prepareDataForTest();
-//        Dao dao = new Dao(this);
-//        dao.temp();
-
-        adapter = new FoldingCellAdapter(null, this);
-        List<Messages> messages = adapter.prepareData();
-        if (messages != null && messages.size() != 0)
-            adapter.addData(messages);
-        recyclerView = findViewById(R.id.main_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
-        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        // 开启滑动删除
-        adapter.enableSwipeItem();
-        adapter.setOnItemSwipeListener(onItemSwipeListener);
+        initTabBar();
+        initPage1();
 
         checkUpdate();
 
         Date out = new Date();
-        Log.d(TAG, "onCreate: time: " + (out.getTime() - in.getTime()));
+        Log.d(TAG, "onCreate: tvTime: " + (out.getTime() - in.getTime()));
     }
+
+    private Page1 initPage1() {
+        if (page1 != null)
+            return page1;
+        page1 = new Page1();
+
+        return page1;
+    }
+
+    private Page2 initPage2() {
+        if (page2 != null)
+            return page2;
+        page2 = new Page2();
+
+        return page2;
+    }
+
+    private Page3 initPage3() {
+        if (page3 != null)
+            return page3;
+        page3 = new Page3();
+
+        return page3;
+    }
+
+    private void initTabBar() {
+        final ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
+        viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+
+            @Override
+            public int getCount() {
+                return 3;
+            }
+
+            @Override
+            public Fragment getItem(int position) {
+                Fragment fragment = null;
+                switch (position) {
+                    case 0:
+                        fragment = initPage1();
+                        break;
+                    case 1:
+                        fragment = initPage2();
+                        break;
+                    case 2:
+                        fragment = initPage3();
+                        break;
+                }
+                return fragment;
+            }
+        });
+
+        final String[] colors = getResources().getStringArray(R.array.default_preview);
+
+        final NavigationTabBar navigationTabBar = findViewById(R.id.ntb_horizontal);
+        final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
+        models.add(new NavigationTabBar.Model.Builder(
+                getResources().getDrawable(R.drawable.ic_settings),
+                Color.parseColor(colors[0]))
+                .title("Heart")
+                .build());
+        models.add(new NavigationTabBar.Model.Builder(
+                getResources().getDrawable(R.drawable.ic_settings),
+                Color.parseColor(colors[1]))
+                .title("Cup")
+                .build());
+        models.add(new NavigationTabBar.Model.Builder(
+                getResources().getDrawable(R.drawable.ic_settings),
+                Color.parseColor(colors[2]))
+                .title("Diploma")
+                .build());
+
+        navigationTabBar.setModels(models);
+        navigationTabBar.setViewPager(viewPager, 0);
+
+        //IMPORTANT: ENABLE SCROLL BEHAVIOUR IN COORDINATOR LAYOUT
+        navigationTabBar.setBehaviorEnabled(true);
+
+        navigationTabBar.setOnTabBarSelectedIndexListener(new NavigationTabBar.OnTabBarSelectedIndexListener() {
+            @Override
+            public void onStartTabSelected(final NavigationTabBar.Model model, final int index) {
+            }
+
+            @Override
+            public void onEndTabSelected(final NavigationTabBar.Model model, final int index) {
+                model.hideBadge();
+            }
+        });
+        navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(final int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(final int state) {
+
+            }
+        });
+
+//        initFab(navigationTabBar);
+
+    }
+
+//    private void initFab(NavigationTabBar navigationTabBar) {
+//        final CoordinatorLayout coordinatorLayout = findViewById(R.id.parent);
+//        findViewById(R.id.fab).setOnClickListener(v -> {
+//            for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
+//                final NavigationTabBar.Model model = navigationTabBar.getModels().get(i);
+//                navigationTabBar.postDelayed(() -> {
+//                    final String title = String.valueOf(new Random().nextInt(15));
+//                    if (!model.isBadgeShowed()) {
+//                        model.setBadgeTitle(title);
+//                        model.showBadge();
+//                    } else model.updateBadgeTitle(title);
+//                }, i * 100);
+//            }
+//
+//            coordinatorLayout.postDelayed(() -> {
+//                final Snackbar snackbar = Snackbar.make(navigationTabBar, "Coordinator NTB", Snackbar.LENGTH_SHORT);
+//                snackbar.getView().setBackgroundColor(Color.parseColor("#9b92b3"));
+//                ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
+//                        .setTextColor(Color.parseColor("#423752"));
+//                snackbar.show();
+//            }, 1000);
+//        });
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,20 +224,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        super.onResume();
         Log.i(TAG, "onResume");
         if (!new CheckAuthority(this).checkAlertWindowPermission()) {
             Log.i(TAG, "authorized: show warning");
             Toast.makeText(this, "请授予悬浮窗权限\n为了能正常显示撤回的消息 谢谢", Toast.LENGTH_LONG).show();
         }
-        List<Messages> messages = adapter.prepareData();
-        if (messages != null && messages.size() != 0)
-            if (adapter.getData().size() != messages.size()) {
-                adapter.getData().clear();
-                adapter.addData(messages);
-            }
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
-        super.onResume();
     }
 
     @Override
@@ -141,49 +237,11 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
-            = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                return true;
-            case R.id.navigation_monitor:
-                return true;
-            case R.id.navigation_setting:
-                return true;
-            default:
-                return false;
-        }
-    };
-
-    private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
-
-        @Override
-        public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-            Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Dao dao = Dao.getInstance(getApplicationContext());
-            dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
-            Log.i(TAG, "clearView: " + adapter.getData());
-        }
-
-        @Override
-        public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
-
-        }
-    };
-
     private void checkUpdate() {
         //wifi环境下检查更新
         UpdateHelper helper = new UpdateHelper(this);
 //        if (helper.isWifi())
-            helper.checkUpdate();
+        helper.checkUpdate();
     }
 
     // for test
@@ -203,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
         Date out = new Date();
-        Log.i(TAG, "prepareDataForTest: time: " + (out.getTime() - in.getTime()));
+        Log.i(TAG, "prepareDataForTest: tvTime: " + (out.getTime() - in.getTime()));
     }
 
 }

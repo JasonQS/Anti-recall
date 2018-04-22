@@ -10,15 +10,15 @@
     <color name="colorPrimaryDark">#2e6099</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="bgBackSideColor">#e6ecf2</color>
     <color name="bgTitle">#6c9fd9</color>
     <color name="bgName">#e6f1ff</color>
     <color name="bgContent">#f5f7fa</color>
-    <color name="bgMain">#e6ecf2</color>
+    <color name="bgBackSideColor">#dae0e6</color>
 
     <color name="text_color_title">#FFFFFF</color>
+    <color name="text_color_title_date">#EEEEEE</color>
     <color name="text_color_name">#333333</color>
     <color name="text_color_message">#333333</color>
-    <color name="text_color_time">#808080</color>
+    <color name="text_color_time">#888888</color>
     <color name="contentDividerLine">#808080</color>
 </resources>
