@@ -45,10 +45,10 @@ public class NotificationListener extends NotificationListenerService {
         if (!"com.tencent.mm".equals(packageName))
             return false;
         if ("微信".equals(title))
-            if ("Mac 微信登录确认".equals(text) || "Windows 微信登录确认".equals(text))
+            if ("Mac 微信登录确认".equals(text) || "Windows 微信登录确认".equals(text) || "Windows WeChat登入確認".equals(text))
                 return true;
         if ("WeChat".equals(title))
-            if ("Confirm your login to Mac WeChat".equals(text) || "Mac WeChat登入確認".equals(text))
+            if ("Confirm your login to Mac WeChat".equals(text) || "Confirm your login to Windows WeChat".equals(text) || "Mac WeChat登入確認".equals(text))
                 return true;
 
         return false;
