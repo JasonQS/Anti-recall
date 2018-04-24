@@ -8,7 +8,6 @@ package com.qsboy.antirecall.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,7 +23,6 @@ import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
-import com.ramotion.foldingcell.FoldingCell;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,11 +30,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static java.util.Calendar.*;
+import static java.util.Calendar.DAY_OF_YEAR;
 
-public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
+public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
-    String TAG = "FoldingCellAdapter";
+    String TAG = "Page1Adapter";
 
     Context context;
     Dao dao;
@@ -50,7 +48,7 @@ public class FoldingCellAdapter extends BaseItemDraggableAdapter<Messages, BaseV
     static DividerItemDecoration decor;
     long down = 0;
 
-    public FoldingCellAdapter(@Nullable List<Messages> data, Context context) {
+    public Page2Adapter(@Nullable List<Messages> data, Context context) {
         super(R.layout.cell, data);
         this.context = context;
         dao = Dao.getInstance(context);

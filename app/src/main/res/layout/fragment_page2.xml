@@ -10,4 +10,6 @@
     android:layout_height="match_parent"
     tools:context="com.qsboy.antirecall.ui.Page2">
 
+    <include layout="@layout/list_messages" />
+
 </FrameLayout>

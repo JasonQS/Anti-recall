@@ -10,6 +10,10 @@
     <color name="colorPrimaryDark">#2e6099</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="colorWX">#20b920</color>
+    <color name="colorTim">#0188fb</color>
+    <color name="colorQQ">#ec3f35</color>
+
     <color name="bgTitle">#6c9fd9</color>
     <color name="bgName">#e6f1ff</color>
     <color name="bgContent">#f5f7fa</color>

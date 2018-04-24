@@ -7,7 +7,6 @@
 package com.qsboy.antirecall.ui;
 
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,8 +32,8 @@ import java.util.List;
 public class Page1 extends Fragment {
 
     String TAG = "Page1";
-    RecyclerView recyclerView;
-    FoldingCellAdapter adapter;
+    MyRecyclerView recyclerView;
+    Page1Adapter adapter;
 
     public Page1() {
     }
@@ -43,7 +42,7 @@ public class Page1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page1, container, false);
 
-        adapter = new FoldingCellAdapter(null, getActivity());
+        adapter = new Page1Adapter(null, getActivity());
         recyclerView = view.findViewById(R.id.main_recycler_view);
 
         List<Messages> messages = adapter.prepareData();
@@ -62,6 +61,7 @@ public class Page1 extends Fragment {
         return view;
     }
 
+    // TODO: 24/04/2018 refresh
     public void refresh() {
         if (adapter == null)
             return;

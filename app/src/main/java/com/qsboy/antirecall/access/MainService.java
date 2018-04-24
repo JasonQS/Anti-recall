@@ -7,8 +7,6 @@
 package com.qsboy.antirecall.access;
 
 import android.accessibilityservice.AccessibilityService;
-import android.app.Notification;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -22,9 +20,9 @@ public class MainService extends AccessibilityService {
     private String TAG = "Main Service";
     private AccessibilityNodeInfo root;
     private String packageName;
-    final String pknTim = "com.tencent.tim";
-    final String pknQQ = "com.tencent.mobileqq";
-    final String pknWX = "com.tencent.mm";
+    final String pkgTim = "com.tencent.tim";
+    final String pkgQQ = "com.tencent.mobileqq";
+    final String pkgWX = "com.tencent.mm";
     WXAutoLogin autoLogin;
 
     @Override
@@ -36,7 +34,7 @@ public class MainService extends AccessibilityService {
         }
         packageName = event.getPackageName() + "";
 
-//        if (!(packageName.equals(pknTim) || packageName.equals(pknQQ) || packageName.equals(pknWX)))
+//        if (!(packageName.equals(pkgTim) || packageName.equals(pkgQQ) || packageName.equals(pkgWX)))
 //            return;
 
         root = getRootInActiveWindow();
@@ -76,11 +74,11 @@ public class MainService extends AccessibilityService {
         CharSequence cs = event.getSource().getText();
 
         switch (packageName) {
-            case pknTim:
+            case pkgTim:
                 Log.d(TAG, "\nonContentChanged: " + cs);
                 new TimClient(this).onContentChanged(root);
                 break;
-            case pknQQ:
+            case pkgQQ:
                 Log.d(TAG, "\nonContentChanged: " + cs);
                 new QQClient(this).onContentChanged(root);
                 break;
@@ -91,13 +89,13 @@ public class MainService extends AccessibilityService {
         Log.i(TAG, "onClick " + event.getText());
 //        NodesInfo.show(root, "d");
         switch (packageName) {
-            case pknTim:
+            case pkgTim:
                 new TimClient(this).findRecalls(root, event);
                 break;
-            case pknQQ:
+            case pkgQQ:
                 new QQClient(this).findRecalls(root, event);
                 break;
-            case pknWX:
+            case pkgWX:
                 NodesInfo.show(root, TAG);
 
         }
@@ -114,13 +112,16 @@ public class MainService extends AccessibilityService {
         }
         Log.i(TAG, "onNotification: " + packageName + " | " + texts);
         switch (packageName) {
-            case pknTim:
+            case pkgTim:
 //                new TimClient(this).onContentChanged(root);
                 new TimClient(this).onNotificationChanged(event);
                 break;
-            case pknQQ:
+            case pkgQQ:
 //                new QQClient(this).onContentChanged(root);
                 new QQClient(this).onNotificationChanged(event);
+                break;
+            case pkgWX:
+                new WXClient(this).onNotificationChanged(event);
                 break;
         }
     }
@@ -154,7 +155,7 @@ public class MainService extends AccessibilityService {
                 if (!node.getChild(4).isClickable())
                     return;
                 loginBtn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                Log.i(TAG, "autoLoginWX: click");
+                Log.w(TAG, "autoLoginWX: Perform Click");
                 time = 0;
             }
         }

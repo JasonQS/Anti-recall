@@ -9,6 +9,7 @@ package com.qsboy.antirecall.access;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -18,9 +19,7 @@ import com.qsboy.utils.NodesInfo;
 import com.qsboy.utils.XToast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.qsboy.utils.ImageHelper.searchImageFile;
 
@@ -69,8 +68,6 @@ public abstract class Client {
         private String prevMessage;
         private String nextSubName;
         private String prevSubName;
-        //        private int prevPos;
-//        private int nextPos;
         private int unknownRecalls;
         private ArrayList<String> subNameArray = new ArrayList<>();
 
@@ -148,39 +145,42 @@ public abstract class Client {
                 }
             }
             Log.i(TAG, "findRecallByContext: [ " + prevPos + " - " + nextPos + " ]");
-            Map<Integer, Messages> map = new HashMap<>();
 
-            for (int i = 0, j = 0, k = 0; k < 10; k++) {
-                String subName = subNameArray.get(i);
-                Log.i(TAG, "findRecallByContext: [" + i + " " + j + "] - " + " [" + (prevPos + i) + " " + (nextPos - j) + "]" + subName);
-                Messages msgPrev = findNext(prevPos + i, subName);
-                Messages msgNext = findNext(nextPos - j, subName);
-                if (msgPrev != null) {
-                    if (!map.containsKey(i))
-                        map.put(i, msgPrev);
-                    i++;
-                    Log.i(TAG, "map: " + map);
-                    if (i == unknownRecalls)
-                        break;
+            if (prevPos == -1) {
+                // TODO: 23/04/2018  
+                // 上文或者下文没截到 导致distance过大
+            } else {
+                SparseArray<Messages> map = new SparseArray<>();
+                for (int i = 0, j = 0, k = 0; k < 10; k++) {
+                    String subName = subNameArray.get(i);
+                    Log.i(TAG, "findRecallByContext: [" + i + " " + j + "] - " + " [" + (prevPos + i) + " " + (nextPos - j) + "]" + subName);
+                    Messages msgPrev = findNext(prevPos + i, subName);
+                    Messages msgNext = findNext(nextPos - j, subName);
+                    if (msgPrev != null) {
+                        if (map.get(i) == null)
+                            map.put(i, msgPrev);
+                        i++;
+                        Log.i(TAG, "map: " + map);
+                        if (i == unknownRecalls)
+                            break;
+                    }
+                    if (msgNext != null) {
+                        int index = unknownRecalls - j;
+                        if (map.get(index) == null)
+                            map.put(index, msgNext);
+                        j++;
+                        Log.i(TAG, "map: " + map);
+                        if (j == unknownRecalls)
+                            break;
+                    }
                 }
-                if (msgNext != null) {
-                    // TODO: 改用其他数据结构
-                    int index = unknownRecalls - j;
-                    if (!map.containsKey(index))
-                        map.put(index, msgNext);
-                    j++;
-                    Log.i(TAG, "map: " + map);
-                    if (j == unknownRecalls)
-                        break;
-                }
+                Log.i(TAG, "final map: " + map);
+                if (map.size() == 0)
+                    notFound();
+                else
+                    for (int i = 0; i < unknownRecalls; i++)
+                        addRecall(map.get(i));
             }
-            Log.i(TAG, "final map: " + map);
-            if (map.size() == 0)
-                notFound();
-            else
-                for (int i = 0; i < unknownRecalls; i++)
-                    addRecall(map.get(i));
-
         }
 
         private void findRecallByPrev(int prevPos) {
@@ -321,10 +321,6 @@ public abstract class Client {
             }
             unknownRecalls = botPos - topPos - 1;
         }
-    }
-
-    private class recallList extends ArrayList {
-
     }
 
     public void onContentChanged(AccessibilityNodeInfo root) {
