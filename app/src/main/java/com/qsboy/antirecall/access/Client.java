@@ -105,12 +105,15 @@ public abstract class Client {
 
             if (nextList.size() == 0) {
                 // 没有下文
-                if (prevList.size() == 0)
+                if (prevList.size() == 0) {
                     // 没有上下文
-                    notFound();
-                    // TODO: 查找上一条
-//                    XToast.build(context, "不能全屏撤回哦").show();
-                else
+                    Messages message = findPrev(dao.getMaxID(title, isWX), subName);
+                    if (message != null) {
+                        addRecall(message);
+                        XToast.build(context, "该条消息不保证正确").show();
+                    } else
+                        notFound();
+                } else
                     // 只有上文
                     findRecallByPrev(prevList.get(0));
             } else
@@ -146,10 +149,11 @@ public abstract class Client {
             }
             Log.i(TAG, "findRecallByContext: [ " + prevPos + " - " + nextPos + " ]");
 
-            if (prevPos == -1) {
-                // TODO: 23/04/2018  
+            if (prevPos == -1)
                 // 上文或者下文没截到 导致distance过大
-            } else {
+                // 但是极大概率是上文沒找到 所以按照只有下文的情况找
+                findRecallByNext(nextList.get(0));
+            else {
                 SparseArray<Messages> map = new SparseArray<>();
                 for (int i = 0, j = 0, k = 0; k < 10; k++) {
                     String subName = subNameArray.get(i);
@@ -230,9 +234,9 @@ public abstract class Client {
         private Messages findPrev(int nextPos, String subName) {
             Log.i(TAG, "findPrev: " + nextPos + " - " + subName);
             Messages messages = null;
-            // 和真正要找的消息之间可能会参杂着误加的消息 所以需要一个范围
-            // 但为了性能 所以 不用 while(true) 而用 for i 20
-            for (int i = 0; i < 20; i++) {
+            // 和真正要找的消息之间可能会参杂着误加的消息 所以需要一个范围 但不会太多
+            int i;
+            for (i = 0; i < 10; i++) {
                 nextPos--;
                 // 到底了
                 if (nextPos == 0) {
@@ -248,6 +252,8 @@ public abstract class Client {
                 // 找到了
                 break;
             }
+            if (i == 10)
+                messages = null;
             return messages;
         }
 
@@ -260,7 +266,7 @@ public abstract class Client {
                 notFound();
                 return;
             }
-            Log.w(TAG, "addRecall: " + messages.getMessage());
+            Log.e(TAG, "addRecall: " + messages.getMessage());
             if ("[图片]".equals(messages.getMessage())) {
                 messages.setImages(searchImageFile(context, messages.getTime(), client));
                 XToast.build(context, messages.getSubName() + ": [图片]" + messages.getImage()).show();
@@ -326,7 +332,6 @@ public abstract class Client {
     public void onContentChanged(AccessibilityNodeInfo root) {
         if (!init(root))
             return;
-        NodesInfo.show(root, TAG);
         if (isOtherMsg) {
             onOtherMsg();
             return;
@@ -381,7 +386,6 @@ public abstract class Client {
             message = string.substring(i + 2);
             subName = title;
             //是群消息
-            // TODO: 当前是 QQ 群 微信群待测试
             int j = title.indexOf('(');
             if (j > 0 && title.charAt(i - 1) == ')') {
                 message = string.substring(i + 1);
