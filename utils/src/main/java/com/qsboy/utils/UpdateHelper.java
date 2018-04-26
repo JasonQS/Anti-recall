@@ -6,7 +6,6 @@
 
 package com.qsboy.utils;
 
-import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,9 +17,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
@@ -36,7 +32,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
