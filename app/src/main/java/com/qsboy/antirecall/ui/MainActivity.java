@@ -39,8 +39,6 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = "Main Activity";
 
     Page1 page1;
-    Page2 page2;
-    Page3 page3;
 
     // TODO: 09/04/2018 加一个看聊天记录的
     @Override
@@ -48,16 +46,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         LogcatHelper.getInstance().start();
         Date in = new Date();
-//        setContentView(R.layout.activity_main);
-        setContentView(R.layout.activity_horizontal_coordinator_ntb);
+        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar);
-//        collapsingToolbarLayout.setExpandedTitleColor(Color.parseColor("#009F90AF"));
-//        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
-
-        initTabBar();
         initPage1();
 
         checkUpdate();
@@ -73,130 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         return page1;
     }
-
-    private Page2 initPage2() {
-        if (page2 != null)
-            return page2;
-        page2 = new Page2();
-
-        return page2;
-    }
-
-    private Page3 initPage3() {
-        if (page3 != null)
-            return page3;
-        page3 = new Page3();
-
-        return page3;
-    }
-
-    private void initTabBar() {
-        final ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
-        viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-
-            @Override
-            public int getCount() {
-                return 3;
-            }
-
-            @Override
-            public Fragment getItem(int position) {
-                Fragment fragment = null;
-                switch (position) {
-                    case 0:
-                        fragment = initPage1();
-                        break;
-                    case 1:
-                        fragment = initPage2();
-                        break;
-                    case 2:
-                        fragment = initPage3();
-                        break;
-                }
-                return fragment;
-            }
-        });
-
-        final String[] colors = getResources().getStringArray(R.array.default_preview);
-
-        final NavigationTabBar navigationTabBar = findViewById(R.id.ntb_horizontal);
-        final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
-        models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_settings),
-                Color.parseColor(colors[0]))
-                .title("Heart")
-                .build());
-        models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_settings),
-                Color.parseColor(colors[1]))
-                .title("Cup")
-                .build());
-        models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_settings),
-                Color.parseColor(colors[2]))
-                .title("Diploma")
-                .build());
-
-        navigationTabBar.setModels(models);
-        navigationTabBar.setViewPager(viewPager, 0);
-
-        //IMPORTANT: ENABLE SCROLL BEHAVIOUR IN COORDINATOR LAYOUT
-        navigationTabBar.setBehaviorEnabled(true);
-
-        navigationTabBar.setOnTabBarSelectedIndexListener(new NavigationTabBar.OnTabBarSelectedIndexListener() {
-            @Override
-            public void onStartTabSelected(final NavigationTabBar.Model model, final int index) {
-            }
-
-            @Override
-            public void onEndTabSelected(final NavigationTabBar.Model model, final int index) {
-                model.hideBadge();
-            }
-        });
-        navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(final int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(final int state) {
-
-            }
-        });
-
-//        initFab(navigationTabBar);
-
-    }
-
-//    private void initFab(NavigationTabBar navigationTabBar) {
-//        final CoordinatorLayout coordinatorLayout = findViewById(R.id.parent);
-//        findViewById(R.id.fab).setOnClickListener(v -> {
-//            for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
-//                final NavigationTabBar.Model model = navigationTabBar.getModels().get(i);
-//                navigationTabBar.postDelayed(() -> {
-//                    final String title = String.valueOf(new Random().nextInt(15));
-//                    if (!model.isBadgeShowed()) {
-//                        model.setBadgeTitle(title);
-//                        model.showBadge();
-//                    } else model.updateBadgeTitle(title);
-//                }, i * 100);
-//            }
-//
-//            coordinatorLayout.postDelayed(() -> {
-//                final Snackbar snackbar = Snackbar.make(navigationTabBar, "Coordinator NTB", Snackbar.LENGTH_SHORT);
-//                snackbar.getView().setBackgroundColor(Color.parseColor("#9b92b3"));
-//                ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
-//                        .setTextColor(Color.parseColor("#423752"));
-//                snackbar.show();
-//            }, 1000);
-//        });
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
