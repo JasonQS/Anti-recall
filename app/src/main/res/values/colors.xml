@@ -6,18 +6,18 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#437dbf</color>
-    <color name="colorPrimaryDark">#2e6099</color>
+    <color name="colorPrimary">#437DBF</color>
+    <color name="colorPrimaryDark">#2E6099</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="colorWX">#20b920</color>
-    <color name="colorTim">#0188fb</color>
-    <color name="colorQQ">#ec3f35</color>
+    <color name="colorWX">#BB20B920</color>
+    <color name="colorTim">#BB0188FB</color>
+    <color name="colorQQ">#BBEC3F35</color>
 
-    <color name="bgTitle">#6c9fd9</color>
-    <color name="bgName">#e6f1ff</color>
-    <color name="bgContent">#f5f7fa</color>
-    <color name="bgBackSideColor">#dae0e6</color>
+    <color name="bgTitle">#6C9FD9</color>
+    <color name="bgName">#E6F1FF</color>
+    <color name="bgContent">#F5F7FA</color>
+    <color name="bgBackSideColor">#DAE0E6</color>
 
     <color name="text_color_title">#FFFFFF</color>
     <color name="text_color_title_date">#EEEEEE</color>

@@ -12,7 +12,7 @@ import android.util.Log;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.utils.ImageHelper;
 
@@ -29,7 +29,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     String TAG = "MultiMessagesAdapter";
 
     Context context;
-    Dao dao;
+    QQDao QQDao;
     int day;
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat sdfSec = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
@@ -40,7 +40,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     public MultiMessagesAdapter(List<Messages> data, Context context) {
         super(R.layout.item_message, data);
         this.context = context;
-        dao = Dao.getInstance(context);
+        QQDao = QQDao.getInstance(context);
     }
 
     @Override

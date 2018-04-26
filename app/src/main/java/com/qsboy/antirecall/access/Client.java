@@ -13,7 +13,7 @@ import android.util.SparseArray;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.utils.NodesInfo;
 import com.qsboy.utils.XToast;
@@ -45,11 +45,11 @@ public abstract class Client {
     boolean isOtherMsg;
     boolean isWX;
 
-    private Dao dao;
+    private QQDao QQDao;
     private Context context;
 
     public Client(Context context) {
-        dao = Dao.getInstance(context);
+        QQDao = QQDao.getInstance(context);
         this.context = context;
     }
 
@@ -98,8 +98,8 @@ public abstract class Client {
             }
 
             // TODO: 如果上一条是图片 name 根据上上条找
-            ArrayList<Integer> prevList = dao.queryByMessage(title, isWX, prevSubName, prevMessage);
-            ArrayList<Integer> nextList = dao.queryByMessage(title, isWX, nextSubName, nextMessage);
+            ArrayList<Integer> prevList = QQDao.queryByMessage(title, prevSubName, prevMessage);
+            ArrayList<Integer> nextList = QQDao.queryByMessage(title, nextSubName, nextMessage);
             Log.i(TAG, "findRecalls: prevList: " + prevList);
             Log.i(TAG, "findRecalls: nextList: " + nextList);
 
@@ -204,14 +204,14 @@ public abstract class Client {
         private Messages findNext(int prevPos, String subName) {
             Log.i(TAG, "findNext: " + prevPos + " - " + subName);
             Messages messages = null;
-            int maxID = dao.getMaxID(title, isWX);
+            int maxID = QQDao.getMaxID(title);
             for (int i = 0; i < 20; i++) {
                 prevPos++;
                 if (prevPos > maxID) {
                     Log.i(TAG, "findNext: to the end: " + maxID);
                     return null;
                 }
-                if ((messages = dao.queryById(title, isWX, prevPos)) == null)
+                if ((messages = QQDao.queryById(title, prevPos)) == null)
                     continue;
                 if (!messages.getSubName().equals(subName))
                     continue;
@@ -240,7 +240,7 @@ public abstract class Client {
                     return null;
                 }
                 // 中间可能删过消息
-                if ((messages = dao.queryById(title, isWX, nextPos)) == null)
+                if ((messages = QQDao.queryById(title, nextPos)) == null)
                     continue;
                 // 判断撤回人名字是否一致
                 if (!messages.getSubName().equals(subName))
@@ -260,16 +260,16 @@ public abstract class Client {
                 notFound();
                 return;
             }
-            Log.w(TAG, "addRecall: " + messages.getMessage());
+            Log.e(TAG, "addRecall: " + messages.getMessage());
             if ("[图片]".equals(messages.getMessage())) {
                 messages.setImages(searchImageFile(context, messages.getTime(), client));
                 XToast.build(context, messages.getSubName() + ": [图片]" + messages.getImage()).show();
             } else {
                 XToast.build(context, messages.getSubName() + ": " + messages.getMessage()).show();
             }
-            if (dao.existRecall(messages))
+            if (QQDao.existRecall(messages))
                 return;
-            dao.addRecall(messages, prevSubName, prevMessage, nextSubName, nextMessage);
+            QQDao.addRecall(messages, prevSubName, prevMessage, nextSubName, nextMessage);
         }
 
         private void initContext(AccessibilityEvent event) {
@@ -326,7 +326,6 @@ public abstract class Client {
     public void onContentChanged(AccessibilityNodeInfo root) {
         if (!init(root))
             return;
-        NodesInfo.show(root, TAG);
         if (isOtherMsg) {
             onOtherMsg();
             return;
@@ -412,7 +411,7 @@ public abstract class Client {
                 break;
             title = string.substring(0, j);
             subName = string.substring(j + 1, i);
-            if (!dao.existTable(title, isWX)) {
+            if (!QQDao.existTable(title)) {
                 Log.i(TAG, "onOtherMsg: " + title + " " + subName);
                 continue;
             }
@@ -433,14 +432,14 @@ public abstract class Client {
             return;
         if (!force) {
             Log.d(TAG, "Add message: message: " + message + "\t prevMessage: " + pMessage);
-            if (dao.existMessage(title, isWX, message, pMessage, subName, pSubName)) {
+            if (QQDao.existMessage(title, message, pMessage, subName, pSubName)) {
                 Log.d(TAG, "addMsg: already exits");
                 return;
             }
         }
         added = temp;
         Log.e(TAG, "Add message: " + added);
-        dao.addMessage(title, subName, isWX, message);
+        QQDao.addMessage(title, subName, message);
     }
 
 }

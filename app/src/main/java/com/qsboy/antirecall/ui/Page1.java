@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
 
 import java.util.List;
@@ -90,7 +90,7 @@ public class Page1 extends Fragment {
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
             Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Dao dao = Dao.getInstance(getActivity());
+            QQDao dao = QQDao.getInstance(getActivity());
             dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
             Log.i(TAG, "clearView: " + adapter.getData());
         }

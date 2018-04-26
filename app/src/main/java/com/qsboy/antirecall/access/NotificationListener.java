@@ -14,7 +14,6 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 
-@SuppressLint("OverrideAbstract")
 public class NotificationListener extends NotificationListenerService {
 
     private String packageName;
@@ -38,6 +37,11 @@ public class NotificationListener extends NotificationListenerService {
                 " \nText : " + text);
 
         super.onNotificationPosted(sbn);
+    }
+
+    @Override
+    public void onNotificationRemoved(StatusBarNotification sbn) {
+        super.onNotificationRemoved(sbn);
     }
 
     public boolean isPCApplyLogin() {

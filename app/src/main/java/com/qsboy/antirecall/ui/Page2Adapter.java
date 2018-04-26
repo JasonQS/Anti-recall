@@ -21,8 +21,9 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
+import com.qsboy.antirecall.db.WeChatDao;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,7 +38,7 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
     String TAG = "Page1Adapter";
 
     Context context;
-    Dao dao;
+    WeChatDao dao;
     Messages data;
     Calendar now = Calendar.getInstance();
     Calendar calendar = Calendar.getInstance();
@@ -45,14 +46,14 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
     SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
     SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    static DividerItemDecoration decor;
+    static DividerItemDecoration divider;
     long down = 0;
 
     public Page2Adapter(@Nullable List<Messages> data, Context context) {
         super(R.layout.cell, data);
         this.context = context;
-        dao = Dao.getInstance(context);
-        decor = new DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL);
+        dao = WeChatDao.getInstance(context);
+        divider = new DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
 
         final int[] top = {item.getId()};
         final int[] bot = {item.getId(), 1};
-        int max = dao.getMaxID(item.getName(), item.isWX());
+        int max = dao.getMaxID(item.getName());
         adapter.addData(item);
         adapter.setStartUpFetchPosition(3);
         adapter.setUpFetchEnable(true);
@@ -83,7 +84,7 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
                 adapter.setUpFetchEnable(false);
                 return;
             }
-            while ((data = dao.queryById(item.getName(), item.isWX(), --top[0])) == null) ;
+            while ((data = dao.queryById(item.getName(), --top[0])) == null) ;
             adapter.addData(0, data);
             adapter.setUpFetching(false);
         }));
@@ -102,14 +103,14 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
                 return;
             }
             bot[1] = 0;
-            while ((data = dao.queryById(item.getName(), item.isWX(), ++bot[0])) == null) ;
+            while ((data = dao.queryById(item.getName(), ++bot[0])) == null) ;
             adapter.addData(data);
             adapter.loadMoreComplete();
             bot[1] = 1;
         }), recyclerView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.addItemDecoration(decor);
+        recyclerView.addItemDecoration(divider);
         recyclerView.setAdapter(adapter);
 
         // 滑动删除
@@ -128,15 +129,15 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
 
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+                // TODO: 26/04/2018
                 Log.i(TAG, "onItemSwiped: pos: " + pos);
-                List<Messages> data = adapter.getData();
-                if (data.size() <= pos) {
-                    Log.i(TAG, "onItemSwiped: size is too small");
-                    return;
-                }
-                Dao dao = Dao.getInstance(context);
-                Messages msg = data.get(pos);
-                dao.deleteMessage(msg.getName(), msg.isWX(), msg.getId());
+//                List<Messages> data = adapter.getData();
+//                if (data.size() <= pos) {
+//                    Log.i(TAG, "onItemSwiped: size is too small");
+//                    return;
+//                }
+//                Messages msg = data.get(pos);
+//                dao.deleteMessage(msg.getName(), msg.getId());
             }
 
             @Override
@@ -161,7 +162,7 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
     }
 
     public List<Messages> prepareData() {
-        return dao.queryAllRecalls();
+        return dao.queryAllMessages();
     }
 
     private String formatTime(long time) {

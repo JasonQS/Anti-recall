@@ -22,8 +22,9 @@ import android.view.ViewGroup;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
+import com.qsboy.antirecall.db.WeChatDao;
 
 import java.util.List;
 
@@ -95,9 +96,10 @@ public class Page2 extends Fragment {
 
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+            // TODO: 26/04/2018
             Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Dao dao = Dao.getInstance(getActivity());
-            dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
+//            WeChatDao dao = WeChatDao.getInstance(getActivity());
+//            dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
             Log.i(TAG, "clearView: " + adapter.getData());
         }
 

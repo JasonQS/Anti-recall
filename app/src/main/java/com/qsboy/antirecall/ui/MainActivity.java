@@ -7,7 +7,6 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
@@ -16,14 +15,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.utils.CheckAuthority;
 import com.qsboy.utils.LogcatHelper;
 import com.qsboy.utils.UpdateHelper;
@@ -63,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         checkUpdate();
 
         Date out = new Date();
-        Log.d(TAG, "onCreate: tvTime: " + (out.getTime() - in.getTime()));
+        Log.d(TAG, "onCreateTime: " + (out.getTime() - in.getTime()));
     }
 
     private Page1 initPage1() {
@@ -117,24 +114,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final String[] colors = getResources().getStringArray(R.array.default_preview);
-
         final NavigationTabBar navigationTabBar = findViewById(R.id.ntb_horizontal);
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_settings),
-                Color.parseColor(colors[0]))
-                .title("Heart")
+                getResources().getDrawable(R.drawable.ic_qq),
+                getResources().getColor(R.color.colorQQ))
+                .title("QQ/Tim")
+                .build());
+        models.add(new NavigationTabBar.Model.Builder(
+                getResources().getDrawable(R.drawable.ic_wechat_),
+                getResources().getColor(R.color.colorWX))
+                .title("WeChat")
                 .build());
         models.add(new NavigationTabBar.Model.Builder(
                 getResources().getDrawable(R.drawable.ic_settings),
-                Color.parseColor(colors[1]))
-                .title("Cup")
-                .build());
-        models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_settings),
-                Color.parseColor(colors[2]))
-                .title("Diploma")
+                getResources().getColor(R.color.colorTim))
+                .title("Setting")
                 .build());
 
         navigationTabBar.setModels(models);
@@ -247,17 +242,17 @@ public class MainActivity extends AppCompatActivity {
     // for test
     public void prepareDataForTest() {
         Date in = new Date();
-        Dao dao = Dao.getInstance(this);
+        QQDao dao = QQDao.getInstance(this);
 //        dao.deleteAll();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -9);
         for (int i = 1; i < 200; ) {
             for (int j = 1; j < 21; j++, i++) {
-                dao.addMessage("Jason", "qs", false, String.valueOf(i), calendar.getTime().getTime());
+                dao.addMessage("Jason", "qs", String.valueOf(i), calendar.getTime().getTime());
                 calendar.add(Calendar.MINUTE, 3);
                 calendar.add(Calendar.SECOND, 3);
             }
-            dao.addRecall(i, "Jason", "qs", String.valueOf(i - 1), false, calendar.getTime().getTime(), null, null, null, null, null);
+            dao.addRecall(i, "Jason", "qs", String.valueOf(i - 1), calendar.getTime().getTime(), null, null, null, null, null);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
         Date out = new Date();
