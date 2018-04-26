@@ -51,13 +51,21 @@ public class QQDao {
     }
 
     private void createTableIfNotExists(String name) {
-        String sqlCreateTable = "CREATE TABLE IF NOT EXISTS `" + name + "` (" +
+        String sqlCreateTable = "CREATE TABLE IF NOT EXISTS " + getSafeName(name) + " (" +
                 Column_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 Column_SubName + " TEXT, " +
                 Column_Message + " TEXT NOT NULL, " +
                 Column_Time + " REAL NOT NULL)";
 
         db.execSQL(sqlCreateTable);
+    }
+
+    private String getSafeName(String name) {
+        while (name.startsWith("'") || name.startsWith("\""))
+            name = name.substring(1);
+        while (name.endsWith("'") || name.endsWith("\""))
+            name = name.substring(0, name.length() - 1);
+        return "'" + name + "'";
     }
 
     /**
@@ -77,7 +85,7 @@ public class QQDao {
         values.put(Column_SubName, subName);
         values.put(Column_Message, message);
         values.put(Column_Time, time);
-        db.insert(name, null, values);
+        db.insert(getSafeName(name), null, values);
     }
 
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
@@ -110,8 +118,7 @@ public class QQDao {
         ArrayList<Integer> list = new ArrayList<>();
         if (message == null || subName == null || name == null)
             return list;
-        cursor = db.query(
-                name,
+        cursor = db.query(getSafeName(name),
                 new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",
                 new String[]{message, subName},
@@ -131,7 +138,7 @@ public class QQDao {
 
     public Messages queryById(String name, int id) {
         // SELECT * FROM tableName WHERE Id = id
-        cursor = db.query(name,
+        cursor = db.query(getSafeName(name),
                 null,
                 Column_ID + " = ?",
                 new String[]{String.valueOf(id)},
@@ -181,7 +188,7 @@ public class QQDao {
     }
 
     public boolean existTable(String name) {
-        cursor = db.rawQuery("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = '" + name + "'", null);
+        cursor = db.rawQuery("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = " + getSafeName(name), null);
         if (!cursor.moveToFirst()) return false;
         int count = cursor.getInt(0);
         return count > 0;
@@ -192,7 +199,7 @@ public class QQDao {
             return false;
         if (prevMessage == null || prevSubName == null)
             return false;
-        cursor = db.query(name,
+        cursor = db.query(getSafeName(name),
                 new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",
                 new String[]{message, subName},
@@ -202,7 +209,7 @@ public class QQDao {
         if (!cursor.moveToFirst())
             return false;
         int idMsg = cursor.getInt(0);
-        cursor = db.query(name,
+        cursor = db.query(getSafeName(name),
                 new String[]{Column_ID},
                 Column_Message + " = ? and " + Column_SubName + " = ?",
                 new String[]{prevMessage, prevSubName},
@@ -236,7 +243,7 @@ public class QQDao {
     public void deleteMessage(String name, int id) {
         String selection = Column_ID + " = ?";
         String[] selectionArgs = {String.valueOf(id)};
-        db.delete(name, selection, selectionArgs);
+        db.delete(getSafeName(name), selection, selectionArgs);
     }
 
     public void deleteRecall(int id) {
@@ -259,7 +266,7 @@ public class QQDao {
     }
 
     public int getMaxID(String name) {
-        cursor = db.rawQuery("SELECT MAX(id) FROM '" + name + "'", null);
+        cursor = db.rawQuery("SELECT MAX(id) FROM " + getSafeName(name), null);
         if (!cursor.moveToFirst()) {
             return 0;
         }
