@@ -25,14 +25,13 @@ import static com.qsboy.utils.ImageHelper.searchImageFile;
 
 public abstract class Client {
 
+    static String added = "";
     AccessibilityNodeInfo titleNode;
     AccessibilityNodeInfo chatGroupViewNode;
     AccessibilityNodeInfo redPegNode;
     AccessibilityNodeInfo otherMsgNode;
     AccessibilityNodeInfo inputNode;
     AccessibilityNodeInfo sendBtnNode;
-
-    static String added = "";
     String TAG = "Client";
     String title = "";
     String subName = "";
@@ -59,6 +58,124 @@ public abstract class Client {
 
     void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
         new Recalls().findRecalls(root, event);
+    }
+
+    public void onContentChanged(AccessibilityNodeInfo root) {
+        if (!init(root))
+            return;
+        if (isOtherMsg) {
+            onOtherMsg();
+            return;
+        }
+
+        AccessibilityNodeInfo group;
+        int index = chatGroupViewNode.getChildCount() - 2;
+        // 如果屏幕内有大于1条消息的话 根据上下两条消息查重
+        if (index > 0) {
+            group = chatGroupViewNode.getChild(index);
+            if (group == null)
+                return;
+            parser(group);
+            pMessage = message;
+            pSubName = subName;
+        }
+
+        group = chatGroupViewNode.getChild(chatGroupViewNode.getChildCount() - 1);
+        if (group == null)
+            return;
+        parser(group);
+
+        addMsg(false);
+
+    }
+
+    public void onNotificationChanged(AccessibilityEvent event) {
+        List<CharSequence> texts = event.getText();
+        if (texts.isEmpty() || texts.size() == 0)
+            return;
+        for (CharSequence text : texts) {
+            String string = text + "";
+            Log.w(TAG, "Notification text: " + string);
+            if (string.equals("你的帐号在电脑登录"))
+                return;
+
+            StringBuilder builder = new StringBuilder(string);
+            int i1 = string.indexOf("[特别关注]");
+            int i2 = string.indexOf("[有新回复]");
+            if (i1 != -1 && i1 + 6 < string.length())
+                builder.delete(i1, i1 + 6);
+            if (i2 != -1 && i2 + 6 < string.length())
+                builder.delete(i2, i2 + 6);
+            string = builder.toString();
+
+            int i = string.indexOf(':');
+            if (i < 1) {
+                Log.d(TAG, "Notification does not contains ':'");
+                return;
+            }
+            title = string.substring(0, i);
+            message = string.substring(i + 2);
+            subName = title;
+            //是群消息
+            int j = title.indexOf('(');
+            if (j > 0 && title.charAt(i - 1) == ')') {
+                message = string.substring(i + 1);
+                subName = title.substring(0, j);
+                title = title.substring(j + 1, i - 1);
+            }
+
+            addMsg(true);
+        }
+    }
+
+    /**
+     * 判断是否是在其他人的聊天界面收到了消息
+     */
+    private void onOtherMsg() {
+        if (otherMsgNode == null)
+            return;
+        String string = otherMsgNode.getText() + "";
+        Log.i(TAG, "onOtherMsg: " + string);
+        int i = string.indexOf(":");
+        int k = string.lastIndexOf("-");
+        //如果在联系人列表里出现过的,那么就是在其他人的聊天界面
+        message = string.substring(i + 1);
+        //包含"-" 可能是群
+        for (int l = 0, j = string.indexOf("-", l); ; l++) {
+            // "-"存在, l 不大于 lastIndex, - 在 : 前面
+            if (j < 0 || l > k || k > i)
+                break;
+            title = string.substring(0, j);
+            subName = string.substring(j + 1, i);
+            if (!dao.existTable(title)) {
+                Log.i(TAG, "onOtherMsg: " + title + " " + subName);
+                continue;
+            }
+            addMsg(false);
+            return;
+        }
+        title = string.substring(0, i);
+        addMsg(false);
+    }
+
+    // TODO: 如果有 qq 表情的话(非常规 ascii) 把它转义成 斜杠+描述 的形式
+    public void addMsg(boolean force) {
+        String temp = title + "-" + subName + ": " + message;
+        if (added.equals(temp))
+            return;
+        // 不添加"撤回了一条消息"
+        if (RECALL.equals(message))
+            return;
+        if (!force) {
+            Log.d(TAG, "Add message: message: " + message + "\t prevMessage: " + pMessage);
+            if (dao.existMessage(title, message, pMessage, subName, pSubName)) {
+                Log.d(TAG, "addMsg: already exits");
+                return;
+            }
+        }
+        added = temp;
+        Log.e(TAG, "Add message: " + added);
+        dao.addMessage(title, subName, message);
     }
 
     private class Recalls {
@@ -330,124 +447,6 @@ public abstract class Client {
             }
             unknownRecalls = botPos - topPos - 1;
         }
-    }
-
-    public void onContentChanged(AccessibilityNodeInfo root) {
-        if (!init(root))
-            return;
-        if (isOtherMsg) {
-            onOtherMsg();
-            return;
-        }
-
-        AccessibilityNodeInfo group;
-        int index = chatGroupViewNode.getChildCount() - 2;
-        // 如果屏幕内有大于1条消息的话 根据上下两条消息查重
-        if (index > 0) {
-            group = chatGroupViewNode.getChild(index);
-            if (group == null)
-                return;
-            parser(group);
-            pMessage = message;
-            pSubName = subName;
-        }
-
-        group = chatGroupViewNode.getChild(chatGroupViewNode.getChildCount() - 1);
-        if (group == null)
-            return;
-        parser(group);
-
-        addMsg(false);
-
-    }
-
-    public void onNotificationChanged(AccessibilityEvent event) {
-        List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0)
-            return;
-        for (CharSequence text : texts) {
-            String string = text + "";
-            Log.w(TAG, "Notification text: " + string);
-            if (string.equals("你的帐号在电脑登录"))
-                return;
-
-            StringBuilder builder = new StringBuilder(string);
-            int i1 = string.indexOf("[特别关注]");
-            int i2 = string.indexOf("[有新回复]");
-            if (i1 != -1 && i1 + 6 < string.length())
-                builder.delete(i1, i1 + 6);
-            if (i2 != -1 && i2 + 6 < string.length())
-                builder.delete(i2, i2 + 6);
-            string = builder.toString();
-
-            int i = string.indexOf(':');
-            if (i < 1) {
-                Log.d(TAG, "Notification does not contains ':'");
-                return;
-            }
-            title = string.substring(0, i);
-            message = string.substring(i + 2);
-            subName = title;
-            //是群消息
-            int j = title.indexOf('(');
-            if (j > 0 && title.charAt(i - 1) == ')') {
-                message = string.substring(i + 1);
-                subName = title.substring(0, j);
-                title = title.substring(j + 1, i - 1);
-            }
-
-            addMsg(true);
-        }
-    }
-
-    /**
-     * 判断是否是在其他人的聊天界面收到了消息
-     */
-    private void onOtherMsg() {
-        if (otherMsgNode == null)
-            return;
-        String string = otherMsgNode.getText() + "";
-        Log.i(TAG, "onOtherMsg: " + string);
-        int i = string.indexOf(":");
-        int k = string.lastIndexOf("-");
-        //如果在联系人列表里出现过的,那么就是在其他人的聊天界面
-        message = string.substring(i + 1);
-        //包含"-" 可能是群
-        for (int l = 0, j = string.indexOf("-", l); ; l++) {
-            // "-"存在, l 不大于 lastIndex, - 在 : 前面
-            if (j < 0 || l > k || k > i)
-                break;
-            title = string.substring(0, j);
-            subName = string.substring(j + 1, i);
-            if (!dao.existTable(title)) {
-                Log.i(TAG, "onOtherMsg: " + title + " " + subName);
-                continue;
-            }
-            addMsg(false);
-            return;
-        }
-        title = string.substring(0, i);
-        addMsg(false);
-    }
-
-    // TODO: 如果有 qq 表情的话(非常规 ascii) 把它转义成 斜杠+描述 的形式
-    public void addMsg(boolean force) {
-        String temp = title + "-" + subName + ": " + message;
-        if (added.equals(temp))
-            return;
-        // 不添加"撤回了一条消息"
-        if (RECALL.equals(message))
-            return;
-        if (!force) {
-            Log.d(TAG, "Add message: message: " + message + "\t prevMessage: " + pMessage);
-            if (dao.existMessage(title, message, pMessage, subName, pSubName)) {
-                Log.d(TAG, "addMsg: already exits");
-                return;
-            }
-        }
-        added = temp;
-        Log.e(TAG, "Add message: " + added);
-        dao.addMessage(title, subName, message);
     }
 
 }

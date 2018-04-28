@@ -14,8 +14,6 @@ import java.util.List;
 
 public class QQClient extends Client {
 
-    String TAG = "QQ";
-
     final String IdTitle = "com.tencent.mobileqq:id/title";
     final String IdChatGroupView = "com.tencent.mobileqq:id/listView1";
     final String IdHeadIcon = "com.tencent.mobileqq:id/chat_item_head_icon";
@@ -25,7 +23,7 @@ public class QQClient extends Client {
     final String IdGrayBar = "com.tencent.mobileqq:id/graybar";
     final String IdInput = "com.tencent.mobileqq:id/input";
     final String IdSend = "com.tencent.mobileqq:id/fun_btn";
-
+    String TAG = "QQ";
     int headIconPos;
     int messagePos;
 

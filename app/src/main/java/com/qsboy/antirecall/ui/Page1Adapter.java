@@ -21,9 +21,8 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.QQDBHelper;
-import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
+import com.qsboy.antirecall.db.QQDao;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,22 +30,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static java.util.Calendar.*;
+import static java.util.Calendar.DAY_OF_YEAR;
 
 public class Page1Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
+    static DividerItemDecoration decor;
     String TAG = "Page1Adapter";
-
     Context context;
     QQDao dao;
     Messages data;
     Calendar now = Calendar.getInstance();
     Calendar calendar = Calendar.getInstance();
-
     SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
     SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    static DividerItemDecoration decor;
     long down = 0;
 
     public Page1Adapter(@Nullable List<Messages> data, Context context) {

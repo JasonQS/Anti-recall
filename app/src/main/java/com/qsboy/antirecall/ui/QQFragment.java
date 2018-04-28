@@ -7,7 +7,6 @@
 package com.qsboy.antirecall.ui;
 
 
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,29 +21,51 @@ import android.view.ViewGroup;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.db.WeChatDao;
+import com.qsboy.antirecall.db.QQDao;
 
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Page2 extends Fragment {
+public class QQFragment extends Fragment {
 
-    String TAG = "Page2";
+    String TAG = "QQFragment";
     MyRecyclerView recyclerView;
-    Page2Adapter adapter;
+    Page1Adapter adapter;
+    private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
 
-    public Page2() {
+        @Override
+        public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
+        }
+
+        @Override
+        public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
+        }
+
+        @Override
+        public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+            Log.i(TAG, "onItemSwiped: pos: " + pos);
+            QQDao dao = QQDao.getInstance(getActivity());
+            dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
+            Log.i(TAG, "clearView: " + adapter.getData());
+        }
+
+        @Override
+        public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
+
+        }
+    };
+
+    public QQFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page1, container, false);
+        View view = inflater.inflate(R.layout.fragment_qq, container, false);
 
-        adapter = new Page2Adapter(null, getActivity());
+        adapter = new Page1Adapter(null, getActivity());
         recyclerView = view.findViewById(R.id.main_recycler_view);
 
         List<Messages> messages = adapter.prepareData();
@@ -60,11 +81,6 @@ public class Page2 extends Fragment {
 
         adapter.enableSwipeItem();
         adapter.setOnItemSwipeListener(onItemSwipeListener);
-
-        String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
-        Intent intent = new Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
         return view;
     }
 
@@ -83,29 +99,4 @@ public class Page2 extends Fragment {
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
     }
-
-    private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
-
-        @Override
-        public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-            // TODO: 26/04/2018
-            Log.i(TAG, "onItemSwiped: pos: " + pos);
-//            WeChatDao dao = WeChatDao.getInstance(getActivity());
-//            dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
-            Log.i(TAG, "clearView: " + adapter.getData());
-        }
-
-        @Override
-        public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
-
-        }
-    };
 }

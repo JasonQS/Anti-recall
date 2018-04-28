@@ -35,11 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
     final String TAG = "Main Activity";
 
-    Page1 page1;
-    Page2 page2;
-    Page3 page3;
-
-    // TODO: 09/04/2018 加一个看聊天记录的
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,36 +50,11 @@ public class MainActivity extends AppCompatActivity {
 //        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
 
         initTabBar();
-        initPage1();
 
         checkUpdate();
 
         Date out = new Date();
         Log.d(TAG, "onCreateTime: " + (out.getTime() - in.getTime()));
-    }
-
-    private Page1 initPage1() {
-        if (page1 != null)
-            return page1;
-        page1 = new Page1();
-
-        return page1;
-    }
-
-    private Page2 initPage2() {
-        if (page2 != null)
-            return page2;
-        page2 = new Page2();
-
-        return page2;
-    }
-
-    private Page3 initPage3() {
-        if (page3 != null)
-            return page3;
-        page3 = new Page3();
-
-        return page3;
     }
 
     private void initTabBar() {
@@ -101,13 +71,13 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = null;
                 switch (position) {
                     case 0:
-                        fragment = initPage1();
+                        fragment = new QQFragment();
                         break;
                     case 1:
-                        fragment = initPage2();
+                        fragment = new WeChatFragment();
                         break;
                     case 2:
-                        fragment = initPage3();
+                        fragment = new SettingsFragment();
                         break;
                 }
                 return fragment;
@@ -129,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         models.add(new NavigationTabBar.Model.Builder(
                 getResources().getDrawable(R.drawable.ic_settings),
                 getResources().getColor(R.color.colorTim))
-                .title("Setting")
+                .title("SettingsFragment")
                 .build());
 
         navigationTabBar.setModels(models);

@@ -21,7 +21,6 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.db.WeChatDao;
 
@@ -35,18 +34,16 @@ import static java.util.Calendar.DAY_OF_YEAR;
 
 public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
+    static DividerItemDecoration divider;
     String TAG = "Page1Adapter";
-
     Context context;
     WeChatDao dao;
     Messages data;
     Calendar now = Calendar.getInstance();
     Calendar calendar = Calendar.getInstance();
-
     SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
     SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    static DividerItemDecoration divider;
     long down = 0;
 
     public Page2Adapter(@Nullable List<Messages> data, Context context) {
@@ -129,15 +126,14 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
 
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-                // TODO: 26/04/2018
                 Log.i(TAG, "onItemSwiped: pos: " + pos);
-//                List<Messages> data = adapter.getData();
-//                if (data.size() <= pos) {
-//                    Log.i(TAG, "onItemSwiped: size is too small");
-//                    return;
-//                }
-//                Messages msg = data.get(pos);
-//                dao.deleteMessage(msg.getName(), msg.getId());
+                List<Messages> data = adapter.getData();
+                if (data.size() <= pos) {
+                    Log.i(TAG, "onItemSwiped: size is too small");
+                    return;
+                }
+                Messages msg = data.get(pos);
+                dao.deleteMessage(msg.getName(), msg.getId());
             }
 
             @Override
@@ -162,7 +158,7 @@ public class Page2Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
     }
 
     public List<Messages> prepareData() {
-        return dao.queryAllMessages();
+        return dao.queryAllLastMessage(dao.queryAllTables());
     }
 
     private String formatTime(long time) {

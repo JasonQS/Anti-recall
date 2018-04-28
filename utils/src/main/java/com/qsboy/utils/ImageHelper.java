@@ -68,6 +68,7 @@ public class ImageHelper {
      * @param time 图片的创建时间
      * @return 是否找到了图片
      */
+    // TODO: 28/04/2018 加一个网络状态参数 是wifi的话 误差就小一点 不是误差就大一点
     public static String[] searchImageFile(Context context, long time, String client) {
         Log.i(TAG, "searchImageFile: time: " + time + " client: " + client);
         String path = getPath(client);

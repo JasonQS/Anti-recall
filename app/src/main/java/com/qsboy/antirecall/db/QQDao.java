@@ -32,12 +32,11 @@ import static com.qsboy.antirecall.db.QQDBHelper.Table_Recalled_Messages;
 
 public class QQDao {
 
-    private String TAG = "QQDao";
-    private QQDBHelper QQDBHelper;
     private static QQDao instance = null;
-
     SQLiteDatabase db = null;
     Cursor cursor = null;
+    private String TAG = "QQDao";
+    private QQDBHelper QQDBHelper;
 
     private QQDao(Context context) {
         QQDBHelper = new QQDBHelper(context, null, DB_VERSION);

@@ -14,8 +14,6 @@ import java.util.List;
 
 public class TimClient extends Client {
 
-    String TAG = "Tim";
-
     final String IdTitle = "com.tencent.tim:id/title";
     final String IdChatGroupView = "com.tencent.tim:id/listView1";
     final String IdHeadIcon = "com.tencent.tim:id/chat_item_head_icon";
@@ -25,7 +23,7 @@ public class TimClient extends Client {
     final String IdGrayBar = "com.tencent.tim:id/graybar";
     final String IdInput = "com.tencent.tim:id/input";
     final String IdSend = "com.tencent.tim:id/fun_btn";
-
+    String TAG = "Tim";
     int headIconPos;
     int messagePos;
 

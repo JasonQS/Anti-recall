@@ -12,7 +12,6 @@ import android.util.Log;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.utils.ImageHelper;
 
@@ -22,14 +21,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static java.util.Calendar.*;
+import static java.util.Calendar.DAY_OF_YEAR;
 
 public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
     String TAG = "MultiMessagesAdapter";
 
     Context context;
-    QQDao QQDao;
     int day;
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat sdfSec = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
@@ -40,7 +38,6 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     public MultiMessagesAdapter(List<Messages> data, Context context) {
         super(R.layout.item_message, data);
         this.context = context;
-        QQDao = QQDao.getInstance(context);
     }
 
     @Override
@@ -59,10 +56,6 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         }
     }
 
-    interface OnDateChangeListener {
-        void onDateChange(long date);
-    }
-
     public void setOnDateChangeListener(OnDateChangeListener onDateChangeListener) {
         this.onDateChangeListener = onDateChangeListener;
     }
@@ -72,5 +65,9 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         calendar.setTime(date);
         if (day != (day = calendar.get(DAY_OF_YEAR)))
             onDateChangeListener.onDateChange(time);
+    }
+
+    interface OnDateChangeListener {
+        void onDateChange(long date);
     }
 }

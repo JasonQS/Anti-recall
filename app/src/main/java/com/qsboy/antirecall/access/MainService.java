@@ -17,13 +17,13 @@ import java.util.List;
 
 public class MainService extends AccessibilityService {
 
-    private String TAG = "Main Service";
-    private AccessibilityNodeInfo root;
-    private String packageName;
     final String pkgTim = "com.tencent.tim";
     final String pkgQQ = "com.tencent.mobileqq";
     final String pkgWX = "com.tencent.mm";
     WXAutoLogin autoLogin;
+    private String TAG = "Main Service";
+    private AccessibilityNodeInfo root;
+    private String packageName;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -121,9 +121,19 @@ public class MainService extends AccessibilityService {
                 new QQClient(this).onNotificationChanged(event);
                 break;
             case pkgWX:
-                new WXClient(this).onNotificationChanged(event);
                 break;
         }
+    }
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        autoLogin = new WXAutoLogin();
+    }
+
+    @Override
+    public void onInterrupt() {
+
     }
 
     /**
@@ -159,16 +169,5 @@ public class MainService extends AccessibilityService {
                 time = 0;
             }
         }
-    }
-
-    @Override
-    protected void onServiceConnected() {
-        super.onServiceConnected();
-        autoLogin = new WXAutoLogin();
-    }
-
-    @Override
-    public void onInterrupt() {
-
     }
 }
