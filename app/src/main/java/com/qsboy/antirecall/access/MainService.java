@@ -42,6 +42,11 @@ public class MainService extends AccessibilityService {
 //            Log.d(TAG, "onAccessibilityEvent: root is null, return");
             return;
         }
+        AccessibilityNodeInfo source = event.getSource();
+        if (source == null) {
+            Log.i(TAG, "onAccessibilityEvent: source is null, return");
+            return;
+        }
 
         int eventType = event.getEventType();
         if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
