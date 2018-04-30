@@ -71,15 +71,12 @@ public class MainService extends AccessibilityService {
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
         if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
             return;
-        CharSequence cs = event.getSource().getText();
 
         switch (packageName) {
             case pkgTim:
-                Log.d(TAG, "\nonContentChanged: " + cs);
                 new TimClient(this).onContentChanged(root);
                 break;
             case pkgQQ:
-                Log.d(TAG, "\nonContentChanged: " + cs);
                 new QQClient(this).onContentChanged(root);
                 break;
         }

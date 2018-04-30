@@ -34,30 +34,6 @@ public class QQFragment extends Fragment {
     String TAG = "QQFragment";
     MyRecyclerView recyclerView;
     Page1Adapter adapter;
-    private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
-
-        @Override
-        public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-            Log.i(TAG, "onItemSwiped: pos: " + pos);
-            QQDao dao = QQDao.getInstance(getActivity());
-            dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
-            Log.i(TAG, "clearView: " + adapter.getData());
-        }
-
-        @Override
-        public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
-
-        }
-    };
-
     public QQFragment() {
     }
 
@@ -83,6 +59,30 @@ public class QQFragment extends Fragment {
         adapter.setOnItemSwipeListener(onItemSwipeListener);
         return view;
     }
+
+    private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
+
+        @Override
+        public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
+        }
+
+        @Override
+        public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
+        }
+
+        @Override
+        public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+            Log.i(TAG, "onItemSwiped: pos: " + pos);
+            QQDao dao = QQDao.getInstance(getActivity());
+            dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
+            Log.i(TAG, "clearView: " + adapter.getData());
+        }
+
+        @Override
+        public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
+
+        }
+    };
 
     // TODO: 24/04/2018 refresh
     public void refresh() {
