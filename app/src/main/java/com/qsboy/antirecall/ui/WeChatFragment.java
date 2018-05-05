@@ -33,8 +33,34 @@ import java.util.List;
 public class WeChatFragment extends Fragment {
 
     String TAG = "WeChatFragment";
-    MyRecyclerView recyclerView;
+    RecyclerView recyclerView;
     Page2Adapter adapter;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.list_messages, container, false);
+
+        adapter = new Page2Adapter(null, getActivity());
+        recyclerView = view.findViewById(R.id.main_recycler_view);
+
+        List<Messages> messages = adapter.prepareData();
+        Log.d(TAG, "onCreateView: data: " + messages);
+        if (messages != null && messages.size() != 0)
+            adapter.addData(messages);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+
+        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        adapter.enableSwipeItem();
+        adapter.setOnItemSwipeListener(onItemSwipeListener);
+
+        return view;
+    }
+
     private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
 
         @Override
@@ -61,35 +87,6 @@ public class WeChatFragment extends Fragment {
     };
 
     public WeChatFragment() {
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_qq, container, false);
-
-        adapter = new Page2Adapter(null, getActivity());
-        recyclerView = view.findViewById(R.id.main_recycler_view);
-
-        List<Messages> messages = adapter.prepareData();
-        Log.i(TAG, "onCreateView: data: " + messages);
-        if (messages != null && messages.size() != 0)
-            adapter.addData(messages);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
-
-        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        adapter.enableSwipeItem();
-        adapter.setOnItemSwipeListener(onItemSwipeListener);
-
-        String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
-        Intent intent = new Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        return view;
     }
 
     // TODO: 24/04/2018 refresh

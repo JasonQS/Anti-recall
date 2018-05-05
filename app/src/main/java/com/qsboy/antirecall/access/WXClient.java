@@ -28,6 +28,8 @@ public class WXClient {
     }
 
     public void onNotification(String title, String text) {
+        if (title == null || text == null)
+            return;
         int i = text.indexOf(':');
         if (i < 1) {
             Log.d(TAG, "Notification does not contains ':'");

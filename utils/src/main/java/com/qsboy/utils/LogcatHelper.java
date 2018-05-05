@@ -110,7 +110,7 @@ public class LogcatHelper {
             try {
                 logcatProcess = Runtime.getRuntime().exec(cmd);
                 reader = new BufferedReader(new InputStreamReader(
-                        logcatProcess.getInputStream()), 1024);
+                        logcatProcess.getInputStream()), 4096);
                 String line;
                 while (isRunning && (line = reader.readLine()) != null) {
                     if (!isRunning) {
@@ -119,9 +119,9 @@ public class LogcatHelper {
                     if (line.length() == 0) {
                         continue;
                     }
+
                     if (out != null && line.contains(pid)) {
-                        out.write((line + "\n")
-                                .getBytes());
+                        out.write((line + "\n").getBytes());
                     }
                 }
 

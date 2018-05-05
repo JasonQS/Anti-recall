@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
         initTabBar();
 
-        checkUpdate();
-
         Date out = new Date();
         Log.d(TAG, "onCreateTime: " + (out.getTime() - in.getTime()));
     }
@@ -69,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Fragment getItem(int position) {
                 Fragment fragment = null;
+                // TODO: 03/05/2018 refresh
                 switch (position) {
                     case 0:
                         fragment = new QQFragment();
@@ -202,12 +201,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void checkUpdate() {
-        //wifi环境下检查更新
-        UpdateHelper helper = new UpdateHelper(this);
-//        if (helper.isWifi())
-        helper.checkUpdate();
-    }
 
     // for test
     public void prepareDataForTest() {

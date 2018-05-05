@@ -10,6 +10,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.qsboy.utils.NodesInfo;
+
 import java.util.List;
 
 public class QQClient extends Client {
@@ -59,6 +61,7 @@ public class QQClient extends Client {
             Log.i(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
+//        NodesInfo.show(root, TAG);
         List<AccessibilityNodeInfo> titleList;
         List<AccessibilityNodeInfo> inputList;
         List<AccessibilityNodeInfo> sendList;
@@ -103,18 +106,20 @@ public class QQClient extends Client {
     }
 
     protected void parser(AccessibilityNodeInfo group) {
+        if (group.getChildCount() == 0)
+            return;
         subName = "";
         message = "";
         isRecalledMsg = false;
         for (int j = 0; j < group.getChildCount(); j++) {
             AccessibilityNodeInfo child = group.getChild(j);
             if (child == null) {
-                Log.d(TAG, "init: child is null, continue");
+                Log.d(TAG, "parser: child is null, continue");
                 continue;
             }
             String nodeId = child.getViewIdResourceName();
             if (nodeId == null) {
-                Log.d(TAG, "init: node ID is null, continue");
+                Log.d(TAG, "parser: node ID is null, continue");
                 continue;
             }
             switch (nodeId) {

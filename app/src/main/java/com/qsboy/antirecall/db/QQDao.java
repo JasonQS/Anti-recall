@@ -87,6 +87,24 @@ public class QQDao {
         db.insert(getSafeName(name), null, values);
     }
 
+    public void addRecall(Messages messages) {
+        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getMessage(), messages.getTime(), messages.getImages());
+    }
+
+    public void addRecall(int originalID, String name, String subName, String message, long time, String images) {
+        Log.d(TAG, "addRecall() called with: originalID = [" + originalID + "], name = [" + name + "], subName = [" + subName + "], message = [" + message + "], time = [" + time + "]");
+
+        ContentValues values = new ContentValues();
+        values.put(Column_Original_ID, originalID);
+        values.put(Column_Name, name);
+        values.put(Column_SubName, subName);
+        values.put(Column_Message, message);
+        values.put(Column_Time, time);
+        values.put(Column_Image, images);
+
+        db.insert(Table_Recalled_Messages, null, values);
+    }
+
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
         this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getMessage(), messages.getTime(), messages.getImages(),
                 prevSubName, prevMessage, nextSubName, nextMessage);

@@ -39,6 +39,7 @@ public abstract class Client {
     String pSubName = "";
     String pMessage = "";
     String RECALL = "撤回了一条消息";
+    // TODO: 英文
     String client;
     boolean isRecalledMsg;
     boolean isOtherMsg;
@@ -56,7 +57,7 @@ public abstract class Client {
 
     protected abstract void parser(AccessibilityNodeInfo group);
 
-    void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
+    public void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
         new Recalls().findRecalls(root, event);
     }
 
@@ -181,10 +182,12 @@ public abstract class Client {
     private class Recalls {
 
         private List<Messages> contextList = new ArrayList<>();
-        private String nextMessage;
-        private String prevMessage;
-        private String nextSubName;
-        private String prevSubName;
+        //        private String nextMessage;
+//        private String prevMessage;
+//        private String nextSubName;
+//        private String prevSubName;
+        private int topPos = 0;
+        private int botPos = 0;
         private int unknownRecalls;
         private ArrayList<String> subNameArray = new ArrayList<>();
 
@@ -203,13 +206,18 @@ public abstract class Client {
 
             NodesInfo.show(root, TAG);
 
-            initContext(event);
+//            initContext(event);
+            List<Entry> entries = initContextList(event);
 
+            String prevSubName = entries.get(topPos).subName;
+            String nextSubName = entries.get(botPos).subName;
+            String prevMessage = entries.get(topPos).message;
+            String nextMessage = entries.get(botPos).message;
             Log.w(TAG, "findRecalls: \nunknown Recalls: " + unknownRecalls +
                     " \nprev Msg: " + prevSubName + " - " + prevMessage +
                     " \nnext Msg: " + nextSubName + " - " + nextMessage);
 
-            if (prevMessage == null && nextMessage == null) {
+            if (topPos == 0 && botPos == entries.size()) {
                 XToast.build(context, "不能全屏撤回哦").show();
                 return;
             }
@@ -224,7 +232,7 @@ public abstract class Client {
                 // 没有下文
                 if (prevList.size() == 0) {
                     // 没有上下文
-                    Messages message = findPrev(dao.getMaxID(title), subName);
+                    Messages message = findPrev(dao.getMaxID(title), Client.this.subName);
                     if (message != null) {
                         addRecall(message);
                         XToast.build(context, "该条消息不保证正确").show();
@@ -395,57 +403,113 @@ public abstract class Client {
             }
             if (dao.existRecall(messages))
                 return;
-            dao.addRecall(messages, prevSubName, prevMessage, nextSubName, nextMessage);
+            dao.addRecall(messages);
         }
 
-        private void initContext(AccessibilityEvent event) {
-            prevMessage = null;
-            nextMessage = null;
-            prevSubName = null;
-            nextSubName = null;
-            subNameArray.clear();
-            int topPos = 0;
-            int botPos = chatGroupViewNode.getChildCount();
+//        /**
+//         * 获取上下文名字内容
+//         * 获取要查的撤回消息数量
+//         */
+//        private void initContext(AccessibilityEvent event) {
+//            prevMessage = null;
+//            nextMessage = null;
+//            prevSubName = null;
+//            nextSubName = null;
+//            subNameArray.clear();
+//            int topPos = 0;
+//            int botPos = chatGroupViewNode.getChildCount();
+//
+//            Rect clickRect = new Rect();
+//            Rect nodeRect = new Rect();
+//            int pos = 0;
+//
+//            event.getSource().getBoundsInScreen(clickRect);
+//
+//            for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
+//                AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
+//                parser(group);
+//                chatGroupViewNode.getChild(i).getBoundsInScreen(nodeRect);
+//                //当前点击的地方
+//                if (nodeRect.contains(clickRect))
+//                    pos = i;
+//                // 获取上下文
+//                // pos未赋值
+//                if (pos == 0) {
+//                    if (message.contains(RECALL)) {
+//                        Log.i(TAG, "initContext: p-sub-name: " + subName);
+//                        subNameArray.add(subName);
+//                    } else {
+//                        // 保证撤回消息是连续的
+//                        subNameArray.clear();
+//                        prevMessage = message;
+//                        prevSubName = subName;
+//                        topPos = i;
+//                    }
+//                } else {
+//                    if (message.contains(RECALL)) {
+//                        Log.i(TAG, "initContext: n-sub-name: " + subName);
+//                        subNameArray.add(subName);
+//                    } else {
+//                        nextMessage = message;
+//                        nextSubName = subName;
+//                        botPos = i;
+//                        break;
+//                    }
+//                }
+//            }
+//            unknownRecalls = botPos - topPos - 1;
+//        }
+
+        private List<Entry> initContextList(AccessibilityEvent event) {
+            List<Entry> contextList = new ArrayList<>();
 
             Rect clickRect = new Rect();
             Rect nodeRect = new Rect();
-            int pos = 0;
-
             event.getSource().getBoundsInScreen(clickRect);
 
             for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
+                Entry entry = new Entry();
                 AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
                 parser(group);
                 chatGroupViewNode.getChild(i).getBoundsInScreen(nodeRect);
                 //当前点击的地方
-                if (nodeRect.contains(clickRect))
-                    pos = i;
-                // 获取上下文
-                // pos未赋值
-                if (pos == 0) {
-                    if (message.contains(RECALL)) {
-                        Log.i(TAG, "initContext: p-sub-name: " + subName);
-                        subNameArray.add(subName);
-                    } else {
-                        // 保证撤回消息是连续的
-                        subNameArray.clear();
-                        prevMessage = message;
-                        prevSubName = subName;
-                        topPos = i;
-                    }
-                } else {
-                    if (message.contains(RECALL)) {
-                        Log.i(TAG, "initContext: n-sub-name: " + subName);
-                        subNameArray.add(subName);
-                    } else {
-                        nextMessage = message;
-                        nextSubName = subName;
-                        botPos = i;
-                        break;
-                    }
+                if (nodeRect.contains(clickRect)) {
+                    topPos = i;
+                    botPos = i;
+                }
+                entry.message = message;
+                entry.subName = subName;
+                entry.isRecalledMessage = isRecalledMsg;
+                contextList.add(entry);
+            }
+
+            while (true) {
+                Entry entry = contextList.get(topPos);
+                if (entry.isRecalledMessage)
+                    topPos--;
+                else {
+                    topPos++;
+                    break;
+                }
+            }
+            while (true) {
+                Entry entry = contextList.get(botPos);
+                if (entry.isRecalledMessage)
+                    botPos++;
+                else {
+                    botPos--;
+                    break;
                 }
             }
             unknownRecalls = botPos - topPos - 1;
+
+            return contextList;
+        }
+
+        private class Entry {
+            String message;
+            String subName;
+            boolean isRecalledMessage;
         }
     }
 

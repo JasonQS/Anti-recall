@@ -39,14 +39,18 @@ public class MainService extends AccessibilityService {
 
         root = getRootInActiveWindow();
         if (root == null) {
-//            Log.d(TAG, "onAccessibilityEvent: root is null, return");
+            Log.d(TAG, "onAccessibilityEvent: root is null, return");
+            return;
+        }
+        if (event.getSource() == null) {
+            Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
             return;
         }
 
         int eventType = event.getEventType();
-        if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            Log.v(TAG, AccessibilityEvent.eventTypeToString(eventType));
-        }
+//        if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+        Log.v(TAG, AccessibilityEvent.eventTypeToString(eventType));
+//        }
 
         switch (eventType) {
             case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
@@ -65,12 +69,15 @@ public class MainService extends AccessibilityService {
     }
 
     private void onContentChanged(AccessibilityEvent event) {
-        if (root == null)
+        if (root == null) {
+            Log.d(TAG, "onContentChanged: root is null, return");
             return;
+        }
         // 只需在改变类型为文字时执行添加操作
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
-        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
-            return;
+        // TODO: 有些机型需要所有types
+//        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+//            return;
 
         switch (packageName) {
             case pkgTim:
@@ -125,6 +132,7 @@ public class MainService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        Log.e(TAG, "onServiceConnected");
         autoLogin = new WXAutoLogin();
     }
 

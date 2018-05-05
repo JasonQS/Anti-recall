@@ -32,14 +32,12 @@ import java.util.List;
 public class QQFragment extends Fragment {
 
     String TAG = "QQFragment";
-    MyRecyclerView recyclerView;
+    RecyclerView recyclerView;
     Page1Adapter adapter;
-    public QQFragment() {
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_qq, container, false);
+        View view = inflater.inflate(R.layout.list_messages, container, false);
 
         adapter = new Page1Adapter(null, getActivity());
         recyclerView = view.findViewById(R.id.main_recycler_view);

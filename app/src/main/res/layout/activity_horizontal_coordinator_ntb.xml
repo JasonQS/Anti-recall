@@ -40,7 +40,6 @@
         android:layout_gravity="bottom"
         app:ntb_badge_size="12sp"
         app:ntb_bg_color="#ffffff"
-        app:ntb_badge_bg_color="#ffff0000"
         app:ntb_badge_gravity="top"
         app:ntb_badge_position="left"
         app:ntb_badge_title_color="#ffffffff"

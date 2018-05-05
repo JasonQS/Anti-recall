@@ -21,6 +21,10 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
+    <style name="SettingsTheme" parent="AppTheme">
+        <item name="android:padding">@dimen/margin_half</item>
+    </style>
+
     <style name="iphone_progress_dialog" parent="@style/Theme.AppCompat">
         <item name="android:listDivider">@null</item>
         <item name="android:windowFrame">@null</item> <!--Dialog的windowFrame框为无 -->
