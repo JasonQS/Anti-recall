@@ -23,17 +23,18 @@ import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.QQDao;
 import com.qsboy.utils.CheckAuthority;
 import com.qsboy.utils.LogcatHelper;
-import com.qsboy.utils.UpdateHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
 
     final String TAG = "Main Activity";
+    List<Fragment> fragmentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +57,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabBar() {
-        final ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
+        ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
+        if (fragmentList.size() < 3) {
+            fragmentList.add(new QQFragment());
+            fragmentList.add(new WeChatFragment());
+            fragmentList.add(new SettingsFragment());
+        }
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-
             @Override
             public int getCount() {
                 return 3;
@@ -66,24 +71,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public Fragment getItem(int position) {
-                Fragment fragment = null;
-                // TODO: 03/05/2018 refresh
-                switch (position) {
-                    case 0:
-                        fragment = new QQFragment();
-                        break;
-                    case 1:
-                        fragment = new WeChatFragment();
-                        break;
-                    case 2:
-                        fragment = new SettingsFragment();
-                        break;
-                }
-                return fragment;
+                return fragmentList.get(position);
             }
         });
 
-        final NavigationTabBar navigationTabBar = findViewById(R.id.ntb_horizontal);
+        NavigationTabBar navigationTabBar = findViewById(R.id.ntb_horizontal);
+        navigationTabBar.show();
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(new NavigationTabBar.Model.Builder(
                 getResources().getDrawable(R.drawable.ic_qq),

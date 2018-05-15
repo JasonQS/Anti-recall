@@ -8,39 +8,60 @@ package com.qsboy.antirecall.ui;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.utils.UpdateHelper;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
+import devlight.io.library.ntb.NavigationTabBar;
+import ezy.assist.compat.SettingsCompat;
+
 public class SettingsFragment extends Fragment {
 
-    // TODO: 帮助
-    // TODO: 检查权限
+    // TODO: 在scroller view 上下滚动时手动呼出底部导航
 
     String TAG = "SettingsFragment";
+    Handler handler = new Handler();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
-
-        view.setScrollContainer(true);
+        ScrollView view = (ScrollView) inflater.inflate(R.layout.fragment_settings, container, false);
 
         View btnAccessibilityService = view.findViewById(R.id.btn_navigate_accessibility_service);
         View btnNotificationListener = view.findViewById(R.id.btn_navigate_notification_listener);
+        View btnOverlays = view.findViewById(R.id.btn_navigate_overlays);
+        View btnSettings = view.findViewById(R.id.btn_navigate_settings);
+
+        view.setOnTouchListener((v, event) -> {
+            NavigationTabBar navigationTabBar = getActivity().findViewById(R.id.ntb_horizontal);
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    if (event.getHistorySize() < 1)
+                        return false;
+                    float y = event.getY();
+                    float historicalY = event.getHistoricalY(event.getHistorySize() - 1);
+                    if (y > historicalY)
+                        navigationTabBar.show();
+                    else
+                        navigationTabBar.hide();
+            }
+            return false;
+        });
 
         // 设置
-        // TODO: 跳转到悬浮窗设置界面
-        // TODO: 跳转到设置界面
         btnAccessibilityService.setOnClickListener(v -> {
             Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             startActivity(intent);
@@ -53,36 +74,27 @@ public class SettingsFragment extends Fragment {
             startActivity(intent);
         });
 
-//        final CircularProgressButton circularButton1 = view.findViewById(R.id.circularButton1);
-//        circularButton1.setIndeterminateProgressMode(true);
-//        circularButton1.setOnClickListener(v -> {
-//            if (circularButton1.getProgress() == 0) {
-//                circularButton1.setProgress(50);
-//            } else if (circularButton1.getProgress() == 100) {
-//                circularButton1.setProgress(0);
-//            } else {
-//                circularButton1.setProgress(100);
-//            }
-//        });
-//
-//        final CircularProgressButton circularButton2 = view.findViewById(R.id.circularButton2);
-//        circularButton2.setIndeterminateProgressMode(true);
-//        circularButton2.setOnClickListener(v -> {
-//            if (circularButton2.getProgress() == 0) {
-//                circularButton2.setProgress(50);
-//            } else if (circularButton2.getProgress() == -1) {
-//                circularButton2.setProgress(0);
-//            } else {
-//                circularButton2.setProgress(-1);
-//            }
-//        });
+        btnOverlays.setOnClickListener(v -> SettingsCompat.manageDrawOverlays(getActivity()));
+
+        btnSettings.setOnClickListener(v -> SettingsCompat.manageWriteSettings(getActivity()));
 
         // 检查权限
 
-        View btnCheckPermission = view.findViewById(R.id.btn_check_permission);
+//        btn.doneLoadingAnimation(fillColor, bitmap);
+//        btn.revertAnimation();
+//        final CircularProgressButton btnCheckPermission = view.findViewById(R.id.circularButton1);
+        CircularProgressButton btnCheckPermission = view.findViewById(R.id.btn_check_permission);
         btnCheckPermission.setOnClickListener(v -> {
+            btnCheckPermission.startAnimation();
             Log.i(TAG, "onCheckPermission: ");
-            addView("悬浮窗权限", true);
+            ViewGroup llPermission = view.findViewById(R.id.ll_permission);
+            llPermission.removeAllViews();
+            llPermission.addView(btnCheckPermission);
+            handler.postDelayed(() -> addView(llPermission, "悬浮窗权限", true), 500);
+            handler.postDelayed(() -> addView(llPermission, "辅助功能服务", false), 1000);
+            handler.postDelayed(() -> addView(llPermission, "通知监听服务", true), 1500);
+            handler.postDelayed(btnCheckPermission::revertAnimation, 2000);
+
         });
 
 
@@ -109,22 +121,25 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-    private View addView(String content, boolean isChecked) {
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    private void addView(ViewGroup mainView, String content, boolean isChecked) {
 //         LayoutInflater inflater1=(LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LayoutInflater inflater = getLayoutInflater();
 //        LayoutInflater inflater3 = LayoutInflater.from(getActivity());
+
         View view = inflater.inflate(R.layout.item_check_permission, null);
         TextView tvPermission = view.findViewById(R.id.tv_permission);
         ImageView ivChecked = view.findViewById(R.id.iv_checked);
 
         tvPermission.setText(content);
-        if (isChecked)
+        if (isChecked) {
             ivChecked.setImageResource(R.drawable.ic_accept);
-        else
+            ivChecked.setColorFilter(Color.GREEN);
+        } else {
             ivChecked.setImageResource(R.drawable.ic_cancel);
+            ivChecked.setColorFilter(Color.RED);
+        }
 
-        view.setLayoutParams(lp);
-        return view;
+        mainView.addView(view);
+
     }
 }

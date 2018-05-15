@@ -24,8 +24,6 @@ public class TimClient extends Client {
     final String IdInput = "com.tencent.tim:id/input";
     final String IdSend = "com.tencent.tim:id/fun_btn";
     String TAG = "Tim";
-    int headIconPos;
-    int messagePos;
 
     public TimClient(Context context) {
         super(context);
@@ -114,6 +112,8 @@ public class TimClient extends Client {
     }
 
     protected void parser(AccessibilityNodeInfo group) {
+        int headIconPos = 0;
+        int messagePos = 0;
         subName = "";
         message = "";
         isRecalledMsg = false;
@@ -155,8 +155,8 @@ public class TimClient extends Client {
                             if (child.getChildCount() == 2) {
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
-                                if (child1 != null && "android.widget.TextView".equals(child1.getClassName())) {
-                                    if (child2 != null && "android.widget.TextView".equals(child2.getClassName())) {
+                                if (child1 != null && "android.widget.TextView".contentEquals(child1.getClassName())) {
+                                    if (child2 != null && "android.widget.TextView".contentEquals(child2.getClassName())) {
                                         message = child2.getText() + "";
                                     }
                                 }

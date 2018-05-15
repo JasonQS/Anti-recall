@@ -146,8 +146,8 @@ public class QQClient extends Client {
                             if (child.getChildCount() == 2) {
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
-                                if (child1 != null && "android.widget.RelativeLayout".equals(child1.getClassName())) {
-                                    if (child2 != null && "android.widget.TextView".equals(child2.getClassName())) {
+                                if (child1 != null && "android.widget.RelativeLayout".contentEquals(child1.getClassName())) {
+                                    if (child2 != null && "android.widget.TextView".contentEquals(child2.getClassName())) {
 //                                        message = "回复 " + child1.getText() + ": \n" + child2.getText();
                                         message = child2.getText() + "";
                                     }

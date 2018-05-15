@@ -9,93 +9,117 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/gray_light"
     android:divider="@color/contentDividerLine"
     android:dividerPadding="10dp"
     android:orientation="vertical"
-    android:padding="@dimen/margin_quarter"
     android:showDividers="middle"
-    android:theme="@style/SettingsTheme"
     tools:context="com.qsboy.antirecall.ui.SettingsFragment"
     tools:ignore="HardcodedText">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/ll_permission"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:theme="@style/SettingsTheme">
 
-            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-                android:id="@+id/btn_check_permission"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/bgTitle"
-                app:spinning_bar_color="#FFF"
-                app:spinning_bar_padding="6dp"
-                app:spinning_bar_width="4dp" />
+                android:text="权限" />
+
+            <LinearLayout
+                android:layout_marginStart="@dimen/margin_default"
+                android:layout_marginEnd="@dimen/margin_default"
+                android:id="@+id/ll_permission"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                    android:id="@+id/btn_check_permission"
+                    android:layout_width="match_parent"
+                    android:layout_margin="20dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_check_permission"
+                    android:text="检查权限"
+                    android:textColor="#AA333333"
+                    android:gravity="center"
+                    app:initialCornerAngle="50dp"
+                    app:spinning_bar_color="#FFF"
+                    app:spinning_bar_padding="6dp"
+                    app:spinning_bar_width="4dp" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_navigate_accessibility_service"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="带我打开辅助功能服务" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_navigate_notification_listener"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@android:id/title"
+                    android:text="打开通知监听服务开关" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_navigate_overlays"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@android:id/title"
+                    android:text="带我打开悬浮窗权限" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btn_navigate_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@android:id/title"
+                    android:text="带我去系统设置" />
+            </RelativeLayout>
 
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/btn_navigate_accessibility_service"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="带我打开辅助功能服务" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/btn_navigate_notification_listener"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@android:id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="带我打开基础服务"
-                android:textColor="@android:color/primary_text_light" />
-
-            <TextView
-                android:id="@android:id/summary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@android:id/title"
-                android:text="打开辅助功能服务开关"
-                android:textColor="@android:color/secondary_text_light" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@android:id/title"
-                style="@android:style/TextAppearance.DeviceDefault"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="带我打开基础服务" />
-
-            <TextView
-                style="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Subtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@android:id/title"
-                android:text="打开通知监听服务开关" />
-
-        </RelativeLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginBottom="20dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:theme="@style/SettingsTheme">
 
             <TextView
                 android:layout_width="match_parent"
@@ -158,7 +182,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginBottom="20dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:theme="@style/SettingsTheme">
 
             <TextView
                 android:layout_width="match_parent"
@@ -202,27 +229,29 @@
                     android:text="已是最新版" />
             </RelativeLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/margin_default">
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="0dp"
-                android:text="©2014 - 2018 qsboy.com"
-                android:textAlignment="center" />
+                android:orientation="vertical"
+                android:padding="@dimen/margin_default">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="0dp"
-                android:text="All right reserved"
-                android:textAlignment="center" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="0dp"
+                    android:text="©2016 - 2018 qsboy.com"
+                    android:textAlignment="center"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="0dp"
+                    android:text="All right reserved"
+                    android:textAlignment="center"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

@@ -30,21 +30,22 @@ public class WXClient {
     public void onNotification(String title, String text) {
         if (title == null || text == null)
             return;
-        int i = text.indexOf(':');
-        if (i < 1) {
-            Log.d(TAG, "Notification does not contains ':'");
-            return;
-        }
         this.title = title;
-        name = text.substring(0, i);
-        message = text.substring(i + 2);
-        //多条消息
-        int j;
-        if (name.startsWith("["))
-            if ((j = name.indexOf("]")) > 0)
-                name = name.substring(j + 1);
+        int i = text.indexOf(':');
+        if (i >= 1) {
+            name = text.substring(0, i);
+            message = text.substring(i + 2);
+            //多条消息
+            int j;
+            if (name.startsWith("["))
+                if ((j = name.indexOf("]")) > 0)
+                    name = name.substring(j + 1);
+        } else {
+            name = title;
+            message = text;
+        }
 
-        Log.i(TAG, "onNotification: " + title + "-" + name + ":" + message);
+        Log.w(TAG, "onNotification: " + title + " - " + name + " : " + message);
         dao.addMessage(title, name, message);
     }
 

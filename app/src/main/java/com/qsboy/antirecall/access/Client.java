@@ -6,8 +6,10 @@
 
 package com.qsboy.antirecall.access;
 
+import android.app.Notification;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityEvent;
@@ -57,6 +59,8 @@ public abstract class Client {
 
     protected abstract void parser(AccessibilityNodeInfo group);
 
+//    protected abstract void onNotification();
+
     public void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
         new Recalls().findRecalls(root, event);
     }
@@ -92,7 +96,7 @@ public abstract class Client {
 
     public void onNotificationChanged(AccessibilityEvent event) {
         List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0)
+        if (texts.isEmpty())
             return;
         for (CharSequence text : texts) {
             String string = text + "";
@@ -161,7 +165,7 @@ public abstract class Client {
 
     // TODO: 如果有 qq 表情的话(非常规 ascii) 把它转义成 斜杠+描述 的形式
     public void addMsg(boolean force) {
-        String temp = title + "-" + subName + ": " + message;
+        String temp = title + " - " + subName + " : " + message;
         if (added.equals(temp))
             return;
         // 不添加"撤回了一条消息"
@@ -189,10 +193,15 @@ public abstract class Client {
         private int topPos = 0;
         private int botPos = 0;
         private int unknownRecalls;
-        private ArrayList<String> subNameArray = new ArrayList<>();
+        private List<Entry> entries;
+//        private ArrayList<String> subNameArray = new ArrayList<>();
 
         void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
             // TODO: 通知栏收到的表情 聊天框收到的表情 乱码 根据 utf 位置判断
+            if (event.getSource() == null) {
+                Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
+                return;
+            }
             CharSequence cs = event.getSource().getText();
             if (cs == null)
                 return;
@@ -207,15 +216,19 @@ public abstract class Client {
             NodesInfo.show(root, TAG);
 
 //            initContext(event);
-            List<Entry> entries = initContextList(event);
+            entries = initContextList(event);
 
             String prevSubName = entries.get(topPos).subName;
             String nextSubName = entries.get(botPos).subName;
             String prevMessage = entries.get(topPos).message;
             String nextMessage = entries.get(botPos).message;
-            Log.w(TAG, "findRecalls: \nunknown Recalls: " + unknownRecalls +
-                    " \nprev Msg: " + prevSubName + " - " + prevMessage +
-                    " \nnext Msg: " + nextSubName + " - " + nextMessage);
+            Log.w(TAG, "findRecalls: " +
+                    "\nunknown Recalls: \t" + unknownRecalls +
+                    "\ntop: \t" + topPos +
+                    "\nbot: \t" + botPos +
+                    "\nprev Msg: \t" + prevSubName + " - " + prevMessage +
+                    "\nnext Msg: \t" + nextSubName + " - " + nextMessage +
+                    "\nentry: \t" + entries);
 
             if (topPos == 0 && botPos == entries.size()) {
                 XToast.build(context, "不能全屏撤回哦").show();
@@ -259,6 +272,7 @@ public abstract class Client {
                 for (Integer n : nextList) {
                     if (n - p == unknownRecalls + 1) {
                         // 如果上下文的距离刚好就是撤回的数量 那就直接拿来找
+                        distance = n - p;
                         prevPos = p;
                         nextPos = n;
                         break;
@@ -281,10 +295,9 @@ public abstract class Client {
             else {
                 SparseArray<Messages> map = new SparseArray<>();
                 for (int i = 0, j = 0, k = 0; k < 10; k++) {
-                    String subName = subNameArray.get(i);
-                    Log.i(TAG, "findRecallByContext: [" + i + " " + j + "] - " + " [" + (prevPos + i) + " " + (nextPos - j) + "]" + subName);
-                    Messages msgPrev = findNext(prevPos + i, subName);
-                    Messages msgNext = findNext(nextPos - j, subName);
+//                    Log.d(TAG, "findRecallByContext: [" + i + " " + j + "] - " + " [" + (prevPos + i) + " " + (nextPos - j) + "] - " + subName);
+                    Messages msgPrev = findNext(prevPos + i, entries.get(topPos + i + 1).subName);
+                    Messages msgNext = findPrev(nextPos - j, entries.get(botPos - j - 1).subName);
                     if (msgPrev != null) {
                         if (map.get(i) == null)
                             map.put(i, msgPrev);
@@ -314,7 +327,7 @@ public abstract class Client {
 
         private void findRecallByPrev(int prevPos) {
             for (int i = 0; i < unknownRecalls; i++) {
-                String subName = subNameArray.get(i);
+                String subName = entries.get(topPos + i + 1).subName;
                 Log.i(TAG, "findRecallByPrev: " + prevPos + " - " + subName);
                 Messages messages = findNext(prevPos + i, subName);
                 addRecall(messages);
@@ -323,7 +336,7 @@ public abstract class Client {
 
         private void findRecallByNext(int nextPos) {
             for (int i = unknownRecalls - 1; i >= 0; i--) {
-                String subName = subNameArray.get(i);
+                String subName = entries.get(botPos - i - 1).subName;
                 Log.i(TAG, "findRecallByNext: " + nextPos + " - " + subName);
                 Messages messages = findPrev(nextPos - i, subName);
                 addRecall(messages);
@@ -465,11 +478,16 @@ public abstract class Client {
 
             Rect clickRect = new Rect();
             Rect nodeRect = new Rect();
+            if (event.getSource() == null) {
+                Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
+                return contextList;
+            }
             event.getSource().getBoundsInScreen(clickRect);
 
             for (int i = 0; i < chatGroupViewNode.getChildCount(); i++) {
                 Entry entry = new Entry();
                 AccessibilityNodeInfo group = chatGroupViewNode.getChild(i);
+                Log.i(TAG, "initContextList: ");
                 parser(group);
                 chatGroupViewNode.getChild(i).getBoundsInScreen(nodeRect);
                 //当前点击的地方
@@ -484,24 +502,29 @@ public abstract class Client {
             }
 
             while (true) {
+                if (topPos == -1)
+                    break;
                 Entry entry = contextList.get(topPos);
                 if (entry.isRecalledMessage)
                     topPos--;
-                else {
-                    topPos++;
+                else
                     break;
-                }
             }
+            int size = contextList.size();
             while (true) {
+                if (botPos == size)
+                    break;
                 Entry entry = contextList.get(botPos);
                 if (entry.isRecalledMessage)
                     botPos++;
-                else {
-                    botPos--;
+                else
                     break;
-                }
             }
             unknownRecalls = botPos - topPos - 1;
+            if (botPos == size)
+                botPos--;
+            if (topPos == -1)
+                topPos++;
 
             return contextList;
         }
@@ -510,6 +533,11 @@ public abstract class Client {
             String message;
             String subName;
             boolean isRecalledMessage;
+
+            @Override
+            public String toString() {
+                return "\n\t" + subName + " \t: " + message + " \t" + isRecalledMessage;
+            }
         }
     }
 

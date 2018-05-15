@@ -131,9 +131,11 @@ public class QQDao {
     }
 
     public ArrayList<Integer> queryByMessage(String name, String subName, String message) {
-        Log.d(TAG, "queryByMessage: name = " + name + " subName = " + subName + " message = " + message);
+        Log.d(TAG, "queryByMessage: " + name + " - " + subName + " : " + message);
         ArrayList<Integer> list = new ArrayList<>();
         if (message == null || subName == null || name == null)
+            return list;
+        if (!existTable(name))
             return list;
         cursor = db.query(getSafeName(name),
                 new String[]{Column_ID},
@@ -155,6 +157,8 @@ public class QQDao {
 
     public Messages queryById(String name, int id) {
         // SELECT * FROM tableName WHERE Id = id
+        if (!existTable(name))
+            return null;
         cursor = db.query(getSafeName(name),
                 null,
                 Column_ID + " = ?",
@@ -176,6 +180,8 @@ public class QQDao {
     public List<Messages> queryAllRecalls() {
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM Table_Recalled_Messages
+        if (!existTable(Table_Recalled_Messages))
+            return list;
         cursor = db.query(Table_Recalled_Messages,
                 null,
                 null,
@@ -212,9 +218,9 @@ public class QQDao {
     }
 
     public boolean existMessage(String name, String message, String prevMessage, String subName, String prevSubName) {
-        if (!existTable(name))
-            return false;
         if (prevMessage == null || prevSubName == null)
+            return false;
+        if (!existTable(name))
             return false;
         cursor = db.query(getSafeName(name),
                 new String[]{Column_ID},
@@ -240,6 +246,8 @@ public class QQDao {
     }
 
     public boolean existRecall(Messages messages) {
+        if (!existTable(Table_Recalled_Messages))
+            return false;
         cursor = db.query(Table_Recalled_Messages,
                 new String[]{Column_ID},
                 Column_Original_ID + " = ? and " +
@@ -283,6 +291,8 @@ public class QQDao {
     }
 
     public int getMaxID(String name) {
+        if (!existTable(name))
+            return 0;
         cursor = db.rawQuery("SELECT MAX(id) FROM " + getSafeName(name), null);
         if (!cursor.moveToFirst()) {
             return 0;

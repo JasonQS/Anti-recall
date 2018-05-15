@@ -19,6 +19,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.qsboy.utils.ImageHelper.getBitmap;
 
 public class XToast {
@@ -28,6 +31,7 @@ public class XToast {
     private Context context;
     private WindowManager wm;
     private View view;
+    private static Set<View> viewList = new HashSet<>();
     // TODO: 持续时间设置
     private int duration = 2500;
     private int y = 100;
@@ -42,8 +46,8 @@ public class XToast {
 
         params = new WindowManager.LayoutParams();
         params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+        params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
         params.format = PixelFormat.TRANSLUCENT;
@@ -85,23 +89,25 @@ public class XToast {
     public void show() {
         if (view == null)
             return;
+        Log.i(TAG, "show: view list: " + viewList);
 
-        params.y += offsetY;
+        // TODO: 09/05/2018 做成一个layout 一个view 增加子view
         view.measure(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        offsetY += view.getMeasuredHeight() + dip2px(context, 10);
-
+        offsetY = view.getMeasuredHeight() + dip2px(context, 10);
+        for (View view : viewList) {
+            view.animate().setDuration(0).translationYBy(-offsetY);
+        }
         wm.addView(view, params);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    wm.removeView(view);
-                    offsetY = 0;
-                    view = null;
-                    wm = null;
-                }
+        viewList.add(view);
+        Log.i(TAG, "show: height: " + offsetY);
+        handler.postDelayed(() -> {
+            if (view != null) {
+                viewList.remove(view);
+                wm.removeView(view);
+                view = null;
+                wm = null;
             }
-        }, duration);
+        }, 5000);
     }
 
     /**

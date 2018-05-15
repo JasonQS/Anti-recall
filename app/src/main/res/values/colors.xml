@@ -25,4 +25,8 @@
     <color name="text_color_message">#333333</color>
     <color name="text_color_time">#888888</color>
     <color name="contentDividerLine">#808080</color>
+
+    <color name="gray_light">#ddd</color>
+    <color name="gray_dark">#aaa</color>
+
 </resources>

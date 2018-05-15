@@ -15,6 +15,9 @@ import android.util.Log;
 
 public class NotificationListener extends NotificationListenerService {
 
+    final String pkgTim = "com.tencent.tim";
+    final String pkgQQ = "com.tencent.mobileqq";
+    final String pkgWX = "com.tencent.mm";
     String TAG = "NotificationListener";
     private String packageName;
     private String title;
@@ -22,23 +25,21 @@ public class NotificationListener extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        Log.i(TAG, sbn.toString());
         Bundle extras = sbn.getNotification().extras;
 
         packageName = sbn.getPackageName();
         title = (String) extras.get(Notification.EXTRA_TITLE);
         text = (String) extras.get(Notification.EXTRA_TEXT);
 
-        Log.v(TAG, "Notification - : " +
+        Log.d(TAG, "Notification - : " +
                 " \npackageName: " + packageName +
                 " \nTitle      : " + title +
                 " \nText       : " + text);
 
         switch (packageName) {
-            case "com.tencent.mm":
+            case pkgWX:
                 new WXClient(getApplicationContext()).onNotification(title, text);
                 break;
-
         }
     }
 
