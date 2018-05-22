@@ -33,7 +33,11 @@
         app:layout_constraintTop_toBottomOf="@id/appbar"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <include layout="@layout/list_messages" />
+        <fragment
+            android:name="com.qsboy.antirecall.ui.Page1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/fragment_page1" />
     </android.support.constraint.ConstraintLayout>
 
     <!--<android.support.design.widget.BottomNavigationView-->
