@@ -13,39 +13,41 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
-import static com.qsboy.antirecall.db.QQDBHelper.Column_ID;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Image;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Message;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Name;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Next_Message;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Next_SubName;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Original_ID;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Prev_Message;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Prev_SubName;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_SubName;
-import static com.qsboy.antirecall.db.QQDBHelper.Column_Time;
-import static com.qsboy.antirecall.db.QQDBHelper.DB_VERSION;
-import static com.qsboy.antirecall.db.QQDBHelper.Table_Recalled_Messages;
+import static com.qsboy.antirecall.db.DBHelper.Column_ID;
+import static com.qsboy.antirecall.db.DBHelper.Column_Image;
+import static com.qsboy.antirecall.db.DBHelper.Column_Message;
+import static com.qsboy.antirecall.db.DBHelper.Column_Name;
+import static com.qsboy.antirecall.db.DBHelper.Column_Next_Message;
+import static com.qsboy.antirecall.db.DBHelper.Column_Next_SubName;
+import static com.qsboy.antirecall.db.DBHelper.Column_Original_ID;
+import static com.qsboy.antirecall.db.DBHelper.Column_Prev_Message;
+import static com.qsboy.antirecall.db.DBHelper.Column_Prev_SubName;
+import static com.qsboy.antirecall.db.DBHelper.Column_SubName;
+import static com.qsboy.antirecall.db.DBHelper.Column_Time;
+import static com.qsboy.antirecall.db.DBHelper.Table_Recalled_Messages;
 
-public class QQDao {
+public class Dao {
 
-    private static QQDao instance = null;
-    SQLiteDatabase db = null;
-    Cursor cursor = null;
-    private String TAG = "QQDao";
-    private QQDBHelper QQDBHelper;
+    public static String DB_NAME_QQ = "QQ.db";
+    public static String DB_NAME_WE_CHAT = "WeChat.db";
+    private String TAG = "Dao";
+    private static Dao instance = null;
+    private Cursor cursor;
+    private SQLiteDatabase db;
+    private HashMap<String, Boolean> existTables = new HashMap<>();
 
-    private QQDao(Context context) {
-        QQDBHelper = new QQDBHelper(context, null, DB_VERSION);
-        db = QQDBHelper.getWritableDatabase();
+    private Dao(DBHelper dbHelper) {
+        db = dbHelper.getWritableDatabase();
     }
 
-    public static QQDao getInstance(Context context) {
+    public static Dao getInstance(Context context, String dbName) {
         if (instance == null)
-            instance = new QQDao(context);
+            instance = new Dao(new DBHelper(context, dbName, null, 6));
         return instance;
     }
 
@@ -65,6 +67,16 @@ public class QQDao {
         while (name.endsWith("'") || name.endsWith("\""))
             name = name.substring(0, name.length() - 1);
         return "'" + name + "'";
+    }
+
+    public int getMaxID(String name) {
+        if (!existTable(name))
+            return 0;
+        cursor = db.rawQuery("SELECT MAX(id) FROM " + getSafeName(name), null);
+        if (!cursor.moveToFirst()) {
+            return 0;
+        }
+        return cursor.getInt(0);
     }
 
     /**
@@ -108,7 +120,6 @@ public class QQDao {
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
         this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getMessage(), messages.getTime(), messages.getImages(),
                 prevSubName, prevMessage, nextSubName, nextMessage);
-
     }
 
     public void addRecall(int originalID, String name, String subName, String message, long time, String images,
@@ -177,6 +188,34 @@ public class QQDao {
         return new Messages(id, name, subName, message, time);
     }
 
+    public Messages queryRecallById(int position) {
+        if (!existTable(Table_Recalled_Messages))
+            return null;
+        cursor = db.query(Table_Recalled_Messages,
+                null,
+                Column_ID + " = ?",
+                new String[]{String.valueOf(position)},
+                null,
+                null,
+                null);
+        if (!cursor.moveToFirst()) {
+            Log.d(TAG, "queryById: (null): " + position);
+            return null;
+        }
+        int recalledID = cursor.getInt(0);
+        int id = cursor.getInt(1);
+        String name = cursor.getString(2);
+        String subName = cursor.getString(3);
+        String message = cursor.getString(4);
+        long time = cursor.getLong(5);
+        String image = cursor.getString(6);
+        Messages messages = new Messages(id, name, subName, message, time);
+        messages.setRecalledID(recalledID);
+        messages.setImages(image);
+        Log.d(TAG, "queryRecalls: >>>>>> " + position);
+        return messages;
+    }
+
     public List<Messages> queryAllRecalls() {
         List<Messages> list = new ArrayList<>();
         // SELECT * FROM Table_Recalled_Messages
@@ -210,10 +249,57 @@ public class QQDao {
         return list;
     }
 
+    public List<String> queryAllTables() {
+        List<String> list = new ArrayList<>();
+        cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type = 'table'", null);
+        if (!cursor.moveToFirst())
+            return list;
+        do {
+            String name = cursor.getString(0);
+            if (name != null)
+                list.add(name);
+        } while (cursor.moveToNext());
+        return list;
+    }
+
+    public List<Messages> queryAllLastMessage(List<String> nameList) {
+        List<Messages> list = new ArrayList<>();
+        for (String name : nameList) {
+            Log.i(TAG, "queryAllLastMessage: name: " + name);
+            if ("android_metadata".equals(name) || "sqlite_sequence".equals(name))
+                continue;
+            cursor = db.query(getSafeName(name),
+                    null,
+                    Column_ID + " = ?",
+                    new String[]{String.valueOf(getMaxID(name))},
+                    null, null, null);
+            if (!cursor.moveToFirst()) {
+                Log.d(TAG, "queryByMessage: (null)");
+                continue;
+            }
+            int id = cursor.getInt(0);
+            String subName = cursor.getString(1);
+            String message = cursor.getString(2);
+            long time = cursor.getLong(3);
+
+            list.add(new Messages(id, name, subName, message, time));
+            Collections.sort(list, (o1, o2) -> {
+                long time1 = o1.getTime();
+                long time2 = o2.getTime();
+                return Long.compare(time2, time1);
+            });
+        }
+        return list;
+    }
+
     public boolean existTable(String name) {
+        if (existTables.containsKey(name))
+            if (existTables.get(name))
+                return true;
         cursor = db.rawQuery("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = " + getSafeName(name), null);
         if (!cursor.moveToFirst()) return false;
         int count = cursor.getInt(0);
+        existTables.put(name, count > 0);
         return count > 0;
     }
 
@@ -277,6 +363,12 @@ public class QQDao {
         db.delete(Table_Recalled_Messages, selection, selectionArgs);
     }
 
+    public void deleteTable(int id, String name) {
+        String selection = Column_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        db.delete(getSafeName(name), selection, selectionArgs);
+    }
+
     public void deleteAll() {
         try {
             int delete1 = db.delete(Table_Recalled_Messages, null, null);
@@ -288,16 +380,6 @@ public class QQDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public int getMaxID(String name) {
-        if (!existTable(name))
-            return 0;
-        cursor = db.rawQuery("SELECT MAX(id) FROM " + getSafeName(name), null);
-        if (!cursor.moveToFirst()) {
-            return 0;
-        }
-        return cursor.getInt(0);
     }
 
     public void temp() {
@@ -321,6 +403,6 @@ public class QQDao {
         db.execSQL(sql);
 //        sql = "INSERT INTO " + Table_Recalled_Messages + " SELECT * FROM " + Table_Recalled_Messages + "_";
 //        db.execSQL(sql);
-
     }
+
 }

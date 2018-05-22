@@ -6,5 +6,5 @@
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <corners android:radius="200dp" />
-    <solid android:color="@color/bgName" />
+    <solid android:color="@color/colorPrimary" />
 </shape>

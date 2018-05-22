@@ -7,8 +7,11 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,10 +20,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.QQDao;
+import com.qsboy.antirecall.db.Dao;
 import com.qsboy.utils.CheckAuthority;
 import com.qsboy.utils.LogcatHelper;
 
@@ -28,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
 
@@ -61,12 +66,13 @@ public class MainActivity extends AppCompatActivity {
         if (fragmentList.size() < 3) {
             fragmentList.add(new QQFragment());
             fragmentList.add(new WeChatFragment());
+            fragmentList.add(new TimFragment());
             fragmentList.add(new SettingsFragment());
         }
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public int getCount() {
-                return 3;
+                return fragmentList.size();
             }
 
             @Override
@@ -96,42 +102,13 @@ public class MainActivity extends AppCompatActivity {
 
         navigationTabBar.setModels(models);
         navigationTabBar.setViewPager(viewPager, 0);
-
-        //IMPORTANT: ENABLE SCROLL BEHAVIOUR IN COORDINATOR LAYOUT
         navigationTabBar.setBehaviorEnabled(true);
-
-        navigationTabBar.setOnTabBarSelectedIndexListener(new NavigationTabBar.OnTabBarSelectedIndexListener() {
-            @Override
-            public void onStartTabSelected(final NavigationTabBar.Model model, final int index) {
-            }
-
-            @Override
-            public void onEndTabSelected(final NavigationTabBar.Model model, final int index) {
-                model.hideBadge();
-            }
-        });
-        navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(final int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(final int state) {
-
-            }
-        });
 
 //        initFab(navigationTabBar);
 
     }
 
-//    private void initFab(NavigationTabBar navigationTabBar) {
+    private void initFab(NavigationTabBar navigationTabBar) {
 //        final CoordinatorLayout coordinatorLayout = findViewById(R.id.parent);
 //        findViewById(R.id.fab).setOnClickListener(v -> {
 //            for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
@@ -153,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 //                snackbar.show();
 //            }, 1000);
 //        });
-//    }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -194,11 +171,10 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-
     // for test
     public void prepareDataForTest() {
         Date in = new Date();
-        QQDao dao = QQDao.getInstance(this);
+        Dao dao = Dao.getInstance(this, Dao.DB_NAME_QQ);
 //        dao.deleteAll();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -9);

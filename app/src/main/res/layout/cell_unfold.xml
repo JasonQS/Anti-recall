@@ -14,9 +14,9 @@
 
     <!--Title-->
     <RelativeLayout
+        android:id="@+id/cell_title_unfold_bg"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_title"
-        android:background="@color/bgTitle">
+        android:layout_height="@dimen/height_title">
 
         <TextView
             android:id="@+id/cell_title_unfold"

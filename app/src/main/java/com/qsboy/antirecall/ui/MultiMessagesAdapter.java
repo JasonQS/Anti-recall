@@ -28,6 +28,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
     String TAG = "MultiMessagesAdapter";
 
     Context context;
+    private int theme;
     int day;
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat sdfSec = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
@@ -35,9 +36,10 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
 
     OnDateChangeListener onDateChangeListener;
 
-    public MultiMessagesAdapter(List<Messages> data, Context context) {
+    public MultiMessagesAdapter(List<Messages> data, Context context, int theme) {
         super(R.layout.item_message, data);
         this.context = context;
+        this.theme = theme;
     }
 
     @Override
@@ -53,6 +55,20 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         } else {
             helper.setImageBitmap(R.id.cell_message_image, null);
             helper.setText(R.id.cell_message_text, item.getMessage());
+        }
+        switch (theme) {
+            case App.THEME_BLUE:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameBlue));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentBlue));
+                break;
+            case App.THEME_RED:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameRed));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentRed));
+                break;
+            case App.THEME_GREEN:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameGreen));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentGreen));
+                break;
         }
     }
 

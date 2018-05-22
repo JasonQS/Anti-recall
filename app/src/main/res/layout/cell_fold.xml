@@ -13,9 +13,9 @@
 
     <!--Title-->
     <RelativeLayout
+        android:id="@+id/cell_title_fold_bg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_title"
-        android:background="@color/bgTitle"
         android:gravity="center">
 
         <TextView

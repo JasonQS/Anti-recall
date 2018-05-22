@@ -9,7 +9,7 @@ package com.qsboy.antirecall.access;
 import android.content.Context;
 import android.util.Log;
 
-import com.qsboy.antirecall.db.WeChatDao;
+import com.qsboy.antirecall.db.Dao;
 
 
 public class WXClient {
@@ -17,14 +17,14 @@ public class WXClient {
     String TAG = "Wx";
 
     private Context context;
-    private WeChatDao dao;
+    private Dao dao;
     private String title;
     private String name;
     private String message;
 
     public WXClient(Context context) {
         this.context = context;
-        dao = WeChatDao.getInstance(this.context);
+        dao = Dao.getInstance(this.context, Dao.DB_NAME_WE_CHAT);
     }
 
     public void onNotification(String title, String text) {

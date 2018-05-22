@@ -16,7 +16,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.db.QQDao;
+import com.qsboy.antirecall.db.Dao;
 import com.qsboy.utils.NodesInfo;
 import com.qsboy.utils.XToast;
 
@@ -47,11 +47,11 @@ public abstract class Client {
     boolean isOtherMsg;
     boolean isWX;
 
-    private QQDao dao;
+    private Dao dao;
     private Context context;
 
     public Client(Context context) {
-        dao = QQDao.getInstance(context);
+        dao = Dao.getInstance(context, Dao.DB_NAME_QQ);
         this.context = context;
     }
 

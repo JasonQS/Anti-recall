@@ -21,8 +21,8 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
+import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.db.QQDao;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,12 +32,13 @@ import java.util.Locale;
 
 import static java.util.Calendar.DAY_OF_YEAR;
 
-public class Page1Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
+public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
     static DividerItemDecoration decor;
-    String TAG = "Page1Adapter";
+    String TAG = "MessageAdapter";
     Context context;
-    QQDao dao;
+    Dao dao;
+    private int theme;
     Messages data;
     Calendar now = Calendar.getInstance();
     Calendar calendar = Calendar.getInstance();
@@ -46,10 +47,11 @@ public class Page1Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
     SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
     long down = 0;
 
-    public Page1Adapter(@Nullable List<Messages> data, Context context) {
+    public MessageAdapter(Dao dao, @Nullable List<Messages> data, Context context, int theme) {
         super(R.layout.cell, data);
         this.context = context;
-        dao = QQDao.getInstance(context);
+        this.dao = dao;
+        this.theme = theme;
         decor = new DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL);
     }
 
@@ -58,7 +60,7 @@ public class Page1Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
         Log.v(TAG, "convert: " + item.getMessage() + " id: " + item.getId());
         MyFoldingCell fc = helper.getView(R.id.folding_cell);
         RecyclerView recyclerView = helper.getView(R.id.cell_recycler_view);
-        MultiMessagesAdapter adapter = new MultiMessagesAdapter(null, context);
+        MultiMessagesAdapter adapter = new MultiMessagesAdapter(null, context, theme);
 
         helper.setText(R.id.cell_title_fold, item.getName());
         helper.setText(R.id.cell_title_unfold, item.getName());
@@ -66,8 +68,29 @@ public class Page1Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
         helper.setText(R.id.cell_message_text, item.getMessage());
 
-        final int[] top = {item.getId()};
-        final int[] bot = {item.getId(), 1};
+        switch (theme) {
+            case App.THEME_BLUE:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameBlue));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentBlue));
+                helper.setBackgroundColor(R.id.cell_title_fold_bg, context.getResources().getColor(R.color.bgTitleBlue));
+                helper.setBackgroundColor(R.id.cell_title_unfold_bg, context.getResources().getColor(R.color.bgTitleBlue));
+                break;
+            case App.THEME_RED:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameRed));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentRed));
+                helper.setBackgroundColor(R.id.cell_title_fold_bg, context.getResources().getColor(R.color.bgTitleRed));
+                helper.setBackgroundColor(R.id.cell_title_unfold_bg, context.getResources().getColor(R.color.bgTitleRed));
+                break;
+            case App.THEME_GREEN:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameGreen));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentGreen));
+                helper.setBackgroundColor(R.id.cell_title_fold_bg, context.getResources().getColor(R.color.bgTitleGreen));
+                helper.setBackgroundColor(R.id.cell_title_unfold_bg, context.getResources().getColor(R.color.bgTitleGreen));
+                break;
+
+        }
+        int[] top = {item.getId()};
+        int[] bot = {item.getId(), 1};
         int max = dao.getMaxID(item.getName());
         adapter.addData(item);
         adapter.setStartUpFetchPosition(3);
@@ -77,11 +100,15 @@ public class Page1Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
         adapter.setOnDateChangeListener(date -> helper.setText(R.id.cell_title_date, formatDate(date)));
         adapter.setUpFetchListener(() -> recyclerView.post(() -> {
             Log.v(TAG, "convert: UpFetch");
-            if (top[0] <= 1) {
-                adapter.setUpFetchEnable(false);
-                return;
+            while (true) {
+                top[0]--;
+                if (top[0] <= 0) {
+                    adapter.setUpFetchEnable(false);
+                    return;
+                }
+                if ((data = dao.queryById(item.getName(), top[0])) != null)
+                    break;
             }
-            while ((data = dao.queryById(item.getName(), --top[0])) == null) ;
             adapter.addData(0, data);
             adapter.setUpFetching(false);
         }));
@@ -95,12 +122,17 @@ public class Page1Adapter extends BaseItemDraggableAdapter<Messages, BaseViewHol
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            if (bot[0] >= max) {
-                adapter.loadMoreEnd();
-                return;
-            }
             bot[1] = 0;
-            while ((data = dao.queryById(item.getName(), ++bot[0])) == null) ;
+
+            while (true) {
+                bot[0]++;
+                if (bot[0] > max) {
+                    adapter.loadMoreEnd();
+                    return;
+                }
+                if ((data = dao.queryById(item.getName(), bot[0])) != null)
+                    break;
+            }
             adapter.addData(data);
             adapter.loadMoreComplete();
             bot[1] = 1;

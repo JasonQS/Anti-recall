@@ -7,7 +7,6 @@
 package com.qsboy.antirecall.ui;
 
 
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,9 +22,11 @@ import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.db.WeChatDao;
+import com.qsboy.antirecall.db.Dao;
 
 import java.util.List;
+
+import static com.qsboy.antirecall.db.DBHelper.Table_Recalled_Messages;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,30 +34,61 @@ import java.util.List;
 public class WeChatFragment extends Fragment {
 
     String TAG = "WeChatFragment";
-    RecyclerView recyclerView;
-    Page2Adapter adapter;
+    //    RecyclerView recyclerViewRecall;
+    RecyclerView recyclerViewAll;
+    MessageAdapter adapterAll;
+    Dao dao;
+    int max;
+    int[] cursor = new int[]{0, 1};
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_messages, container, false);
 
-        adapter = new Page2Adapter(null, getActivity());
-        recyclerView = view.findViewById(R.id.main_recycler_view);
+        dao = Dao.getInstance(getContext(), Dao.DB_NAME_WE_CHAT);
+        adapterAll = new MessageAdapter(dao, null, getActivity(), App.THEME_GREEN);
+        recyclerViewAll = view.findViewById(R.id.main_recycler_view_all);
+        max = dao.getMaxID(Table_Recalled_Messages);
 
-        List<Messages> messages = adapter.prepareData();
-        Log.d(TAG, "onCreateView: data: " + messages);
+        List<Messages> messages = prepareData();
         if (messages != null && messages.size() != 0)
-            adapter.addData(messages);
+            adapterAll.addData(messages);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+//        adapterRecall.setPreLoadNumber(4);
+//        adapterRecall.setEnableLoadMore(true);
+//        adapterRecall.setOnLoadMoreListener(() -> {
+//            Log.v(TAG, "convert: OnLoadMore");
+//            if (cursor[1] == 0)
+//                try {
+//                    Log.i(TAG, "convert: load more wait");
+//                    Thread.sleep(10);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            cursor[1] = 0;
+//            while (true) {
+//                cursor[0]--;
+//                if (cursor[0] == 0) {
+//                    adapterRecall.loadMoreEnd();
+//                    return;
+//                }
+//                if ((data = dao.queryRecallById(cursor[0])) != null)
+//                    break;
+//            }
+//            adapterRecall.addData(data);
+//            adapterRecall.loadMoreComplete();
+//            cursor[1] = 1;
+//        }, recyclerViewRecall);
 
-        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
+        recyclerViewAll.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewAll.setAdapter(adapterAll);
+
+        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapterAll);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        itemTouchHelper.attachToRecyclerView(recyclerViewAll);
 
-        adapter.enableSwipeItem();
-        adapter.setOnItemSwipeListener(onItemSwipeListener);
+        adapterAll.enableSwipeItem();
+        adapterAll.setOnItemSwipeListener(onItemSwipeListener);
 
         return view;
     }
@@ -74,10 +106,10 @@ public class WeChatFragment extends Fragment {
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
             Log.i(TAG, "onItemSwiped: pos: " + pos);
-            WeChatDao dao = WeChatDao.getInstance(getActivity());
-            Messages messages = adapter.getData().get(pos);
+            Dao dao = Dao.getInstance(getActivity(), Dao.DB_NAME_WE_CHAT);
+            Messages messages = adapterAll.getData().get(pos);
             dao.deleteMessage(messages.getName(), messages.getRecalledID());
-            Log.i(TAG, "clearView: " + adapter.getData());
+            Log.d(TAG, "clearView: " + adapterAll.getData());
         }
 
         @Override
@@ -86,22 +118,37 @@ public class WeChatFragment extends Fragment {
         }
     };
 
-    public WeChatFragment() {
+    public List<Messages> prepareData() {
+        return dao.queryAllLastMessage(dao.queryAllTables());
+//        List<Messages> list = new ArrayList<>();
+//        Messages messages;
+//        cursor[0] = max + 1 - adapterRecall.getData().size();
+//        for (int i = 0; i < 10; i++) {
+//            while (true) {
+//                cursor[0]--;
+//                if (cursor[0] == 0)
+//                    return list;
+//                if ((messages = dao.queryRecallById(cursor[0])) != null)
+//                    break;
+//            }
+//            adapterRecall.addData(messages);
+//        }
+//        return list;
     }
 
     // TODO: 24/04/2018 refresh
     public void refresh() {
-        if (adapter == null)
+        if (adapterAll == null)
             return;
-        if (recyclerView == null)
+        if (recyclerViewAll == null)
             return;
-        List<Messages> messages = adapter.prepareData();
+        List<Messages> messages = adapterAll.prepareData();
         if (messages != null && messages.size() != 0)
-            if (adapter.getData().size() != messages.size()) {
-                adapter.getData().clear();
-                adapter.addData(messages);
+            if (adapterAll.getData().size() != messages.size()) {
+                adapterAll.getData().clear();
+                adapterAll.addData(messages);
             }
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
+        adapterAll.notifyDataSetChanged();
+        recyclerViewAll.setAdapter(adapterAll);
     }
 }
