@@ -6,18 +6,27 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#437dbf</color>
-    <color name="colorPrimaryDark">#2e6099</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#437DBF</color>
+    <color name="colorPrimaryDark">#2E6099</color>
+    <color name="colorAccent">#4099ff</color>
 
-    <color name="colorWX">#20b920</color>
-    <color name="colorTim">#0188fb</color>
-    <color name="colorQQ">#ec3f35</color>
+    <color name="colorWX">#86d987</color>
+    <color name="colorTim">#77befe</color>
+    <color name="colorQQ">#f49790</color>
 
-    <color name="bgTitle">#6c9fd9</color>
-    <color name="bgName">#e6f1ff</color>
-    <color name="bgContent">#f5f7fa</color>
-    <color name="bgBackSideColor">#dae0e6</color>
+    <color name="bgBackSideColor">#e6e6e6</color>
+
+    <color name="bgTitleBlue">#6C9FD9</color>
+    <color name="bgNameBlue">#E6F1FF</color>
+    <color name="bgContentBlue">#F5F7FA</color>
+
+    <color name="bgTitleRed">#f29691</color>
+    <color name="bgNameRed">#ffe7e6</color>
+    <color name="bgContentRed">#faf5f5</color>
+
+    <color name="bgTitleGreen">#7cbf7c</color>
+    <color name="bgNameGreen">#e6ffe6</color>
+    <color name="bgContentGreen">#f5faf5</color>
 
     <color name="text_color_title">#FFFFFF</color>
     <color name="text_color_title_date">#EEEEEE</color>
@@ -25,4 +34,8 @@
     <color name="text_color_message">#333333</color>
     <color name="text_color_time">#888888</color>
     <color name="contentDividerLine">#808080</color>
+
+    <color name="gray_light">#ddd</color>
+    <color name="gray_dark">#aaa</color>
+
 </resources>

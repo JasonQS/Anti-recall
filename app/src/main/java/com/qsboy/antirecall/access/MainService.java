@@ -7,79 +7,89 @@
 package com.qsboy.antirecall.access;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.Notification;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.qsboy.antirecall.ui.App;
 import com.qsboy.utils.NodesInfo;
 
+import java.util.Date;
 import java.util.List;
 
 public class MainService extends AccessibilityService {
 
-    private String TAG = "Main Service";
-    private AccessibilityNodeInfo root;
-    private String packageName;
     final String pkgTim = "com.tencent.tim";
     final String pkgQQ = "com.tencent.mobileqq";
     final String pkgWX = "com.tencent.mm";
+    final String pkgThis = "com.qsboy.antirecall";
     WXAutoLogin autoLogin;
+    private String TAG = "Main Service";
+    private AccessibilityNodeInfo root;
+    private String packageName;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        // TODO: 加一段 服务运行时间段 记录第一次成功启动服务到最后一次收到 event
-        if (event.getPackageName() == null) {
-            Log.d(TAG, "onAccessibilityEvent: package name is null, return");
-            return;
-        }
-        packageName = event.getPackageName() + "";
+        try {
+            // TODO: 加一段 服务运行时间段 记录第一次成功启动服务到最后一次收到 event
+            if (event.getPackageName() == null) {
+                Log.d(TAG, "onAccessibilityEvent: package name is null, return");
+                return;
+            }
+            packageName = event.getPackageName() + "";
 
 //        if (!(packageName.equals(pkgTim) || packageName.equals(pkgQQ) || packageName.equals(pkgWX)))
 //            return;
 
-        root = getRootInActiveWindow();
-        if (root == null) {
-//            Log.d(TAG, "onAccessibilityEvent: root is null, return");
-            return;
-        }
+            root = getRootInActiveWindow();
+            if (root == null) {
+                Log.d(TAG, "onAccessibilityEvent: root is null, return");
+                return;
+            }
 
-        int eventType = event.getEventType();
-        if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            int eventType = event.getEventType();
             Log.v(TAG, AccessibilityEvent.eventTypeToString(eventType));
+            // TODO: 判断各种手机型号 小米华为/oppo vivo
+            if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            }
+
+            switch (eventType) {
+                case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
+                    onNotification(event);
+                    break;
+                case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                    autoLogin.autoLoginWX();
+                    onContentChanged(event);
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_CLICKED:
+                    onClick(event);
+                    break;
+
+            }
+        } catch (Exception ignored) {
         }
-
-        switch (eventType) {
-            case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
-                onNotification(event);
-                break;
-            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
-                autoLogin.autoLoginWX();
-                onContentChanged(event);
-                break;
-            case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                onClick(event);
-                break;
-
-        }
-
     }
 
     private void onContentChanged(AccessibilityEvent event) {
-        if (root == null)
+        if (root == null) {
+            Log.d(TAG, "onContentChanged: root is null, return");
             return;
+        }
         // 只需在改变类型为文字时执行添加操作
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
-        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+        // TODO: 有些机型需要所有types
+        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) {
+            Log.v(TAG, "onContentChanged: content change type: " + event.getContentChangeTypes());
             return;
-        CharSequence cs = event.getSource().getText();
+        }
 
         switch (packageName) {
             case pkgTim:
-                Log.d(TAG, "\nonContentChanged: " + cs);
                 new TimClient(this).onContentChanged(root);
                 break;
             case pkgQQ:
-                Log.d(TAG, "\nonContentChanged: " + cs);
                 new QQClient(this).onContentChanged(root);
                 break;
         }
@@ -97,14 +107,22 @@ public class MainService extends AccessibilityService {
                 break;
             case pkgWX:
                 NodesInfo.show(root, TAG);
-
+                break;
+            case pkgThis:
+                if (event.getSource() == null) {
+                    Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
+                    return;
+                }
+                if ("com.qsboy.antirecall:id/btn_check_permission".equals(event.getSource().getViewIdResourceName())) {
+                    App.timeClickedCheckPermissionButton = new Date().getTime();
+                }
+                break;
         }
     }
 
     private void onNotification(AccessibilityEvent event) {
-        Log.i(TAG, "onNotification: " + packageName);
         List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0) {
+        if (texts.isEmpty()) {
             NodesInfo.show(root, TAG);
             //微信的登录通知的 text 是 null
             autoLogin.flagEnable();
@@ -112,18 +130,27 @@ public class MainService extends AccessibilityService {
         }
         Log.i(TAG, "onNotification: " + packageName + " | " + texts);
         switch (packageName) {
-            case pkgTim:
-//                new TimClient(this).onContentChanged(root);
-                new TimClient(this).onNotificationChanged(event);
-                break;
             case pkgQQ:
 //                new QQClient(this).onContentChanged(root);
                 new QQClient(this).onNotificationChanged(event);
                 break;
-            case pkgWX:
-                new WXClient(this).onNotificationChanged(event);
+            case pkgTim:
+//                new TimClient(this).onContentChanged(root);
+                new TimClient(this).onNotificationChanged(event);
                 break;
         }
+    }
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        Log.e(TAG, "onServiceConnected");
+        autoLogin = new WXAutoLogin();
+    }
+
+    @Override
+    public void onInterrupt() {
+
     }
 
     /**
@@ -159,16 +186,5 @@ public class MainService extends AccessibilityService {
                 time = 0;
             }
         }
-    }
-
-    @Override
-    protected void onServiceConnected() {
-        super.onServiceConnected();
-        autoLogin = new WXAutoLogin();
-    }
-
-    @Override
-    public void onInterrupt() {
-
     }
 }

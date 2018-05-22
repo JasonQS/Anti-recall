@@ -10,10 +10,10 @@ public class Messages {
 
     private int id;
     private int recalledID;
-    private boolean isWX;
     private String name;
     private String subName;
     private String message;
+    private String pkgName;
     private long time;
     private String images;
 
@@ -21,21 +21,20 @@ public class Messages {
 
     }
 
-    public Messages(int id, boolean isWX, String name, String subName, String message) {
+    public Messages(int id, String name, String subName, String message) {
         this.id = id;
-        this.isWX = isWX;
         this.name = name;
         this.subName = subName;
         this.message = message;
     }
 
-    public Messages(int id, boolean isWX, String name, String subName, String message, long time) {
-        this(id, isWX, name, subName, message);
+    public Messages(int id, String name, String subName, String message, long time) {
+        this(id, name, subName, message);
         this.time = time;
     }
 
     public Messages(int id, boolean isWX, String name, String subName, String message, long time, String images) {
-        this(id, isWX, name, subName, message, time);
+        this(id, name, subName, message, time);
         this.images = images;
     }
 
@@ -59,15 +58,6 @@ public class Messages {
 
     public Messages setRecalledID(int recalledID) {
         this.recalledID = recalledID;
-        return this;
-    }
-
-    public boolean isWX() {
-        return isWX;
-    }
-
-    public Messages setWX(boolean WX) {
-        isWX = WX;
         return this;
     }
 
@@ -120,6 +110,14 @@ public class Messages {
         return images;
     }
 
+    public Messages setImages(String images) {
+        if (images == null)
+            this.images = "";
+        else
+            this.images = images;
+        return this;
+    }
+
     public Messages setImages(String[] images) {
         StringBuilder builder = new StringBuilder();
         if (images != null && images.length != 0) {
@@ -133,12 +131,11 @@ public class Messages {
         return this;
     }
 
-    public Messages setImages(String images) {
-        if (images == null)
-            this.images = "";
-        else
-            this.images = images;
-        return this;
+    public String getPkgName() {
+        return pkgName;
     }
 
+    public void setPkgName(String pkgName) {
+        this.pkgName = pkgName;
+    }
 }

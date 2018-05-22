@@ -68,6 +68,7 @@ public class ImageHelper {
      * @param time 图片的创建时间
      * @return 是否找到了图片
      */
+    // TODO: 28/04/2018 加一个网络状态参数 是wifi的话 误差就小一点 不是误差就大一点
     public static String[] searchImageFile(Context context, long time, String client) {
         Log.i(TAG, "searchImageFile: time: " + time + " client: " + client);
         String path = getPath(client);
@@ -76,34 +77,28 @@ public class ImageHelper {
         Date start = new Date();
         final long mTime = time / 1000 * 1000;
 
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String name) {
-                File f = new File(file + File.separator + name);
-                //文件修改时间
-                long modifiedTime = f.lastModified();
+        FilenameFilter filter = (file, name) -> {
+            File f1 = new File(file + File.separator + name);
+            //文件修改时间
+            long modifiedTime = f1.lastModified();
 //                Log.v(TAG, "accept: time: " + modifiedTime);
-                long diff = modifiedTime - mTime;
-                return diff < 10000 && diff >= 0;
-            }
+            long diff = modifiedTime - mTime;
+            return diff < 10000 && diff >= 0;
         };
 
         File[] files = f.listFiles(filter);
         if (files == null || files.length == 0)
             return new String[0];
 
-        Arrays.sort(files, new Comparator<File>() {
-            @Override
-            public int compare(File o1, File o2) {
-                long l1 = o1.length();
-                long l2 = o2.length();
-                if (l1 < l2)
-                    return 1;
-                if (l1 > l2)
-                    return -1;
-                else
-                    return 0;
-            }
+        Arrays.sort(files, (o1, o2) -> {
+            long l1 = o1.length();
+            long l2 = o2.length();
+            if (l1 < l2)
+                return 1;
+            if (l1 > l2)
+                return -1;
+            else
+                return 0;
         });
 
         Date end = new Date();

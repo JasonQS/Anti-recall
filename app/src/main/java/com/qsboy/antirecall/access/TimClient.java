@@ -14,8 +14,6 @@ import java.util.List;
 
 public class TimClient extends Client {
 
-    String TAG = "Tim";
-
     final String IdTitle = "com.tencent.tim:id/title";
     final String IdChatGroupView = "com.tencent.tim:id/listView1";
     final String IdHeadIcon = "com.tencent.tim:id/chat_item_head_icon";
@@ -25,9 +23,7 @@ public class TimClient extends Client {
     final String IdGrayBar = "com.tencent.tim:id/graybar";
     final String IdInput = "com.tencent.tim:id/input";
     final String IdSend = "com.tencent.tim:id/fun_btn";
-
-    int headIconPos;
-    int messagePos;
+    String TAG = "Tim";
 
     public TimClient(Context context) {
         super(context);
@@ -116,6 +112,8 @@ public class TimClient extends Client {
     }
 
     protected void parser(AccessibilityNodeInfo group) {
+        int headIconPos = 0;
+        int messagePos = 0;
         subName = "";
         message = "";
         isRecalledMsg = false;
@@ -157,8 +155,8 @@ public class TimClient extends Client {
                             if (child.getChildCount() == 2) {
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
-                                if (child1 != null && "android.widget.TextView".equals(child1.getClassName())) {
-                                    if (child2 != null && "android.widget.TextView".equals(child2.getClassName())) {
+                                if (child1 != null && "android.widget.TextView".contentEquals(child1.getClassName())) {
+                                    if (child2 != null && "android.widget.TextView".contentEquals(child2.getClassName())) {
                                         message = child2.getText() + "";
                                     }
                                 }

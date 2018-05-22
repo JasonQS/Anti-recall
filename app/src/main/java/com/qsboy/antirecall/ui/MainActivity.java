@@ -10,60 +10,126 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.utils.CheckAuthority;
 import com.qsboy.utils.LogcatHelper;
-import com.qsboy.utils.UpdateHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
 
     final String TAG = "Main Activity";
+    List<Fragment> fragmentList = new ArrayList<>();
 
-    Page1 page1;
-
-    // TODO: 09/04/2018 加一个看聊天记录的
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogcatHelper.getInstance().start();
         Date in = new Date();
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_horizontal_coordinator_ntb);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        initPage1();
+//        final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar);
+//        collapsingToolbarLayout.setExpandedTitleColor(Color.parseColor("#009F90AF"));
+//        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
 
-        checkUpdate();
+        initTabBar();
 
         Date out = new Date();
-        Log.d(TAG, "onCreate: tvTime: " + (out.getTime() - in.getTime()));
+        Log.d(TAG, "onCreateTime: " + (out.getTime() - in.getTime()));
     }
 
-    private Page1 initPage1() {
-        if (page1 != null)
-            return page1;
-        page1 = new Page1();
+    private void initTabBar() {
+        ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
+        if (fragmentList.size() < 3) {
+            fragmentList.add(new QQFragment());
+            fragmentList.add(new WeChatFragment());
+            fragmentList.add(new TimFragment());
+            fragmentList.add(new SettingsFragment());
+        }
+        viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public int getCount() {
+                return fragmentList.size();
+            }
 
-        return page1;
+            @Override
+            public Fragment getItem(int position) {
+                return fragmentList.get(position);
+            }
+        });
+
+        NavigationTabBar navigationTabBar = findViewById(R.id.ntb_horizontal);
+        navigationTabBar.show();
+        final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
+        models.add(new NavigationTabBar.Model.Builder(
+                getResources().getDrawable(R.drawable.ic_qq),
+                getResources().getColor(R.color.colorQQ))
+                .title("QQ/Tim")
+                .build());
+        models.add(new NavigationTabBar.Model.Builder(
+                getResources().getDrawable(R.drawable.ic_wechat_),
+                getResources().getColor(R.color.colorWX))
+                .title("WeChat")
+                .build());
+        models.add(new NavigationTabBar.Model.Builder(
+                getResources().getDrawable(R.drawable.ic_settings),
+                getResources().getColor(R.color.colorTim))
+                .title("SettingsFragment")
+                .build());
+
+        navigationTabBar.setModels(models);
+        navigationTabBar.setViewPager(viewPager, 0);
+        navigationTabBar.setBehaviorEnabled(true);
+
+//        initFab(navigationTabBar);
+
+    }
+
+    private void initFab(NavigationTabBar navigationTabBar) {
+//        final CoordinatorLayout coordinatorLayout = findViewById(R.id.parent);
+//        findViewById(R.id.fab).setOnClickListener(v -> {
+//            for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
+//                final NavigationTabBar.Model model = navigationTabBar.getModels().get(i);
+//                navigationTabBar.postDelayed(() -> {
+//                    final String title = String.valueOf(new Random().nextInt(15));
+//                    if (!model.isBadgeShowed()) {
+//                        model.setBadgeTitle(title);
+//                        model.showBadge();
+//                    } else model.updateBadgeTitle(title);
+//                }, i * 100);
+//            }
+//
+//            coordinatorLayout.postDelayed(() -> {
+//                final Snackbar snackbar = Snackbar.make(navigationTabBar, "Coordinator NTB", Snackbar.LENGTH_SHORT);
+//                snackbar.getView().setBackgroundColor(Color.parseColor("#9b92b3"));
+//                ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
+//                        .setTextColor(Color.parseColor("#423752"));
+//                snackbar.show();
+//            }, 1000);
+//        });
     }
 
     @Override
@@ -105,27 +171,20 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void checkUpdate() {
-        //wifi环境下检查更新
-        UpdateHelper helper = new UpdateHelper(this);
-//        if (helper.isWifi())
-        helper.checkUpdate();
-    }
-
     // for test
     public void prepareDataForTest() {
         Date in = new Date();
-        Dao dao = Dao.getInstance(this);
+        Dao dao = Dao.getInstance(this, Dao.DB_NAME_QQ);
 //        dao.deleteAll();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -9);
         for (int i = 1; i < 200; ) {
             for (int j = 1; j < 21; j++, i++) {
-                dao.addMessage("Jason", "qs", false, String.valueOf(i), calendar.getTime().getTime());
+                dao.addMessage("Jason", "qs", String.valueOf(i), calendar.getTime().getTime());
                 calendar.add(Calendar.MINUTE, 3);
                 calendar.add(Calendar.SECOND, 3);
             }
-            dao.addRecall(i, "Jason", "qs", String.valueOf(i - 1), false, calendar.getTime().getTime(), null, null, null, null, null);
+            dao.addRecall(i, "Jason", "qs", String.valueOf(i - 1), calendar.getTime().getTime(), null, null, null, null, null);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
         Date out = new Date();

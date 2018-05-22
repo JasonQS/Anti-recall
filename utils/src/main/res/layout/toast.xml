@@ -5,24 +5,33 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/bg_toast">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:clipChildren="false"
+    android:gravity="center_horizontal|bottom">
 
-    <TextView
-        android:id="@+id/toast_tv"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text=""
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_toast">
 
-    <ImageView
-        android:id="@+id/toast_iv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxHeight="300dp"
-        android:maxWidth="300dp" />
+        <TextView
+            android:id="@+id/toast_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text=""
+            android:textColor="#fff"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/toast_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxHeight="300dp"
+            android:maxWidth="300dp" />
+    </FrameLayout>
 
 </RelativeLayout>

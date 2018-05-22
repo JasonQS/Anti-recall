@@ -12,7 +12,6 @@ import android.util.Log;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.utils.ImageHelper;
 
@@ -22,14 +21,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static java.util.Calendar.*;
+import static java.util.Calendar.DAY_OF_YEAR;
 
 public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
     String TAG = "MultiMessagesAdapter";
 
     Context context;
-    Dao dao;
+    private int theme;
     int day;
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat sdfSec = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
@@ -37,10 +36,10 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
 
     OnDateChangeListener onDateChangeListener;
 
-    public MultiMessagesAdapter(List<Messages> data, Context context) {
+    public MultiMessagesAdapter(List<Messages> data, Context context, int theme) {
         super(R.layout.item_message, data);
         this.context = context;
-        dao = Dao.getInstance(context);
+        this.theme = theme;
     }
 
     @Override
@@ -57,10 +56,20 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
             helper.setImageBitmap(R.id.cell_message_image, null);
             helper.setText(R.id.cell_message_text, item.getMessage());
         }
-    }
-
-    interface OnDateChangeListener {
-        void onDateChange(long date);
+        switch (theme) {
+            case App.THEME_BLUE:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameBlue));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentBlue));
+                break;
+            case App.THEME_RED:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameRed));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentRed));
+                break;
+            case App.THEME_GREEN:
+                helper.setBackgroundColor(R.id.cell_name, context.getResources().getColor(R.color.bgNameGreen));
+                helper.setBackgroundColor(R.id.item_message, context.getResources().getColor(R.color.bgContentGreen));
+                break;
+        }
     }
 
     public void setOnDateChangeListener(OnDateChangeListener onDateChangeListener) {
@@ -72,5 +81,9 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
         calendar.setTime(date);
         if (day != (day = calendar.get(DAY_OF_YEAR)))
             onDateChangeListener.onDateChange(time);
+    }
+
+    interface OnDateChangeListener {
+        void onDateChange(long date);
     }
 }

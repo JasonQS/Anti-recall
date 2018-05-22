@@ -1,58 +1,63 @@
+/*
+ * Copyright © 2016 - 2018 by GitHub.com/JasonQS
+ * anti-recall.qsboy.com
+ * All Rights Reserved
+ */
+
 package com.qsboy.antirecall.access;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 
-import java.util.Date;
-import java.util.List;
+import com.qsboy.antirecall.db.Dao;
 
 
-public class WXClient extends Client{
+public class WXClient {
 
     String TAG = "Wx";
 
+    private Context context;
+    private Dao dao;
+    private String title;
+    private String name;
+    private String message;
+
     public WXClient(Context context) {
-        super(context);
+        this.context = context;
+        dao = Dao.getInstance(this.context, Dao.DB_NAME_WE_CHAT);
     }
 
-    @Override
-    protected boolean init(AccessibilityNodeInfo root) {
+    public void onNotification(String title, String text) {
+        if (title == null || text == null)
+            return;
+        this.title = title;
+        int i = text.indexOf(':');
+        if (i >= 1) {
+            name = text.substring(0, i);
+            message = text.substring(i + 2);
+            //多条消息
+            int j;
+            if (name.startsWith("["))
+                if ((j = name.indexOf("]")) > 0)
+                    name = name.substring(j + 1);
+        } else {
+            name = title;
+            message = text;
+        }
+
+        Log.w(TAG, "onNotification: " + title + " - " + name + " : " + message);
+        dao.addMessage(title, name, message);
+    }
+
+    public boolean isPCApplyLogin() {
+        if ("微信".equals(title))
+            if ("Mac 微信登录确认".equals(message) || "Windows 微信登录确认".equals(message) || "Windows WeChat登入確認".equals(message))
+                return true;
+        if ("WeChat".equals(title))
+            if ("Confirm your login to Mac WeChat".equals(message) || "Confirm your login to Windows WeChat".equals(message) || "Mac WeChat登入確認".equals(message))
+                return true;
+
         return false;
     }
 
-    @Override
-    protected void parser(AccessibilityNodeInfo group) {
-
-    }
-
-    @Override
-    public void onNotificationChanged(AccessibilityEvent event) {
-        List<CharSequence> texts = event.getText();
-        if (texts.isEmpty() || texts.size() == 0)
-            return;
-        for (CharSequence text : texts) {
-            String string = text + "";
-            Log.w(TAG, "Notification text: " + string);
-
-            int i = string.indexOf(':');
-            if (i < 1) {
-                Log.d(TAG, "Notification does not contains ':'");
-                return;
-            }
-            title = string.substring(0, i);
-            message = string.substring(i + 2);
-            subName = title;
-            //是群消息
-            int j = title.indexOf('(');
-            if (j > 0 && title.charAt(i - 1) == ')') {
-                message = string.substring(i + 1);
-                subName = title.substring(0, j);
-                title = title.substring(j + 1, i - 1);
-            }
-
-            addMsg(true);
-        }
-    }
 }

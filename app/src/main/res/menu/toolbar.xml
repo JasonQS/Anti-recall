@@ -11,8 +11,8 @@
         android:id="@+id/action_service"
         android:title="开启服务" />
 
-    <!--<item-->
-        <!--android:id="@+id/action_settings"-->
-        <!--android:title="@string/title_setting" />-->
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/title_setting" />
 
 </menu>

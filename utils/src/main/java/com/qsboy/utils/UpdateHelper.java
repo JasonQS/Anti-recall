@@ -6,7 +6,6 @@
 
 package com.qsboy.utils;
 
-import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,9 +17,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
@@ -36,7 +32,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
@@ -49,7 +44,8 @@ public class UpdateHelper {
     private String TAG = "X-Update";
     private final String PATH = "https://anti-recall.qsboy.com/version.json";
     private final String appName = "anti-recall.apk";
-    private String code;
+    private String versionCode;
+    private String versionName;
     private String desc;
     private String path;
     private File apkFile;
@@ -66,40 +62,34 @@ public class UpdateHelper {
     public void checkUpdate() {
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest request = new JsonObjectRequest(PATH, null, new Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                try {
-                    Log.d(TAG, "json: " + String.valueOf(jsonObject));
-                    code = jsonObject.getString("code");
-                    desc = jsonObject.getString("desc");
-                    path = jsonObject.getString("path");
+        JsonObjectRequest request = new JsonObjectRequest(PATH, null, jsonObject -> {
+            try {
+                Log.d(TAG, "json: " + String.valueOf(jsonObject));
+                versionCode = jsonObject.getString("versionCode");
+                versionName = jsonObject.getString("versionName");
+                desc = jsonObject.getString("desc");
+                path = jsonObject.getString("path");
 
-                    Log.d(TAG, "code: " + code);
-                    Log.d(TAG, "desc: " + desc);
-                    Log.d(TAG, "path: " + path);
+                Log.d(TAG, "versionCode: " + versionCode);
+                Log.d(TAG, "desc: " + desc);
+                Log.d(TAG, "path: " + path);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.i(TAG, "UpdateHelper: save path: " + apkFile);
-                if (needUpdate()) {
-                    if (apkFile.exists()) {
-                        Log.w(TAG, "show notice dialog");
-                        showNoticeDialog();
-                    } else {
-                        Log.w(TAG, "download apk");
-                        downloadAPK();
-                    }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.i(TAG, "UpdateHelper: save path: " + apkFile);
+            if (needUpdate()) {
+                if (apkFile.exists()) {
+                    Log.w(TAG, "show notice dialog");
+                    showNoticeDialog();
+                } else {
+                    Log.w(TAG, "download apk");
+                    downloadAPK();
                 }
             }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Log.w(TAG, error.toString());
-            }
+        }, error -> {
+            error.printStackTrace();
+            Log.w(TAG, error.toString());
         });
         requestQueue.add(request);
     }
@@ -116,57 +106,65 @@ public class UpdateHelper {
         return false;
     }
 
+    private CheckUpdate checkUpdate;
+
+    public void setCheckUpdateListener(CheckUpdate checkUpdate) {
+        this.checkUpdate = checkUpdate;
+    }
+
+    public interface CheckUpdate {
+        void needUpdate(boolean needUpdate, String remoteVersion);
+    }
+
     private boolean needUpdate() {
-        int serverVersion = Integer.parseInt(code);
+        int serverVersion = Integer.parseInt(versionCode);
         int localVersion = 1;
         try {
             localVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
-        boolean b = serverVersion > localVersion;
-        Log.d(TAG, "local version code : " + localVersion);
-        Log.d(TAG, "need update?    " + b);
+        boolean needUpdate = serverVersion > localVersion;
+        Log.d(TAG, "local version versionCode : " + localVersion);
+        Log.d(TAG, "need update?    " + needUpdate);
 
-        return b;
+        checkUpdate.needUpdate(needUpdate, versionName);
+        return needUpdate;
     }
 
     private void downloadAPK() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Date start = new Date();
-                    if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
-                        return;
-                    HttpURLConnection conn = (HttpURLConnection) new URL(path).openConnection();
-                    conn.connect();
-                    InputStream is = conn.getInputStream();
-                    FileOutputStream fos = new FileOutputStream(apkFile);
+        new Thread(() -> {
+            try {
+                Date start = new Date();
+                if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+                    return;
+                HttpURLConnection conn = (HttpURLConnection) new URL(path).openConnection();
+                conn.connect();
+                InputStream is = conn.getInputStream();
+                FileOutputStream fos = new FileOutputStream(apkFile);
 
-                    byte[] buffer = new byte[1024];
-                    Log.w(TAG, "正在下载");
-                    int i = 0;
-                    while (true) {
-                        i++;
-                        int readNumber = is.read(buffer);
-                        if (readNumber < 0) {
-                            Log.w(TAG, "下载完毕");
-                            Log.w(TAG, "文件大小: " + i + "kb");
-                            Date end = new Date();
-                            Log.w(TAG, "用时 " + (end.getTime() - start.getTime()) + " mm");
-                            Log.w(TAG, "存储位置 : " + apkFile);
-                            break;
-                        }
-                        fos.write(buffer, 0, readNumber);
+                byte[] buffer = new byte[1024];
+                Log.w(TAG, "正在下载");
+                int i = 0;
+                while (true) {
+                    i++;
+                    int readNumber = is.read(buffer);
+                    if (readNumber < 0) {
+                        Log.w(TAG, "下载完毕");
+                        Log.w(TAG, "文件大小: " + i + "kb");
+                        Date end = new Date();
+                        Log.w(TAG, "用时 " + (end.getTime() - start.getTime()) + " mm");
+                        Log.w(TAG, "存储位置 : " + apkFile);
+                        break;
                     }
-                    fos.close();
-                    is.close();
-                    showNoticeDialog();
-//                    handler.sendEmptyMessage(1);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    fos.write(buffer, 0, readNumber);
                 }
+                fos.close();
+                is.close();
+                showNoticeDialog();
+//                    handler.sendEmptyMessage(1);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
     }
@@ -196,19 +194,11 @@ public class UpdateHelper {
         String message = desc;
 
         builder.setMessage(message);
-        builder.setPositiveButton("安装", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                update();
-                dialog.dismiss();
-            }
+        builder.setPositiveButton("安装", (dialog, which) -> {
+            update();
+            dialog.dismiss();
         });
-        builder.setNegativeButton("下次再说", new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton("下次再说", (dialog, which) -> dialog.dismiss());
 
         builder.create().show();
     }

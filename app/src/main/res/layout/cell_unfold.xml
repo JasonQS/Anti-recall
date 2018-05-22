@@ -14,9 +14,9 @@
 
     <!--Title-->
     <RelativeLayout
+        android:id="@+id/cell_title_unfold_bg"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_title"
-        android:background="@color/bgTitle">
+        android:layout_height="@dimen/height_title">
 
         <TextView
             android:id="@+id/cell_title_unfold"
@@ -34,8 +34,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:textSize="@dimen/text_size_title_date"
-            android:paddingEnd="@dimen/margin_threeQuarter"
-            android:paddingStart="@dimen/margin_threeQuarter"
+            android:paddingEnd="@dimen/margin_three_quarter"
+            android:paddingStart="@dimen/margin_three_quarter"
             android:text="@string/title_date"
             android:textColor="@color/text_color_title_date" />
     </RelativeLayout>

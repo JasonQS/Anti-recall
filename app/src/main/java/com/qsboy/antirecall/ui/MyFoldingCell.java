@@ -14,9 +14,8 @@ import android.view.MotionEvent;
 
 import com.ramotion.foldingcell.FoldingCell;
 
-import java.util.Date;
-
 public class MyFoldingCell extends FoldingCell {
+
     public MyFoldingCell(Context context) {
         super(context);
     }
