@@ -6,8 +6,11 @@
 
 package com.qsboy.antirecall.access;
 
+import android.app.KeyguardManager;
 import android.app.Notification;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -22,6 +25,9 @@ public class NotificationListener extends NotificationListenerService {
     private String packageName;
     private String title;
     private String text;
+
+    private PowerManager pm;
+    private PowerManager.WakeLock wl = null;
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
@@ -42,6 +48,7 @@ public class NotificationListener extends NotificationListenerService {
                 break;
         }
     }
+
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {

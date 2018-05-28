@@ -6,7 +6,7 @@
 
 <resources>
 
-    <style name="AppTheme" parent="Base.Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -17,7 +17,7 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="LaunchTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="LaunchTheme" parent="Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -25,6 +25,10 @@
 
     <style name="SettingsTheme" parent="AppTheme">
         <item name="android:padding">@dimen/margin_half</item>
+        <item name="android:textColor">@color/text_color_message</item>
+        <item name="android:divider">@android:drawable/divider_horizontal_bright</item>
+        <item name="android:dividerPadding">@dimen/margin_default</item>
+        <item name="android:showDividers">middle</item>
     </style>
 
 </resources>

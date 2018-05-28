@@ -17,6 +17,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
@@ -39,8 +40,6 @@ import java.util.Date;
 public class UpdateHelper {
 
     private Context context;
-    //    private MyHandler handler;
-//    private Intent intent;
     private String TAG = "X-Update";
     private final String PATH = "https://anti-recall.qsboy.com/version.json";
     private final String appName = "anti-recall.apk";
@@ -55,8 +54,6 @@ public class UpdateHelper {
 
         this.context = context;
         apkFile = new File(context.getExternalFilesDir("apk"), appName);
-//        intent = new Intent(this.context.getApplicationContext(), mainActivity.getClass());
-//        handler = new MyHandler(this);
     }
 
     public void checkUpdate() {
@@ -133,7 +130,7 @@ public class UpdateHelper {
     }
 
     private void downloadAPK() {
-        new Thread(() -> {
+        new Handler().post(() -> {
             try {
                 Date start = new Date();
                 if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
@@ -162,31 +159,11 @@ public class UpdateHelper {
                 fos.close();
                 is.close();
                 showNoticeDialog();
-//                    handler.sendEmptyMessage(1);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
     }
-
-//    private static class MyHandler extends Handler {
-//
-//        WeakReference reference;
-//
-//        MyHandler(UpdateHelper updateHelper) {
-//            reference = new WeakReference<>(updateHelper);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            UpdateHelper helper = (UpdateHelper) reference.get();
-//            switch (msg.what) {
-//                case 1:
-//                    new XNotification(helper.context, helper.intent).showInstall();
-//                    break;
-//            }
-//        }
-//    }
 
     private void showNoticeDialog() {
         Builder builder = new Builder(context);
@@ -203,7 +180,7 @@ public class UpdateHelper {
         builder.create().show();
     }
 
-    void update() {
+    private void update() {
         if (!apkFile.exists()) {
             Log.w(TAG, "apk isn't exists");
             return;

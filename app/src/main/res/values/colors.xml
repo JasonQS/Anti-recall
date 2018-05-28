@@ -8,7 +8,11 @@
 <resources>
     <color name="colorPrimary">#437DBF</color>
     <color name="colorPrimaryDark">#2E6099</color>
+    <color name="colorPrimaryLight">#2176d9</color>
     <color name="colorAccent">#4099ff</color>
+    <color name="colorCorrect">#40ffa6</color>
+    <color name="colorError">#a640ff</color>
+
 
     <color name="colorWX">#86d987</color>
     <color name="colorTim">#77befe</color>
@@ -33,9 +37,8 @@
     <color name="text_color_name">#333333</color>
     <color name="text_color_message">#333333</color>
     <color name="text_color_time">#888888</color>
-    <color name="contentDividerLine">#808080</color>
 
-    <color name="gray_light">#ddd</color>
+    <color name="gray_light">#eeeeee</color>
     <color name="gray_dark">#aaa</color>
 
 </resources>

@@ -6,30 +6,44 @@
 
 package com.qsboy.antirecall.ui;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
+import com.qsboy.antirecall.access.MainService;
+import com.qsboy.utils.CheckAuthority;
 import com.qsboy.utils.UpdateHelper;
+
+import java.util.Date;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import devlight.io.library.ntb.NavigationTabBar;
 import ezy.assist.compat.SettingsCompat;
 
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     // TODO: 在scroller view 上下滚动时手动呼出底部导航
 
@@ -43,8 +57,21 @@ public class SettingsFragment extends Fragment {
         View btnAccessibilityService = view.findViewById(R.id.btn_navigate_accessibility_service);
         View btnNotificationListener = view.findViewById(R.id.btn_navigate_notification_listener);
         View btnOverlays = view.findViewById(R.id.btn_navigate_overlays);
-        View btnSettings = view.findViewById(R.id.btn_navigate_settings);
+        View btnCheckUpdate = view.findViewById(R.id.btn_check_update);
 
+        SwitchCompat switchShowAllQQMessages = view.findViewById(R.id.switch_show_all_qq_messages);
+        SwitchCompat switchWeChatAutoLogin = view.findViewById(R.id.switch_we_chat_auto_login);
+        SwitchCompat switchCheckUpdateOnlyOnWiFi = view.findViewById(R.id.switch_check_update_only_on_wifi);
+
+        switchShowAllQQMessages.setChecked(App.isShowAllQQMessages);
+        switchWeChatAutoLogin.setChecked(App.isWeChatAutoLogin);
+        switchCheckUpdateOnlyOnWiFi.setChecked(App.isCheckUpdateOnlyOnWiFi);
+
+        switchShowAllQQMessages.setOnClickListener(v -> App.isShowAllQQMessages = ((SwitchCompat) v).isChecked());
+        switchWeChatAutoLogin.setOnClickListener(v -> App.isWeChatAutoLogin = ((SwitchCompat) v).isChecked());
+        switchCheckUpdateOnlyOnWiFi.setOnClickListener(v -> App.isCheckUpdateOnlyOnWiFi = ((SwitchCompat) v).isChecked());
+
+        // 底部navigation bar
         view.setOnTouchListener((v, event) -> {
             NavigationTabBar navigationTabBar = getActivity().findViewById(R.id.ntb_horizontal);
             switch (event.getAction()) {
@@ -64,39 +91,57 @@ public class SettingsFragment extends Fragment {
         // 设置
         btnAccessibilityService.setOnClickListener(v -> {
             Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         });
 
         btnNotificationListener.setOnClickListener(v -> {
-            String action = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
-            Intent intent = new Intent(action);
+            // TODO: 28/05/2018
+            Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         });
 
         btnOverlays.setOnClickListener(v -> SettingsCompat.manageDrawOverlays(getActivity()));
 
-        btnSettings.setOnClickListener(v -> SettingsCompat.manageWriteSettings(getActivity()));
+        btnCheckUpdate.setOnClickListener((v) -> {
+            UpdateHelper helper = new UpdateHelper(getActivity());
+            helper.checkUpdate();
+            helper.setCheckUpdateListener((needUpdate, versionName) -> {
+                if (needUpdate)
+                    Toast.makeText(getContext(), "有更新: " + versionName, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getContext(), "已是最新版", Toast.LENGTH_SHORT).show();
+            });
+        });
 
         // 检查权限
 
-//        btn.doneLoadingAnimation(fillColor, bitmap);
-//        btn.revertAnimation();
-//        final CircularProgressButton btnCheckPermission = view.findViewById(R.id.circularButton1);
         CircularProgressButton btnCheckPermission = view.findViewById(R.id.btn_check_permission);
         btnCheckPermission.setOnClickListener(v -> {
+            btnCheckPermission.performAccessibilityAction(AccessibilityEvent.TYPE_VIEW_CLICKED, null);
             btnCheckPermission.startAnimation();
-            Log.i(TAG, "onCheckPermission: ");
             ViewGroup llPermission = view.findViewById(R.id.ll_permission);
             llPermission.removeAllViews();
-            llPermission.addView(btnCheckPermission);
-            handler.postDelayed(() -> addView(llPermission, "悬浮窗权限", true), 500);
-            handler.postDelayed(() -> addView(llPermission, "辅助功能服务", false), 1000);
-            handler.postDelayed(() -> addView(llPermission, "通知监听服务", true), 1500);
-            handler.postDelayed(btnCheckPermission::revertAnimation, 2000);
+            llPermission.addView((View) btnCheckPermission.getParent());
+            handler.postDelayed(() -> addView(llPermission, "悬浮窗权限", checkFloatingPermission()), 500);
+            handler.postDelayed(() -> addView(llPermission, "辅助功能权限授予", isAccessibilitySettingsOn()), 1000);
+            handler.postDelayed(() -> addView(llPermission, "辅助功能正常使用", isAccessibilityServiceWork()), 1500);
+            handler.postDelayed(() -> addView(llPermission, "通知监听服务", isNotificationListenersEnabled()), 2000);
+
+            handler.postDelayed(() -> {
+                if (checkFloatingPermission() && isAccessibilitySettingsOn() && isAccessibilityServiceWork() && isNotificationListenersEnabled())
+                    btnCheckPermission.doneLoadingAnimation(
+                            getResources().getColor(R.color.colorCorrect),
+                            getBitmap(R.drawable.ic_accept));
+                else btnCheckPermission.doneLoadingAnimation(
+                        getResources().getColor(R.color.colorError),
+                        getBitmap(R.drawable.ic_cancel));
+            }, 2500);
+
+            handler.postDelayed(btnCheckPermission::revertAnimation, 5000);
 
         });
-
 
         // 关于
 
@@ -109,8 +154,10 @@ public class SettingsFragment extends Fragment {
             e.printStackTrace();
         }
         UpdateHelper helper = new UpdateHelper(getActivity());
-//        if (helper.isWifi())
-        // TODO: 02/05/2018 isWifi
+
+        if (App.isCheckUpdateOnlyOnWiFi && !helper.isWifi())
+            return view;
+
         helper.checkUpdate();
         helper.setCheckUpdateListener((needUpdate, versionName) -> {
             if (needUpdate)
@@ -119,6 +166,54 @@ public class SettingsFragment extends Fragment {
                 tvRemoteVersion.setText("已是最新版");
         });
         return view;
+    }
+
+    private boolean checkFloatingPermission() {
+        return new CheckAuthority(getContext()).checkAlertWindowPermission();
+    }
+
+    public boolean isAccessibilitySettingsOn() {
+        final String service = getContext().getPackageName() + "/" + MainService.class.getCanonicalName();  //这里改成自己的class
+        int accessibilityEnabled = Settings.Secure.getInt(getContext().getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 0);
+        if (accessibilityEnabled != 1)
+            return false;
+        TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
+        String settingValue = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+
+        mStringColonSplitter.setString(settingValue);
+        while (mStringColonSplitter.hasNext()) {
+            String accessibilityService = mStringColonSplitter.next();
+            if (accessibilityService.equalsIgnoreCase(service)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isAccessibilityServiceWork() {
+        Log.w(TAG, "isAccessibilityServiceWork: time: " + (new Date().getTime() - App.timeClickedCheckPermissionButton));
+        return (new Date().getTime() - App.timeClickedCheckPermissionButton) < 5000;
+    }
+
+    private boolean isNotificationListenersEnabled() {
+        String notificationEnabled = Settings.Secure.getString(getContext().getContentResolver(), "enabled_notification_listeners");
+        if (TextUtils.isEmpty(notificationEnabled))
+            return false;
+        for (String name : notificationEnabled.split(":")) {
+            ComponentName cn = ComponentName.unflattenFromString(name);
+            if (cn != null) {
+                if (TextUtils.equals(getContext().getPackageName(), cn.getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void addView(ViewGroup mainView, String content, boolean isChecked) {
@@ -142,4 +237,16 @@ public class SettingsFragment extends Fragment {
         mainView.addView(view);
 
     }
+
+    private Bitmap getBitmap(int drawableRes) {
+        Drawable drawable = getResources().getDrawable(drawableRes);
+        Canvas canvas = new Canvas();
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(bitmap);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
 }

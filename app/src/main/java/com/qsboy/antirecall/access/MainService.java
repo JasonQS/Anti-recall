@@ -7,8 +7,6 @@
 package com.qsboy.antirecall.access;
 
 import android.accessibilityservice.AccessibilityService;
-import android.app.Notification;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -113,9 +111,7 @@ public class MainService extends AccessibilityService {
                     Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
                     return;
                 }
-                if ("com.qsboy.antirecall:id/btn_check_permission".equals(event.getSource().getViewIdResourceName())) {
-                    App.timeClickedCheckPermissionButton = new Date().getTime();
-                }
+                App.timeClickedCheckPermissionButton = new Date().getTime();
                 break;
         }
     }

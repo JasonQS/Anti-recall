@@ -18,8 +18,6 @@ import android.util.Log;
 
 import java.lang.reflect.Method;
 
-import static android.support.v4.app.ActivityCompat.shouldShowRequestPermissionRationale;
-
 @SuppressWarnings("unused")
 
 public class CheckAuthority {
@@ -35,19 +33,20 @@ public class CheckAuthority {
     public boolean checkAlertWindowPermission() {
         return checkOp(context, OP_SYSTEM_ALERT_WINDOW);
     }
-//
+
+    //
 //    public boolean asd(Activity activity){
 //        shouldShowRequestPermissionRationale(activity,)
 //    }
 //
-//    void zxc(){
+//    void zxc() {
 //        // Here, thisActivity is the current activity
-//        if (ContextCompat.checkSelfPermission(thisActivity,
+//        if (ContextCompat.checkSelfPermission(context,
 //                Manifest.permission.READ_CONTACTS)
 //                != PackageManager.PERMISSION_GRANTED) {
 //
 //            // Should we show an explanation?
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(thisActivity,
+//            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,
 //                    Manifest.permission.READ_CONTACTS)) {
 //
 //                // Show an expanation to the user *asynchronously* -- don't block
@@ -58,7 +57,7 @@ public class CheckAuthority {
 //
 //                // No explanation needed, we can request the permission.
 //
-//                ActivityCompat.requestPermissions(thisActivity,
+//                ActivityCompat.requestPermissions(context,
 //                        new String[]{Manifest.permission.READ_CONTACTS},
 //                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
 //
@@ -121,7 +120,7 @@ public class CheckAuthority {
 
     int OP_RECEIVE_SMS = 16;
 
-    int OP_RECEIVE_EMERGECY_SMS = 17;
+    int OP_RECEIVE_EMERGENCY_SMS = 17;
 
     int OP_RECEIVE_MMS = 18;
 

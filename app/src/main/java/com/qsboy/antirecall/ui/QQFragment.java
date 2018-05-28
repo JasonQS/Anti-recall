@@ -73,7 +73,7 @@ public class QQFragment extends Fragment {
             Messages data;
             while (true) {
                 cursor[0]--;
-                if (cursor[0] == 0) {
+                if (cursor[0] <= 0) {
                     adapterRecall.loadMoreEnd();
                     return;
                 }
@@ -111,7 +111,6 @@ public class QQFragment extends Fragment {
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
             Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Dao dao = Dao.getInstance(getActivity(), Dao.DB_NAME_QQ);
             dao.deleteRecall(adapterRecall.getData().get(pos).getRecalledID());
             Log.d(TAG, "clearView: " + adapterRecall.getData());
         }
@@ -145,7 +144,7 @@ public class QQFragment extends Fragment {
         for (int i = 0; i < 10; i++) {
             while (true) {
                 cursor[0]--;
-                if (cursor[0] == 0)
+                if (cursor[0] <= 0)
                     return list;
                 if ((messages = dao.queryRecallById(cursor[0])) != null)
                     break;

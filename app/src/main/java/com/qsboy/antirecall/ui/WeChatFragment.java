@@ -21,8 +21,8 @@ import android.view.ViewGroup;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.db.Messages;
 
 import java.util.List;
 
@@ -106,7 +106,6 @@ public class WeChatFragment extends Fragment {
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
             Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Dao dao = Dao.getInstance(getActivity(), Dao.DB_NAME_WE_CHAT);
             Messages messages = adapterAll.getData().get(pos);
             dao.deleteMessage(messages.getName(), messages.getRecalledID());
             Log.d(TAG, "clearView: " + adapterAll.getData());
@@ -119,7 +118,10 @@ public class WeChatFragment extends Fragment {
     };
 
     public List<Messages> prepareData() {
-        return dao.queryAllLastMessage(dao.queryAllTables());
+        Log.w(TAG, "prepareData: " + dao.toString());
+        List<Messages> list = dao.queryAllTheLastMessage(dao.queryAllTables());
+        Log.i(TAG, "prepareData: list: " + list);
+        return list;
 //        List<Messages> list = new ArrayList<>();
 //        Messages messages;
 //        cursor[0] = max + 1 - adapterRecall.getData().size();

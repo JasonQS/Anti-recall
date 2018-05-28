@@ -11,6 +11,9 @@ release/
 *.apk
 *.ap_
 
+# db files
+db/
+
 # IDEA Project files #
 *.iws
 *.iml

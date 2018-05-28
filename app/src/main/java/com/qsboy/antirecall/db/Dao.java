@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.nfc.Tag;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -35,8 +36,9 @@ public class Dao {
 
     public static String DB_NAME_QQ = "QQ.db";
     public static String DB_NAME_WE_CHAT = "WeChat.db";
-    private String TAG = "Dao";
-    private static Dao instance = null;
+    private static String TAG = "Dao";
+    private static Dao instanceQQ = null;
+    private static Dao instanceWeChat = null;
     private Cursor cursor;
     private SQLiteDatabase db;
     private HashMap<String, Boolean> existTables = new HashMap<>();
@@ -46,9 +48,19 @@ public class Dao {
     }
 
     public static Dao getInstance(Context context, String dbName) {
-        if (instance == null)
-            instance = new Dao(new DBHelper(context, dbName, null, 6));
-        return instance;
+        if (DB_NAME_QQ.equals(dbName)) {
+            TAG = "QQ Dao";
+            if (instanceQQ == null)
+                instanceQQ = new Dao(new DBHelper(context, DB_NAME_QQ, null, 6));
+            return instanceQQ;
+        }
+        if (DB_NAME_WE_CHAT.equals(dbName)) {
+            TAG = "WeChat Dao";
+            if (instanceWeChat == null)
+                instanceWeChat = new Dao(new DBHelper(context, DB_NAME_WE_CHAT, null, 6));
+            return instanceWeChat;
+        }
+        return new Dao(new DBHelper(context, DB_NAME_QQ, null, 1));
     }
 
     private void createTableIfNotExists(String name) {
@@ -250,6 +262,7 @@ public class Dao {
     }
 
     public List<String> queryAllTables() {
+        Log.e(TAG, "queryAllTables: " + db.getPath());
         List<String> list = new ArrayList<>();
         cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type = 'table'", null);
         if (!cursor.moveToFirst())
@@ -259,13 +272,14 @@ public class Dao {
             if (name != null)
                 list.add(name);
         } while (cursor.moveToNext());
+        Log.w(TAG, "queryAllTables: tables: " + list);
         return list;
     }
 
-    public List<Messages> queryAllLastMessage(List<String> nameList) {
+    public List<Messages> queryAllTheLastMessage(List<String> nameList) {
         List<Messages> list = new ArrayList<>();
         for (String name : nameList) {
-            Log.i(TAG, "queryAllLastMessage: name: " + name);
+            Log.i(TAG, "queryAllTheLastMessage: name: " + name);
             if ("android_metadata".equals(name) || "sqlite_sequence".equals(name))
                 continue;
             cursor = db.query(getSafeName(name),

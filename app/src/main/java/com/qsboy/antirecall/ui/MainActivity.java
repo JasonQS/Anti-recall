@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
         ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
         if (fragmentList.size() < 3) {
             fragmentList.add(new QQFragment());
+//            fragmentList.add(new QQFragment());
             fragmentList.add(new WeChatFragment());
-            fragmentList.add(new TimFragment());
+//            fragmentList.add(new TimFragment());
             fragmentList.add(new SettingsFragment());
         }
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {

@@ -106,7 +106,6 @@ public class TimFragment extends Fragment {
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
             Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Dao dao = Dao.getInstance(getActivity(), Dao.DB_NAME_QQ);
             dao.deleteRecall(adapter.getData().get(pos).getRecalledID());
             Log.d(TAG, "clearView: " + adapter.getData());
         }
@@ -134,6 +133,6 @@ public class TimFragment extends Fragment {
     }
 
     public List<Messages> prepareData() {
-        return dao.queryAllLastMessage(dao.queryAllTables());
+        return dao.queryAllTheLastMessage(dao.queryAllTables());
     }
 }
