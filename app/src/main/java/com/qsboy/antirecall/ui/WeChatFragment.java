@@ -34,7 +34,7 @@ import static com.qsboy.antirecall.db.DBHelper.Table_Recalled_Messages;
 public class WeChatFragment extends Fragment {
 
     String TAG = "WeChatFragment";
-    //    RecyclerView recyclerViewRecall;
+    //    RecyclerView recyclerView;
     RecyclerView recyclerViewAll;
     MessageAdapter adapterAll;
     Dao dao;
@@ -50,35 +50,9 @@ public class WeChatFragment extends Fragment {
         recyclerViewAll = view.findViewById(R.id.main_recycler_view_all);
         max = dao.getMaxID(Table_Recalled_Messages);
 
-        List<Messages> messages = prepareData();
+        List<Messages> messages = prepareAllData();
         if (messages != null && messages.size() != 0)
             adapterAll.addData(messages);
-
-//        adapterRecall.setPreLoadNumber(4);
-//        adapterRecall.setEnableLoadMore(true);
-//        adapterRecall.setOnLoadMoreListener(() -> {
-//            Log.v(TAG, "convert: OnLoadMore");
-//            if (cursor[1] == 0)
-//                try {
-//                    Log.i(TAG, "convert: load more wait");
-//                    Thread.sleep(10);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            cursor[1] = 0;
-//            while (true) {
-//                cursor[0]--;
-//                if (cursor[0] == 0) {
-//                    adapterRecall.loadMoreEnd();
-//                    return;
-//                }
-//                if ((data = dao.queryRecallById(cursor[0])) != null)
-//                    break;
-//            }
-//            adapterRecall.addData(data);
-//            adapterRecall.loadMoreComplete();
-//            cursor[1] = 1;
-//        }, recyclerViewRecall);
 
         recyclerViewAll.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewAll.setAdapter(adapterAll);
@@ -105,10 +79,14 @@ public class WeChatFragment extends Fragment {
 
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-            Log.i(TAG, "onItemSwiped: pos: " + pos);
-            Messages messages = adapterAll.getData().get(pos);
-            dao.deleteMessage(messages.getName(), messages.getRecalledID());
-            Log.d(TAG, "clearView: " + adapterAll.getData());
+            List<Messages> data = adapterAll.getData();
+            if (data.size() <= pos) {
+                Log.i(TAG, "onItemSwiped: size is too small: " + pos);
+                return;
+            }
+            Messages msg = data.get(pos);
+            dao.deleteRecall(msg.getRecalledID());
+            Log.w(TAG, "onItemSwiped: " + pos + " - " + msg.getName());
         }
 
         @Override
@@ -117,14 +95,14 @@ public class WeChatFragment extends Fragment {
         }
     };
 
-    public List<Messages> prepareData() {
-        Log.w(TAG, "prepareData: " + dao.toString());
+    public List<Messages> prepareAllData() {
+        Log.w(TAG, "prepareAllData: " + dao.toString());
         List<Messages> list = dao.queryAllTheLastMessage(dao.queryAllTables());
-        Log.i(TAG, "prepareData: list: " + list);
+        Log.i(TAG, "prepareAllData: list: " + list);
         return list;
 //        List<Messages> list = new ArrayList<>();
 //        Messages messages;
-//        cursor[0] = max + 1 - adapterRecall.getData().size();
+//        cursor[0] = max + 1 - adapter.getData().size();
 //        for (int i = 0; i < 10; i++) {
 //            while (true) {
 //                cursor[0]--;
@@ -133,7 +111,7 @@ public class WeChatFragment extends Fragment {
 //                if ((messages = dao.queryRecallById(cursor[0])) != null)
 //                    break;
 //            }
-//            adapterRecall.addData(messages);
+//            adapter.addData(messages);
 //        }
 //        return list;
     }

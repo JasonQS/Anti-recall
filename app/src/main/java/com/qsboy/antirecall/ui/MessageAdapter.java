@@ -158,13 +158,13 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
 
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-                Log.i(TAG, "onItemSwiped: pos: " + pos);
                 List<Messages> data = adapter.getData();
                 if (data.size() <= pos) {
-                    Log.i(TAG, "onItemSwiped: size is too small");
+                    Log.i(TAG, "onItemSwiped: size is too small: " + pos);
                     return;
                 }
                 Messages msg = data.get(pos);
+                Log.i(TAG, "onItemSwiped: " + pos + " - " + msg.getName() + ": " + msg.getMessage());
                 dao.deleteMessage(msg.getName(), msg.getId());
             }
 

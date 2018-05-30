@@ -17,9 +17,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,17 +59,14 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
         View btnOverlays = view.findViewById(R.id.btn_navigate_overlays);
         View btnCheckUpdate = view.findViewById(R.id.btn_check_update);
 
-        SwitchCompat switchShowAllQQMessages = view.findViewById(R.id.switch_show_all_qq_messages);
-        SwitchCompat switchWeChatAutoLogin = view.findViewById(R.id.switch_we_chat_auto_login);
-        SwitchCompat switchCheckUpdateOnlyOnWiFi = view.findViewById(R.id.switch_check_update_only_on_wifi);
-
-        switchShowAllQQMessages.setChecked(App.isShowAllQQMessages);
-        switchWeChatAutoLogin.setChecked(App.isWeChatAutoLogin);
-        switchCheckUpdateOnlyOnWiFi.setChecked(App.isCheckUpdateOnlyOnWiFi);
-
-        switchShowAllQQMessages.setOnClickListener(v -> App.isShowAllQQMessages = ((SwitchCompat) v).isChecked());
-        switchWeChatAutoLogin.setOnClickListener(v -> App.isWeChatAutoLogin = ((SwitchCompat) v).isChecked());
-        switchCheckUpdateOnlyOnWiFi.setOnClickListener(v -> App.isCheckUpdateOnlyOnWiFi = ((SwitchCompat) v).isChecked());
+        ((MySwitchCompat) view.findViewById(R.id.switch_show_all_qq_messages))
+                .setAttr(App.class, "isShowAllQQMessages");
+        ((MySwitchCompat) view.findViewById(R.id.switch_we_chat_auto_login))
+                .setAttr(App.class, "isWeChatAutoLogin");
+        ((MySwitchCompat) view.findViewById(R.id.switch_swipe_remove_on))
+                .setAttr(App.class, "isSwipeRemoveOn");
+        ((MySwitchCompat) view.findViewById(R.id.switch_check_update_only_on_wifi))
+                .setAttr(App.class, "isCheckUpdateOnlyOnWiFi");
 
         // 底部navigation bar
         view.setOnTouchListener((v, event) -> {
@@ -217,10 +214,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     }
 
     private void addView(ViewGroup mainView, String content, boolean isChecked) {
-//         LayoutInflater inflater1=(LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LayoutInflater inflater = getLayoutInflater();
-//        LayoutInflater inflater3 = LayoutInflater.from(getActivity());
-
         View view = inflater.inflate(R.layout.item_check_permission, null);
         TextView tvPermission = view.findViewById(R.id.tv_permission);
         ImageView ivChecked = view.findViewById(R.id.iv_checked);
@@ -235,11 +229,10 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
         }
 
         mainView.addView(view);
-
     }
 
     private Bitmap getBitmap(int drawableRes) {
-        Drawable drawable = getResources().getDrawable(drawableRes);
+        Drawable drawable = VectorDrawableCompat.create(getResources(), drawableRes, null);
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         canvas.setBitmap(bitmap);

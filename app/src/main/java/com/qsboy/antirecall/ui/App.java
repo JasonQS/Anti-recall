@@ -19,6 +19,7 @@ public class App extends Application {
 
     public static boolean isShowAllQQMessages = true;
     public static boolean isWeChatAutoLogin = true;
+    public static boolean isSwipeRemoveOn = true;
     public static boolean isCheckUpdateOnlyOnWiFi = false;
 
 

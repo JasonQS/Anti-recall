@@ -7,11 +7,9 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -20,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
@@ -32,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
 
@@ -46,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         LogcatHelper.getInstance().start();
         Date in = new Date();
-//        setContentView(R.layout.activity_main);
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -65,9 +60,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
         if (fragmentList.size() < 3) {
             fragmentList.add(new QQFragment());
-//            fragmentList.add(new QQFragment());
             fragmentList.add(new WeChatFragment());
-//            fragmentList.add(new TimFragment());
             fragmentList.add(new SettingsFragment());
         }
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
@@ -86,17 +79,17 @@ public class MainActivity extends AppCompatActivity {
         navigationTabBar.show();
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_qq),
+                VectorDrawableCompat.create(getResources(), R.drawable.ic_qq, null),
                 getResources().getColor(R.color.colorQQ))
                 .title("QQ/Tim")
                 .build());
         models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_wechat_),
+                VectorDrawableCompat.create(getResources(), R.drawable.ic_wechat, null),
                 getResources().getColor(R.color.colorWX))
                 .title("WeChat")
                 .build());
         models.add(new NavigationTabBar.Model.Builder(
-                getResources().getDrawable(R.drawable.ic_settings),
+                VectorDrawableCompat.create(getResources(), R.drawable.ic_settings, null),
                 getResources().getColor(R.color.colorTim))
                 .title("SettingsFragment")
                 .build());

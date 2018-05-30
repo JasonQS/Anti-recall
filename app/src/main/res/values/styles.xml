@@ -14,7 +14,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="LaunchTheme" parent="Theme.AppCompat.Light">
@@ -24,6 +24,7 @@
     </style>
 
     <style name="SettingsTheme" parent="AppTheme">
+        <item name="android:textSize">16sp</item>
         <item name="android:padding">@dimen/margin_half</item>
         <item name="android:textColor">@color/text_color_message</item>
         <item name="android:divider">@android:drawable/divider_horizontal_bright</item>

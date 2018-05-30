@@ -38,7 +38,16 @@
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold" />
 
-            <android.support.v7.widget.SwitchCompat
+            <com.qsboy.antirecall.ui.MySwitchCompat
+                android:id="@+id/switch_we_chat_auto_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:padding="@dimen/margin_default"
+                android:text="微信自动登录"
+                android:textColor="@color/text_color_message" />
+
+            <com.qsboy.antirecall.ui.MySwitchCompat
                 android:id="@+id/switch_show_all_qq_messages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,13 +56,13 @@
                 android:text="显示所有QQ内容"
                 android:textColor="@color/text_color_message" />
 
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/switch_we_chat_auto_login"
+            <com.qsboy.antirecall.ui.MySwitchCompat
+                android:id="@+id/switch_swipe_remove_on"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:padding="@dimen/margin_default"
-                android:text="微信自动登录"
+                android:text="打开侧滑删除"
                 android:textColor="@color/text_color_message" />
 
         </LinearLayout>
@@ -162,7 +171,7 @@
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold" />
 
-            <android.support.v7.widget.SwitchCompat
+            <com.qsboy.antirecall.ui.MySwitchCompat
                 android:id="@+id/switch_check_update_only_on_wifi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
