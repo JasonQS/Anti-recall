@@ -9,18 +9,20 @@ package com.qsboy.antirecall.ui;
 
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
@@ -39,11 +41,12 @@ public class QQFragment extends Fragment {
 
     String TAG = "QQFragment";
     ImageView adjuster;
-    ConstraintLayout constraintLayout;
+    RelativeLayout relativeLayout;
     RecyclerView recyclerViewRecalled;
     RecyclerView recyclerViewAll;
     MessageAdapter adapterRecalled;
     MessageAdapter adapterAll;
+    Handler handler;
     Dao dao;
     int max;
 
@@ -53,6 +56,7 @@ public class QQFragment extends Fragment {
 
         dao = Dao.getInstance(getContext(), Dao.DB_NAME_QQ);
         max = dao.getMaxID(Table_Recalled_Messages);
+        handler = new Handler();
 
         adjuster = view.findViewById(R.id.adjuster);
         recyclerViewRecalled = view.findViewById(R.id.main_recycler_view_recall);
@@ -60,43 +64,88 @@ public class QQFragment extends Fragment {
         adapterRecalled = new MessageAdapter(dao, null, getActivity(), App.THEME_BLUE);
         adapterAll = new MessageAdapter(dao, null, getActivity(), App.THEME_RED);
 
-        constraintLayout = view.findViewById(R.id.constraint_layout_lists);
-
         initList(recyclerViewRecalled, adapterRecalled, prepareRecalledData());
         initList(recyclerViewAll, adapterAll, prepareAllData());
 
-        constraintLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        relativeLayout = view.findViewById(R.id.relative_layout_lists);
+        relativeLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                constraintLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int layoutHeight = constraintLayout.getHeight();
-                int deviceHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
-                Log.e(TAG, "onCreateView: layoutHeight: " + layoutHeight);
-                Log.e(TAG, "onCreateView: deviceHeight: " + deviceHeight);
-                adjuster.setPadding(100, 100, 0, 100);
+                relativeLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                onMeasured();
+            }
+        });
 
-                adjuster.setOnTouchListener((v, event) -> {
-//                    TransitionManager.beginDelayedTransition(constraintLayout);
-                    ConstraintSet constraintSet = new ConstraintSet();
-//            constraintSet.clone(getContext(), R.id.constraint_layout_lists);
-                    float bias = (event.getRawY() - deviceHeight + layoutHeight) / layoutHeight;
-                    Log.d(TAG, "onCreateView: " + event.getRawY());
-                    Log.i(TAG, "onCreateView: " + bias);
-                    constraintSet.clone(constraintLayout);
-//                    constraintSet.setTransformPivotY(R.id.adjuster, 0.5f);
-//                    Log.w(TAG, "onGlobalLayout: Y: " + constraintLayout.getChildAt(2).getY());
-//                    constraintSet.setTranslationY(R.id.adjuster, event.getY());
 
-                    constraintSet.setVerticalWeight(R.id.main_recycler_view_recall, event.getRawY() - deviceHeight + layoutHeight);
-                    constraintSet.setVerticalWeight(R.id.main_recycler_view_all, deviceHeight - event.getRawY());
-                    constraintSet.applyTo(constraintLayout);
-                    return true;
-                });
+        setRecyclerViewAllHeight(App.recyclerViewAllHeight);
+        setRecyclerViewRecalledHeight(App.recyclerViewRecalledHeight);
+        adjuster.setY(App.adjusterY - App.adjusterOriginalY);
+
+        adjuster.setOnTouchListener(new View.OnTouchListener() {
+            float difAdjuster = 0;
+            float downY = 0;
+            int heightAll;
+            int heightRecalled;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        difAdjuster = adjuster.getY() - event.getRawY();
+                        downY = event.getRawY();
+                        heightAll = recyclerViewAll.getLayoutParams().height;
+                        heightRecalled = recyclerViewRecalled.getLayoutParams().height;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float dif = event.getRawY() - downY;
+                        int v1 = (int) (heightAll + dif);
+                        int v2 = (int) (heightRecalled - dif);
+
+                        if (v1 < 0 || v1 > App.layoutHeight || v2 < 0 | v2 > App.layoutHeight)
+                            break;
+
+                        setRecyclerViewAllHeight(v1);
+                        setRecyclerViewRecalledHeight(v2);
+                        adjuster.setY(App.adjusterY = event.getRawY() + difAdjuster);
+
+                        Log.i(TAG, "adjusterY: " + App.adjusterY);
+
+                        break;
+                }
+
+                return true;
             }
         });
 
         return view;
     }
+
+    private void onMeasured() {
+        if (App.layoutHeight != -1)
+            return;
+        App.layoutHeight = relativeLayout.getHeight();
+        setRecyclerViewAllHeight(App.layoutHeight / 2);
+        setRecyclerViewRecalledHeight(App.layoutHeight / 2);
+        App.adjusterY = App.adjusterOriginalY = adjuster.getY();
+    }
+
+    private void setRecyclerViewAllHeight(int height) {
+        ViewGroup.LayoutParams params = recyclerViewAll.getLayoutParams();
+        params.height = App.recyclerViewAllHeight = height;
+        recyclerViewAll.setLayoutParams(params);
+    }
+
+    private void setRecyclerViewRecalledHeight(int height) {
+        ViewGroup.LayoutParams params = recyclerViewRecalled.getLayoutParams();
+        params.height = App.recyclerViewRecalledHeight = height;
+        recyclerViewRecalled.setLayoutParams(params);
+    }
+
+//    private void setAdjusterY(int y) {
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adjuster.getLayoutParams();
+//        params.topMargin = App.adjusterY = y;
+//        adjuster.setLayoutParams(params);
+//    }
 
     private void initList(RecyclerView recyclerView, MessageAdapter adapter, List<Messages> messages) {
         if (messages != null && messages.size() != 0)

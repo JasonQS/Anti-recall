@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
+  ~ anti-recall.qsboy.com
+  ~ All Rights Reserved
+  -->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true">
+
+    <TextView
+        android:id="@+id/toast_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:text=""
+        android:textColor="#fff"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/toast_iv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:maxHeight="300dp"
+        android:maxWidth="300dp" />
+</FrameLayout>

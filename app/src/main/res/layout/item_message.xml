@@ -4,62 +4,73 @@
   ~ All Rights Reserved
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_message"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:baselineAligned="false"
+    android:orientation="vertical"
     tools:showIn="@layout/cell_fold">
 
-    <!--name-->
-    <TextView
-        android:id="@+id/cell_name"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:gravity="center"
-        android:minHeight="@dimen/height_content_fold"
-        android:paddingEnd="@dimen/margin_half"
-        android:paddingStart="@dimen/margin_half"
-        android:text="@string/name"
-        android:textColor="@color/text_color_name"
-        android:textSize="@dimen/text_size_name" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!--name-->
+        <TextView
+            android:id="@+id/cell_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:minHeight="@dimen/height_content_fold"
+            android:paddingEnd="@dimen/margin_half"
+            android:paddingStart="@dimen/margin_half"
+            android:text="@string/name"
+            android:textColor="@color/text_color_name"
+            android:textSize="@dimen/text_size_name" />
 
-    <!--message-->
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="5"
-        android:padding="@dimen/margin_half">
+        <!--message-->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:padding="@dimen/margin_half">
+
+            <TextView
+                android:id="@+id/cell_message_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/height_content_fold"
+                android:text="@string/message"
+                android:textColor="@color/text_color_message"
+                android:textSize="@dimen/text_size_message" />
+
+            <ImageView
+                android:id="@+id/cell_message_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="@dimen/height_content_fold" />
+        </FrameLayout>
 
         <TextView
-            android:id="@+id/cell_message_text"
-            android:layout_width="match_parent"
+            android:id="@+id/cell_time"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:minHeight="@dimen/height_content_fold"
-            android:text="@string/message"
-            android:textColor="@color/text_color_message"
-            android:textSize="@dimen/text_size_message" />
+            android:gravity="center"
+            android:paddingEnd="@dimen/margin_half"
+            android:paddingStart="@dimen/margin_half"
+            android:text="@string/time"
+            android:textColor="@color/text_color_time"
+            android:textSize="@dimen/text_size_time" />
+    </LinearLayout>
 
-        <ImageView
-            android:id="@+id/cell_message_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:minHeight="@dimen/height_content_fold" />
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/cell_time"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingEnd="@dimen/margin_half"
-        android:paddingStart="@dimen/margin_half"
-        android:text="@string/time"
-        android:textColor="@color/text_color_time"
-        android:textSize="@dimen/text_size_time" />
-
-</LinearLayout>
+    <View
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+</RelativeLayout>
 

@@ -22,6 +22,12 @@ public class App extends Application {
     public static boolean isSwipeRemoveOn = true;
     public static boolean isCheckUpdateOnlyOnWiFi = false;
 
+    public static int layoutHeight = -1;
+    public static int deviceHeight;
+    public static int recyclerViewAllHeight;
+    public static int recyclerViewRecalledHeight;
+    public static float adjusterY;
+    public static float adjusterOriginalY;
 
     public static long timeClickedCheckPermissionButton = 0;
 

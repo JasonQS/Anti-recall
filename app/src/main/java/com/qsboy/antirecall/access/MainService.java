@@ -7,12 +7,13 @@
 package com.qsboy.antirecall.access;
 
 import android.accessibilityservice.AccessibilityService;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.qsboy.antirecall.ui.App;
-import com.qsboy.utils.NodesInfo;
+import com.qsboy.antirecall.utils.NodesInfo;
 
 import java.util.Date;
 import java.util.List;
@@ -66,7 +67,8 @@ public class MainService extends AccessibilityService {
                     break;
 
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -96,6 +98,10 @@ public class MainService extends AccessibilityService {
     private void onClick(AccessibilityEvent event) {
         Log.i(TAG, "onClick " + event.getText());
 //        NodesInfo.show(root, "d");
+        if (event.getSource() == null) {
+            Log.i(TAG, "onClick: event.getSource() is null, return");
+            return;
+        }
         switch (packageName) {
             case pkgTim:
                 new TimClient(this).findRecalls(root, event);
@@ -107,10 +113,6 @@ public class MainService extends AccessibilityService {
                 NodesInfo.show(root, TAG);
                 break;
             case pkgThis:
-                if (event.getSource() == null) {
-                    Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
-                    return;
-                }
                 App.timeClickedCheckPermissionButton = new Date().getTime();
                 break;
         }

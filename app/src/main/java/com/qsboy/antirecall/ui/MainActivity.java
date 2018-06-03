@@ -22,8 +22,8 @@ import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
-import com.qsboy.utils.CheckAuthority;
-import com.qsboy.utils.LogcatHelper;
+import com.qsboy.antirecall.utils.CheckAuthority;
+import com.qsboy.antirecall.utils.LogcatHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     final String TAG = "Main Activity";
     List<Fragment> fragmentList = new ArrayList<>();
+
+    // TODO: 03/06/2018 顶部加filter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 //        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
 
         initTabBar();
+        App.deviceHeight = getWindowManager().getDefaultDisplay().getHeight();
 
         Date out = new Date();
         Log.d(TAG, "onCreateTime: " + (out.getTime() - in.getTime()));

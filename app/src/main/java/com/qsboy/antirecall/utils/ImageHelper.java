@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.utils;
+package com.qsboy.antirecall.utils;
 
 import android.content.Context;
 import android.content.res.Resources;

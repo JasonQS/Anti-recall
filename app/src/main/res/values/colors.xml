@@ -39,6 +39,8 @@
     <color name="text_color_time">#888888</color>
 
     <color name="gray_light">#eeeeee</color>
-    <color name="gray_dark">#aaa</color>
+    <color name="gray_dark">#aaaaaa</color>
+
+    <color name="divider">#20808080</color>
 
 </resources>

@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     android:layout_centerInParent="true"
     android:clipChildren="false"
-    android:gravity="center_horizontal|bottom">
+    android:gravity="center">
 
     <FrameLayout
         android:layout_width="wrap_content"

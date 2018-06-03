@@ -10,8 +10,6 @@ import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.utils.NodesInfo;
-
 import java.util.List;
 
 public class QQClient extends Client {

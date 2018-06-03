@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
@@ -37,6 +38,8 @@ public class WeChatFragment extends Fragment {
     //    RecyclerView recyclerView;
     RecyclerView recyclerViewAll;
     MessageAdapter adapterAll;
+
+    ImageView adjuster;
     Dao dao;
     int max;
     int[] cursor = new int[]{0, 1};
@@ -49,6 +52,8 @@ public class WeChatFragment extends Fragment {
         adapterAll = new MessageAdapter(dao, null, getActivity(), App.THEME_GREEN);
         recyclerViewAll = view.findViewById(R.id.main_recycler_view_all);
         max = dao.getMaxID(Table_Recalled_Messages);
+        adjuster = view.findViewById(R.id.adjuster);
+        adjuster.setVisibility(View.GONE);
 
         List<Messages> messages = prepareAllData();
         if (messages != null && messages.size() != 0)

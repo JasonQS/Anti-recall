@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.utils;
+package com.qsboy.antirecall.utils;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.qsboy.antirecall.R;
 
 public class XNotification extends AppCompatActivity {
 

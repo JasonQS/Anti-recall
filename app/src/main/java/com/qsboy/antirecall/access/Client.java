@@ -6,24 +6,24 @@
 
 package com.qsboy.antirecall.access;
 
-import android.app.Notification;
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.db.Dao;
-import com.qsboy.utils.NodesInfo;
-import com.qsboy.utils.XToast;
+import com.qsboy.antirecall.db.Messages;
+import com.qsboy.antirecall.ui.App;
+import com.qsboy.antirecall.utils.NodesInfo;
+import com.qsboy.antirecall.utils.XToast;
+import com.qsboy.antirecall.utils.XToastPro;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.qsboy.utils.ImageHelper.searchImageFile;
+import static com.qsboy.antirecall.utils.ImageHelper.searchImageFile;
 
 public abstract class Client {
 
@@ -46,7 +46,8 @@ public abstract class Client {
     boolean isRecalledMsg;
     boolean isOtherMsg;
     boolean isWX;
-
+    int top;
+    int bottom;
     private Dao dao;
     private Context context;
 
@@ -185,16 +186,10 @@ public abstract class Client {
 
     private class Recalls {
 
-        private List<Messages> contextList = new ArrayList<>();
-        //        private String nextMessage;
-//        private String prevMessage;
-//        private String nextSubName;
-//        private String prevSubName;
         private int topPos = 0;
         private int botPos = 0;
         private int unknownRecalls;
         private List<Entry> entries;
-//        private ArrayList<String> subNameArray = new ArrayList<>();
 
         void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
             // TODO: 通知栏收到的表情 聊天框收到的表情 乱码 根据 utf 位置判断
@@ -298,6 +293,9 @@ public abstract class Client {
 //                    Log.d(TAG, "findRecallByContext: [" + i + " " + j + "] - " + " [" + (prevPos + i) + " " + (nextPos - j) + "] - " + subName);
                     Messages msgPrev = findNext(prevPos + i, entries.get(topPos + i + 1).subName);
                     Messages msgNext = findPrev(nextPos - j, entries.get(botPos - j - 1).subName);
+                    Log.i(TAG, "findRecallByContext: \n" +
+                            (prevPos + i) +
+                            (nextPos - j));
                     if (msgPrev != null) {
                         if (map.get(i) == null)
                             map.put(i, msgPrev);
@@ -307,12 +305,12 @@ public abstract class Client {
                             break;
                     }
                     if (msgNext != null) {
-                        int index = unknownRecalls - j;
+                        int index = unknownRecalls - 1 - j;
                         if (map.get(index) == null)
                             map.put(index, msgNext);
                         j++;
                         Log.i(TAG, "map: " + map);
-                        if (j == unknownRecalls)
+                        if (j == unknownRecalls - 1)
                             break;
                     }
                 }
@@ -410,9 +408,9 @@ public abstract class Client {
             Log.e(TAG, "addRecall: " + messages.getMessage());
             if ("[图片]".equals(messages.getMessage())) {
                 messages.setImages(searchImageFile(context, messages.getTime(), client));
-                XToast.build(context, messages.getSubName() + ": [图片]" + messages.getImage()).show();
+                XToastPro.build(context, messages.getSubName() + ": [图片]" + messages.getImage()).setPosition(top, bottom).show();
             } else {
-                XToast.build(context, messages.getSubName() + ": " + messages.getMessage()).show();
+                XToastPro.build(context, messages.getSubName() + ": " + messages.getMessage()).setPosition(top, bottom).show();
             }
             if (dao.existRecall(messages))
                 return;
@@ -478,6 +476,9 @@ public abstract class Client {
 
             Rect clickRect = new Rect();
             Rect nodeRect = new Rect();
+            top = App.deviceHeight;
+            bottom = 0;
+
             if (event.getSource() == null) {
                 Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
                 return contextList;
@@ -520,6 +521,14 @@ public abstract class Client {
                 else
                     break;
             }
+            for (int i = topPos + 1; i <= botPos - 1; i++) {
+                chatGroupViewNode.getChild(i).getBoundsInScreen(nodeRect);
+                if (nodeRect.top < top)
+                    top = nodeRect.top;
+                if (nodeRect.bottom > bottom)
+                    bottom = nodeRect.bottom;
+            }
+
             unknownRecalls = botPos - topPos - 1;
             if (botPos == size)
                 botPos--;

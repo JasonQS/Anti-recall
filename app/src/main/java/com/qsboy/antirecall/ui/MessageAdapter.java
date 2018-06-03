@@ -9,6 +9,7 @@ package com.qsboy.antirecall.ui;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +35,6 @@ import static java.util.Calendar.DAY_OF_YEAR;
 
 public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
-    static DividerItemDecoration decor;
     String TAG = "MessageAdapter";
     Context context;
     Dao dao;
@@ -52,7 +52,6 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
         this.context = context;
         this.dao = dao;
         this.theme = theme;
-        decor = new DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL);
     }
 
     @Override
@@ -139,7 +138,6 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
         }), recyclerView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.addItemDecoration(decor);
         recyclerView.setAdapter(adapter);
 
         // 滑动删除

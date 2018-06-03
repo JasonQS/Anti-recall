@@ -34,8 +34,8 @@ import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.access.MainService;
-import com.qsboy.utils.CheckAuthority;
-import com.qsboy.utils.UpdateHelper;
+import com.qsboy.antirecall.utils.CheckAuthority;
+import com.qsboy.antirecall.utils.UpdateHelper;
 
 import java.util.Date;
 
@@ -170,6 +170,8 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     }
 
     public boolean isAccessibilitySettingsOn() {
+        if (getContext() == null)
+            return false;
         final String service = getContext().getPackageName() + "/" + MainService.class.getCanonicalName();  //这里改成自己的class
         int accessibilityEnabled = Settings.Secure.getInt(getContext().getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 0);
         if (accessibilityEnabled != 1)
@@ -194,6 +196,8 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     }
 
     private boolean isNotificationListenersEnabled() {
+        if (getContext() == null)
+            return false;
         String notificationEnabled = Settings.Secure.getString(getContext().getContentResolver(), "enabled_notification_listeners");
         if (TextUtils.isEmpty(notificationEnabled))
             return false;
@@ -214,6 +218,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     }
 
     private void addView(ViewGroup mainView, String content, boolean isChecked) {
+
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.item_check_permission, null);
         TextView tvPermission = view.findViewById(R.id.tv_permission);

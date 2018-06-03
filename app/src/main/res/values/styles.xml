@@ -32,4 +32,9 @@
         <item name="android:showDividers">middle</item>
     </style>
 
+    <style name="Animation_Toast" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/toast_enter</item>
+        <item name="android:windowExitAnimation">@anim/toast_exit</item>
+    </style>
+
 </resources>
