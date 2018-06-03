@@ -7,7 +7,6 @@
 package com.qsboy.antirecall.access;
 
 import android.accessibilityservice.AccessibilityService;
-import android.graphics.Rect;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -159,7 +158,8 @@ public class MainService extends AccessibilityService {
         private int time = 0;
 
         public void flagEnable() {
-            time = 10;
+            if (App.isWeChatAutoLogin)
+                time = 10;
         }
 
         private void autoLoginWX() {

@@ -20,7 +20,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -58,15 +57,28 @@ public class QQFragment extends Fragment {
         max = dao.getMaxID(Table_Recalled_Messages);
         handler = new Handler();
 
-        adjuster = view.findViewById(R.id.adjuster);
         recyclerViewRecalled = view.findViewById(R.id.main_recycler_view_recall);
         recyclerViewAll = view.findViewById(R.id.main_recycler_view_all);
         adapterRecalled = new MessageAdapter(dao, null, getActivity(), App.THEME_BLUE);
         adapterAll = new MessageAdapter(dao, null, getActivity(), App.THEME_RED);
+        adjuster = view.findViewById(R.id.adjuster);
 
         initList(recyclerViewRecalled, adapterRecalled, prepareRecalledData());
-        initList(recyclerViewAll, adapterAll, prepareAllData());
+        if (App.isShowAllQQMessages) {
+            initList(recyclerViewAll, adapterAll, prepareAllData());
+            initAdjuster(view);
+        } else {
+            setRecyclerViewRecalledHeight(App.layoutHeight);
+            App.layoutHeight = -1;
+            adjuster.setVisibility(View.GONE);
+        }
 
+
+        return view;
+    }
+
+    private void initAdjuster(View view) {
+        adjuster.setVisibility(View.VISIBLE);
         relativeLayout = view.findViewById(R.id.relative_layout_lists);
         relativeLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -116,8 +128,6 @@ public class QQFragment extends Fragment {
                 return true;
             }
         });
-
-        return view;
     }
 
     private void onMeasured() {
@@ -131,21 +141,19 @@ public class QQFragment extends Fragment {
 
     private void setRecyclerViewAllHeight(int height) {
         ViewGroup.LayoutParams params = recyclerViewAll.getLayoutParams();
-        params.height = App.recyclerViewAllHeight = height;
+        params.height = height;
+        App.recyclerViewAllHeight = height;
+//        App.recyclerViewRecalledHeight = App.layoutHeight - height;
         recyclerViewAll.setLayoutParams(params);
     }
 
     private void setRecyclerViewRecalledHeight(int height) {
         ViewGroup.LayoutParams params = recyclerViewRecalled.getLayoutParams();
-        params.height = App.recyclerViewRecalledHeight = height;
+        params.height = height;
+        App.recyclerViewRecalledHeight = height;
+//        App.recyclerViewAllHeight = App.layoutHeight - height;
         recyclerViewRecalled.setLayoutParams(params);
     }
-
-//    private void setAdjusterY(int y) {
-//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adjuster.getLayoutParams();
-//        params.topMargin = App.adjusterY = y;
-//        adjuster.setLayoutParams(params);
-//    }
 
     private void initList(RecyclerView recyclerView, MessageAdapter adapter, List<Messages> messages) {
         if (messages != null && messages.size() != 0)

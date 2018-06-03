@@ -36,8 +36,8 @@ public class WeChatFragment extends Fragment {
 
     String TAG = "WeChatFragment";
     //    RecyclerView recyclerView;
-    RecyclerView recyclerViewAll;
-    MessageAdapter adapterAll;
+    RecyclerView recyclerView;
+    MessageAdapter adapter;
 
     ImageView adjuster;
     Dao dao;
@@ -49,25 +49,31 @@ public class WeChatFragment extends Fragment {
         View view = inflater.inflate(R.layout.list_messages, container, false);
 
         dao = Dao.getInstance(getContext(), Dao.DB_NAME_WE_CHAT);
-        adapterAll = new MessageAdapter(dao, null, getActivity(), App.THEME_GREEN);
-        recyclerViewAll = view.findViewById(R.id.main_recycler_view_all);
         max = dao.getMaxID(Table_Recalled_Messages);
+
+        recyclerView = view.findViewById(R.id.main_recycler_view_all);
+        adapter = new MessageAdapter(dao, null, getActivity(), App.THEME_GREEN);
         adjuster = view.findViewById(R.id.adjuster);
         adjuster.setVisibility(View.GONE);
 
         List<Messages> messages = prepareAllData();
         if (messages != null && messages.size() != 0)
-            adapterAll.addData(messages);
+            adapter.addData(messages);
 
-        recyclerViewAll.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewAll.setAdapter(adapterAll);
-
-        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapterAll);
+        ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerViewAll);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        adapterAll.enableSwipeItem();
-        adapterAll.setOnItemSwipeListener(onItemSwipeListener);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+
+        if (App.isSwipeRemoveOn)
+            adapter.enableSwipeItem();
+        else
+            adapter.disableSwipeItem();
+
+        adapter.enableSwipeItem();
+        adapter.setOnItemSwipeListener(onItemSwipeListener);
 
         return view;
     }
@@ -84,7 +90,7 @@ public class WeChatFragment extends Fragment {
 
         @Override
         public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-            List<Messages> data = adapterAll.getData();
+            List<Messages> data = adapter.getData();
             if (data.size() <= pos) {
                 Log.i(TAG, "onItemSwiped: size is too small: " + pos);
                 return;
@@ -105,35 +111,21 @@ public class WeChatFragment extends Fragment {
         List<Messages> list = dao.queryAllTheLastMessage(dao.queryAllTables());
         Log.i(TAG, "prepareAllData: list: " + list);
         return list;
-//        List<Messages> list = new ArrayList<>();
-//        Messages messages;
-//        cursor[0] = max + 1 - adapter.getData().size();
-//        for (int i = 0; i < 10; i++) {
-//            while (true) {
-//                cursor[0]--;
-//                if (cursor[0] == 0)
-//                    return list;
-//                if ((messages = dao.queryRecallById(cursor[0])) != null)
-//                    break;
-//            }
-//            adapter.addData(messages);
-//        }
-//        return list;
     }
 
     // TODO: 24/04/2018 refresh
     public void refresh() {
-        if (adapterAll == null)
+        if (adapter == null)
             return;
-        if (recyclerViewAll == null)
+        if (recyclerView == null)
             return;
-        List<Messages> messages = adapterAll.prepareData();
+        List<Messages> messages = adapter.prepareData();
         if (messages != null && messages.size() != 0)
-            if (adapterAll.getData().size() != messages.size()) {
-                adapterAll.getData().clear();
-                adapterAll.addData(messages);
+            if (adapter.getData().size() != messages.size()) {
+                adapter.getData().clear();
+                adapter.addData(messages);
             }
-        adapterAll.notifyDataSetChanged();
-        recyclerViewAll.setAdapter(adapterAll);
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
     }
 }
