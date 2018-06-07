@@ -6,7 +6,10 @@
 
 package com.qsboy.antirecall.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -18,12 +21,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
-import com.qsboy.antirecall.utils.CheckAuthority;
 import com.qsboy.antirecall.utils.LogcatHelper;
+import com.qsboy.antirecall.utils.UpdateHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,16 +36,22 @@ import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
 
-    final String TAG = "Main Activity";
-    List<Fragment> fragmentList = new ArrayList<>();
+    private final String TAG = "Main Activity";
+    private List<Fragment> fragmentList = new ArrayList<>();
 
     // TODO: 03/06/2018 顶部加filter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 记录log
         LogcatHelper.getInstance().start();
         Date in = new Date();
+
+        // 检查更新
+        if (!App.isCheckUpdateOnlyOnWiFi || isWifi())
+            new UpdateHelper(this).checkUpdate();
+
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -101,32 +109,18 @@ public class MainActivity extends AppCompatActivity {
         navigationTabBar.setViewPager(viewPager, 0);
         navigationTabBar.setBehaviorEnabled(true);
 
-//        initFab(navigationTabBar);
-
     }
 
-    private void initFab(NavigationTabBar navigationTabBar) {
-//        final CoordinatorLayout coordinatorLayout = findViewById(R.id.parent);
-//        findViewById(R.id.fab).setOnClickListener(v -> {
-//            for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
-//                final NavigationTabBar.Model model = navigationTabBar.getModels().get(i);
-//                navigationTabBar.postDelayed(() -> {
-//                    final String title = String.valueOf(new Random().nextInt(15));
-//                    if (!model.isBadgeShowed()) {
-//                        model.setBadgeTitle(title);
-//                        model.showBadge();
-//                    } else model.updateBadgeTitle(title);
-//                }, i * 100);
-//            }
-//
-//            coordinatorLayout.postDelayed(() -> {
-//                final Snackbar snackbar = Snackbar.make(navigationTabBar, "Coordinator NTB", Snackbar.LENGTH_SHORT);
-//                snackbar.getView().setBackgroundColor(Color.parseColor("#9b92b3"));
-//                ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
-//                        .setTextColor(Color.parseColor("#423752"));
-//                snackbar.show();
-//            }, 1000);
-//        });
+    public boolean isWifi() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                Log.d(TAG, "isWifi");
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -157,10 +151,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume");
-        if (!new CheckAuthority(this).checkAlertWindowPermission()) {
-            Log.i(TAG, "authorized: show warning");
-            Toast.makeText(this, "请授予悬浮窗权限\n为了能正常显示撤回的消息 谢谢", Toast.LENGTH_LONG).show();
-        }
+        fragmentList.clear();
     }
 
     @Override

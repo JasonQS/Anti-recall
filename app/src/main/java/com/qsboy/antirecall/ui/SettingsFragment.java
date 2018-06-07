@@ -45,8 +45,6 @@ import ezy.assist.compat.SettingsCompat;
 
 public class SettingsFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    // TODO: 在scroller view 上下滚动时手动呼出底部导航
-
     String TAG = "SettingsFragment";
     Handler handler = new Handler();
 
@@ -54,38 +52,11 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ScrollView view = (ScrollView) inflater.inflate(R.layout.fragment_settings, container, false);
 
+        // 跳转
         View btnAccessibilityService = view.findViewById(R.id.btn_navigate_accessibility_service);
         View btnNotificationListener = view.findViewById(R.id.btn_navigate_notification_listener);
         View btnOverlays = view.findViewById(R.id.btn_navigate_overlays);
-        View btnCheckUpdate = view.findViewById(R.id.btn_check_update);
 
-        ((MySwitchCompat) view.findViewById(R.id.switch_show_all_qq_messages))
-                .setAttr(App.class, "isShowAllQQMessages");
-        ((MySwitchCompat) view.findViewById(R.id.switch_we_chat_auto_login))
-                .setAttr(App.class, "isWeChatAutoLogin");
-        ((MySwitchCompat) view.findViewById(R.id.switch_swipe_remove_on))
-                .setAttr(App.class, "isSwipeRemoveOn");
-        ((MySwitchCompat) view.findViewById(R.id.switch_check_update_only_on_wifi))
-                .setAttr(App.class, "isCheckUpdateOnlyOnWiFi");
-
-        // 底部navigation bar
-        view.setOnTouchListener((v, event) -> {
-            NavigationTabBar navigationTabBar = getActivity().findViewById(R.id.ntb_horizontal);
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    if (event.getHistorySize() < 1)
-                        return false;
-                    float y = event.getY();
-                    float historicalY = event.getHistoricalY(event.getHistorySize() - 1);
-                    if (y > historicalY)
-                        navigationTabBar.show();
-                    else
-                        navigationTabBar.hide();
-            }
-            return false;
-        });
-
-        // 设置
         btnAccessibilityService.setOnClickListener(v -> {
             Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -93,7 +64,6 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
         });
 
         btnNotificationListener.setOnClickListener(v -> {
-            // TODO: 28/05/2018
             Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -101,19 +71,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
         btnOverlays.setOnClickListener(v -> SettingsCompat.manageDrawOverlays(getActivity()));
 
-        btnCheckUpdate.setOnClickListener((v) -> {
-            UpdateHelper helper = new UpdateHelper(getActivity());
-            helper.checkUpdate();
-            helper.setCheckUpdateListener((needUpdate, versionName) -> {
-                if (needUpdate)
-                    Toast.makeText(getContext(), "有更新: " + versionName, Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(getContext(), "已是最新版", Toast.LENGTH_SHORT).show();
-            });
-        });
-
         // 检查权限
-
         CircularProgressButton btnCheckPermission = view.findViewById(R.id.btn_check_permission);
         btnCheckPermission.setOnClickListener(v -> {
             btnCheckPermission.performAccessibilityAction(AccessibilityEvent.TYPE_VIEW_CLICKED, null);
@@ -137,31 +95,70 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
             }, 2500);
 
             handler.postDelayed(btnCheckPermission::revertAnimation, 5000);
+        });
 
+        // 设置
+        ((MySwitchCompat) view.findViewById(R.id.switch_show_all_qq_messages))
+                .setAttr(App.class, "isShowAllQQMessages");
+        ((MySwitchCompat) view.findViewById(R.id.switch_we_chat_auto_login))
+                .setAttr(App.class, "isWeChatAutoLogin");
+        ((MySwitchCompat) view.findViewById(R.id.switch_swipe_remove_on))
+                .setAttr(App.class, "isSwipeRemoveOn");
+        ((MySwitchCompat) view.findViewById(R.id.switch_check_update_only_on_wifi))
+                .setAttr(App.class, "isCheckUpdateOnlyOnWiFi");
+
+        // 底部navigation bar的show hide
+        view.setOnTouchListener((v, event) -> {
+            NavigationTabBar navigationTabBar = getActivity().findViewById(R.id.ntb_horizontal);
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    if (event.getHistorySize() < 1)
+                        return false;
+                    float y = event.getY();
+                    float historicalY = event.getHistoricalY(event.getHistorySize() - 1);
+                    if (y > historicalY)
+                        navigationTabBar.show();
+                    else
+                        navigationTabBar.hide();
+            }
+            return false;
         });
 
         // 关于
 
+        View btnCheckUpdate = view.findViewById(R.id.btn_check_update);
         TextView tvLocalVersion = view.findViewById(R.id.tv_local_version);
         TextView tvRemoteVersion = view.findViewById(R.id.tv_remote_version);
+        btnCheckUpdate.setOnClickListener((v) -> {
+            UpdateHelper helper = new UpdateHelper(getActivity());
+            helper.checkUpdate();
+            helper.setCheckUpdateListener(new UpdateHelper.CheckUpdateListener() {
 
+                @Override
+                public void needUpdate(boolean needUpdate, String versionName) {
+                    if (needUpdate) {
+                        tvRemoteVersion.setText("有更新: " + versionName);
+                        Toast.makeText(getContext(), "有更新: " + versionName, Toast.LENGTH_SHORT).show();
+                    } else {
+                        tvRemoteVersion.setText("已是最新版");
+                        Toast.makeText(getContext(), "已是最新版", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void error() {
+                    Toast.makeText(getContext(), "网络错误", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        // 当前版本号
         try {
             tvLocalVersion.setText(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        UpdateHelper helper = new UpdateHelper(getActivity());
 
-        if (App.isCheckUpdateOnlyOnWiFi && !helper.isWifi())
-            return view;
-
-        helper.checkUpdate();
-        helper.setCheckUpdateListener((needUpdate, versionName) -> {
-            if (needUpdate)
-                tvRemoteVersion.setText("有更新: " + versionName);
-            else
-                tvRemoteVersion.setText("已是最新版");
-        });
         return view;
     }
 

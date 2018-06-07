@@ -25,16 +25,14 @@ import static java.util.Calendar.DAY_OF_YEAR;
 
 public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
-    String TAG = "MultiMessagesAdapter";
-
-    Context context;
+    private String TAG = "MultiMessagesAdapter";
+    private Context context;
     private int theme;
-    int day;
-    Calendar calendar = Calendar.getInstance();
-    SimpleDateFormat sdfSec = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-    SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
-
-    OnDateChangeListener onDateChangeListener;
+    private int day;
+    private Calendar calendar = Calendar.getInstance();
+    private SimpleDateFormat sdfSec = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+    private SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
+    private OnDateChangeListener onDateChangeListener;
 
     public MultiMessagesAdapter(List<Messages> data, Context context, int theme) {
         super(R.layout.item_message, data);

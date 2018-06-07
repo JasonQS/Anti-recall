@@ -70,9 +70,9 @@ public class QQFragment extends Fragment {
         } else {
             setRecyclerViewRecalledHeight(App.layoutHeight);
             App.layoutHeight = -1;
+            initAdjuster(view);
             adjuster.setVisibility(View.GONE);
         }
-
 
         return view;
     }
@@ -258,7 +258,7 @@ public class QQFragment extends Fragment {
 
     public List<Messages> prepareAllData() {
         List<Messages> list = dao.queryAllTheLastMessage(dao.queryAllTables());
-        Log.i(TAG, "prepareAllData: list: " + list);
+        Log.d(TAG, "prepareAllData: list: " + list);
         return list;
     }
 

@@ -26,6 +26,7 @@ import static com.qsboy.antirecall.utils.ImageHelper.getBitmap;
 public class XToast {
 
     private static String TAG = "X-Toast";
+    private static int offsetY = 0;
     private WindowManager.LayoutParams params;
     private Context context;
     private WindowManager wm;
@@ -33,7 +34,6 @@ public class XToast {
     // TODO: 持续时间设置
     private int duration = 2500;
     private int y = 100;
-    private static int offsetY = 0;
     private Handler handler;
 
 
@@ -83,6 +83,14 @@ public class XToast {
     }
 
     /**
+     * dip到px单位转换
+     */
+    private static int dip2px(Context context, float dipValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale);
+    }
+
+    /**
      * 支持多条消息同时显示 中间间隔10dp
      */
     public void show() {
@@ -102,13 +110,5 @@ public class XToast {
                 wm = null;
             }
         }, duration);
-    }
-
-    /**
-     * dip到px单位转换
-     */
-    private static int dip2px(Context context, float dipValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dipValue * scale);
     }
 }

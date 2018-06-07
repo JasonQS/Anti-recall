@@ -69,21 +69,6 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".ui.LaunchReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.qsboy.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
     </application>
 
 </manifest>

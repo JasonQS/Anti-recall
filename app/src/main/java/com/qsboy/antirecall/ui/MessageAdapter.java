@@ -9,8 +9,6 @@ package com.qsboy.antirecall.ui;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -35,17 +33,17 @@ import static java.util.Calendar.DAY_OF_YEAR;
 
 public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewHolder> {
 
-    String TAG = "MessageAdapter";
-    Context context;
-    Dao dao;
+    private String TAG = "MessageAdapter";
+    private Context context;
+    private Dao dao;
     private int theme;
-    Messages data;
-    Calendar now = Calendar.getInstance();
-    Calendar calendar = Calendar.getInstance();
-    SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
-    SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
-    SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    long down = 0;
+    private Messages data;
+    private Calendar now = Calendar.getInstance();
+    private Calendar calendar = Calendar.getInstance();
+    private SimpleDateFormat sdfDate = new SimpleDateFormat("MM - dd", Locale.getDefault());
+    private SimpleDateFormat sdfL = new SimpleDateFormat("MM-dd\nHH:mm", Locale.getDefault());
+    private SimpleDateFormat sdfS = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private long down = 0;
 
     public MessageAdapter(Dao dao, @Nullable List<Messages> data, Context context, int theme) {
         super(R.layout.cell, data);

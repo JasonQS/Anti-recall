@@ -110,14 +110,6 @@ public class Messages {
         return images;
     }
 
-    public Messages setImages(String images) {
-        if (images == null)
-            this.images = "";
-        else
-            this.images = images;
-        return this;
-    }
-
     public Messages setImages(String[] images) {
         StringBuilder builder = new StringBuilder();
         if (images != null && images.length != 0) {
@@ -128,6 +120,14 @@ public class Messages {
             builder.deleteCharAt(builder.length() - 1);
         }
         this.images = builder.toString();
+        return this;
+    }
+
+    public Messages setImages(String images) {
+        if (images == null)
+            this.images = "";
+        else
+            this.images = images;
         return this;
     }
 

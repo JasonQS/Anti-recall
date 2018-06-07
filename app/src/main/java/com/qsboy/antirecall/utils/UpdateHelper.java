@@ -6,196 +6,117 @@
 
 package com.qsboy.antirecall.utils;
 
-import android.app.AlertDialog.Builder;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.support.v4.content.FileProvider;
+import android.app.Activity;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
+import com.allenliu.versionchecklib.v2.AllenVersionChecker;
+import com.allenliu.versionchecklib.v2.builder.UIData;
+import com.allenliu.versionchecklib.v2.callback.RequestVersionListener;
+import com.google.gson.Gson;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Date;
 
 public class UpdateHelper {
 
-    private Context context;
-    private String TAG = "X-Update";
-    private final String PATH = "https://anti-recall.qsboy.com/version.json";
-    private final String appName = "anti-recall.apk";
-    private String versionCode;
-    private String versionName;
-    private String desc;
-    private String path;
-    private File apkFile;
+    private final String REQUEST_URL = "https://anti-recall.qsboy.com/version.json";
+    public String TAG = "Check Update";
+    Entry entry = new Entry();
+    private Activity activity;
+    private CheckUpdateListener checkUpdateListener;
 
-    // TODO: 02/04/2018
-    public UpdateHelper(Context context) {
-
-        this.context = context;
-        apkFile = new File(context.getExternalFilesDir("apk"), appName);
+    public UpdateHelper(Activity activity) {
+        this.activity = activity;
     }
 
     public void checkUpdate() {
+        String apkPath = activity.getExternalFilesDir("") + File.separator;
+        Log.e(TAG, "checkUpdateListener: apk path: " + apkPath);
+        AllenVersionChecker
+                .getInstance()
+                .requestVersion()
+                .setRequestUrl(REQUEST_URL)
+                .request(new RequestVersionListener() {
+                    @Override
+                    public UIData onRequestVersionSuccess(String result) {
+                        entry = new Gson().fromJson(result, Entry.class);
+                        Log.i(TAG, "onRequestVersionSuccess: " + entry);
 
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest request = new JsonObjectRequest(PATH, null, jsonObject -> {
-            try {
-                Log.d(TAG, "json: " + String.valueOf(jsonObject));
-                versionCode = jsonObject.getString("versionCode");
-                versionName = jsonObject.getString("versionName");
-                desc = jsonObject.getString("desc");
-                path = jsonObject.getString("path");
+                        boolean needUpdate = needUpdate(entry.versionCode);
+                        if (checkUpdateListener != null)
+                            checkUpdateListener.needUpdate(needUpdate, entry.versionName);
+                        if (needUpdate)
+                            return UIData
+                                    .create()
+                                    .setTitle(entry.title)
+                                    .setContent(entry.desc)
+                                    .setDownloadUrl(entry.path);
+                        else return null;
+                    }
 
-                Log.d(TAG, "versionCode: " + versionCode);
-                Log.d(TAG, "desc: " + desc);
-                Log.d(TAG, "path: " + path);
+                    @Override
+                    public void onRequestVersionFailure(String message) {
+                        Log.i(TAG, "onRequestVersionFailure: " + message);
+                        if (checkUpdateListener != null)
+                            checkUpdateListener.error();
+                    }
+                })
+                .setForceUpdateListener(() -> activity.finish())
+                .setDownloadAPKPath(apkPath)
+                .excuteMission(activity);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Log.i(TAG, "UpdateHelper: save path: " + apkFile);
-            if (needUpdate()) {
-                if (apkFile.exists()) {
-                    Log.w(TAG, "show notice dialog");
-                    showNoticeDialog();
-                } else {
-                    Log.w(TAG, "download apk");
-                    downloadAPK();
-                }
-            }
-        }, error -> {
-            error.printStackTrace();
-            Log.w(TAG, error.toString());
-        });
-        requestQueue.add(request);
     }
 
-    public boolean isWifi() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                Log.d(TAG, "isWifi");
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private CheckUpdate checkUpdate;
-
-    public void setCheckUpdateListener(CheckUpdate checkUpdate) {
-        this.checkUpdate = checkUpdate;
-    }
-
-    public interface CheckUpdate {
-        void needUpdate(boolean needUpdate, String remoteVersion);
-    }
-
-    private boolean needUpdate() {
-        int serverVersion = Integer.parseInt(versionCode);
+    private boolean needUpdate(int versionCode) {
         int localVersion = 1;
         try {
-            localVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-        } catch (NameNotFoundException e) {
+            PackageInfo packageInfo = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
+            localVersion = packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        boolean needUpdate = serverVersion > localVersion;
+        boolean needUpdate = versionCode > localVersion;
         Log.d(TAG, "local version versionCode : " + localVersion);
         Log.d(TAG, "need update?    " + needUpdate);
 
-        checkUpdate.needUpdate(needUpdate, versionName);
         return needUpdate;
     }
 
-    private void downloadAPK() {
-        new Handler().post(() -> {
-            try {
-                Date start = new Date();
-                if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
-                    return;
-                HttpURLConnection conn = (HttpURLConnection) new URL(path).openConnection();
-                conn.connect();
-                InputStream is = conn.getInputStream();
-                FileOutputStream fos = new FileOutputStream(apkFile);
-
-                byte[] buffer = new byte[1024];
-                Log.w(TAG, "正在下载");
-                int i = 0;
-                while (true) {
-                    i++;
-                    int readNumber = is.read(buffer);
-                    if (readNumber < 0) {
-                        Log.w(TAG, "下载完毕");
-                        Log.w(TAG, "文件大小: " + i + "kb");
-                        Date end = new Date();
-                        Log.w(TAG, "用时 " + (end.getTime() - start.getTime()) + " mm");
-                        Log.w(TAG, "存储位置 : " + apkFile);
-                        break;
-                    }
-                    fos.write(buffer, 0, readNumber);
-                }
-                fos.close();
-                is.close();
-                showNoticeDialog();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+    public void setCheckUpdateListener(CheckUpdateListener checkUpdateListener) {
+        this.checkUpdateListener = checkUpdateListener;
     }
 
-    private void showNoticeDialog() {
-        Builder builder = new Builder(context);
-        builder.setTitle("软件有更新");
-        String message = desc;
+    public interface CheckUpdateListener {
+        void needUpdate(boolean needUpdate, String versionName);
 
-        builder.setMessage(message);
-        builder.setPositiveButton("安装", (dialog, which) -> {
-            update();
-            dialog.dismiss();
-        });
-        builder.setNegativeButton("下次再说", (dialog, which) -> dialog.dismiss());
-
-        builder.create().show();
+        void error();
     }
 
-    private void update() {
-        if (!apkFile.exists()) {
-            Log.w(TAG, "apk isn't exists");
-            return;
+    private class Entry {
+
+        /**
+         * versionCode : 6
+         * versionName : v5.1.0
+         * desc : v5.1.0-release
+         * force : true
+         * path : http://cdn.qsboy.com/anti-recall/releases/anti-recall-v5.1.0.apk
+         */
+
+        int versionCode;
+        String versionName;
+        String title;
+        String desc;
+        boolean force;
+        String path;
+
+        @Override
+        public String toString() {
+            return "\nversionCode: " + versionCode +
+                    "\nversionName: " + versionName +
+                    "\ndesc: " + desc +
+                    "\npath: " + path +
+                    "\nforce: " + force;
         }
-        Intent intent = new Intent();
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(Intent.ACTION_VIEW);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Uri uri = FileProvider.getUriForFile(context, "com.qsboy.provider", apkFile);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-        } else {//其他版本直接调用
-            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
-        }
-        context.startActivity(intent);
     }
-
 }

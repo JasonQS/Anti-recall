@@ -38,6 +38,7 @@ public class MyFoldingCell extends FoldingCell {
                 // 如果是展开的 所有手势都交给自己处理
                 // 如果是收起的 在滑动一段后 (为了判断是真的想滑动) 就交给父 View 处理
                 // 否则自己处理 (点击之类)
+                // 实现父子View同方向滚动
                 if (!isUnfolded()) {
                     int historySize = ev.getHistorySize();
                     Log.v("MyFoldingCell", "dispatchTouchEvent: historySize: " + historySize);

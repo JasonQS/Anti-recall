@@ -43,6 +43,33 @@ public class WeChatFragment extends Fragment {
     Dao dao;
     int max;
     int[] cursor = new int[]{0, 1};
+    private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
+
+        @Override
+        public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
+        }
+
+        @Override
+        public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
+        }
+
+        @Override
+        public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+            List<Messages> data = adapter.getData();
+            if (data.size() <= pos) {
+                Log.i(TAG, "onItemSwiped: size is too small: " + pos);
+                return;
+            }
+            Messages msg = data.get(pos);
+            dao.deleteRecall(msg.getRecalledID());
+            Log.w(TAG, "onItemSwiped: " + pos + " - " + msg.getName());
+        }
+
+        @Override
+        public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
+
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,38 +105,9 @@ public class WeChatFragment extends Fragment {
         return view;
     }
 
-    private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
-
-        @Override
-        public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void clearView(RecyclerView.ViewHolder viewHolder, int pos) {
-        }
-
-        @Override
-        public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-            List<Messages> data = adapter.getData();
-            if (data.size() <= pos) {
-                Log.i(TAG, "onItemSwiped: size is too small: " + pos);
-                return;
-            }
-            Messages msg = data.get(pos);
-            dao.deleteRecall(msg.getRecalledID());
-            Log.w(TAG, "onItemSwiped: " + pos + " - " + msg.getName());
-        }
-
-        @Override
-        public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
-
-        }
-    };
-
     public List<Messages> prepareAllData() {
-        Log.w(TAG, "prepareAllData: " + dao.toString());
         List<Messages> list = dao.queryAllTheLastMessage(dao.queryAllTables());
-        Log.i(TAG, "prepareAllData: list: " + list);
+        Log.d(TAG, "prepareAllData: list: " + list);
         return list;
     }
 

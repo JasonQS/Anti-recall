@@ -6,9 +6,7 @@
 
 package com.qsboy.antirecall.access;
 
-import android.app.KeyguardManager;
 import android.app.Notification;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.service.notification.NotificationListenerService;

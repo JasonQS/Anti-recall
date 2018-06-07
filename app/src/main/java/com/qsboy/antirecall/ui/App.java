@@ -8,7 +8,6 @@ package com.qsboy.antirecall.ui;
 
 import android.app.Application;
 import android.content.Context;
-import android.view.View;
 
 
 public class App extends Application {

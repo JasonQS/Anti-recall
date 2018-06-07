@@ -10,7 +10,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.nfc.Tag;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -262,7 +261,6 @@ public class Dao {
     }
 
     public List<String> queryAllTables() {
-        Log.e(TAG, "queryAllTables: " + db.getPath());
         List<String> list = new ArrayList<>();
         cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type = 'table'", null);
         if (!cursor.moveToFirst())
@@ -272,14 +270,12 @@ public class Dao {
             if (name != null)
                 list.add(name);
         } while (cursor.moveToNext());
-        Log.w(TAG, "queryAllTables: tables: " + list);
         return list;
     }
 
     public List<Messages> queryAllTheLastMessage(List<String> nameList) {
         List<Messages> list = new ArrayList<>();
         for (String name : nameList) {
-            Log.i(TAG, "queryAllTheLastMessage: name: " + name);
             if ("android_metadata".equals(name) || "sqlite_sequence".equals(name))
                 continue;
             cursor = db.query(getSafeName(name),

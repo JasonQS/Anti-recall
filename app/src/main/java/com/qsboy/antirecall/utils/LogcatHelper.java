@@ -27,6 +27,18 @@ public class LogcatHelper {
     private int pid;
 
 
+    private LogcatHelper() {
+        init();
+        pid = android.os.Process.myPid();
+    }
+
+    public static LogcatHelper getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new LogcatHelper();
+        }
+        return INSTANCE;
+    }
+
     /**
      * 初始化目录
      */
@@ -40,18 +52,6 @@ public class LogcatHelper {
         }
 
 
-    }
-
-    public static LogcatHelper getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new LogcatHelper();
-        }
-        return INSTANCE;
-    }
-
-    private LogcatHelper() {
-        init();
-        pid = android.os.Process.myPid();
     }
 
     public void start() {
@@ -70,13 +70,13 @@ public class LogcatHelper {
 
     private class LogDumper extends Thread {
 
+        String cmd = null;
+        SimpleDateFormat sdf;
         private Process logcatProcess;
         private BufferedReader reader = null;
         private boolean isRunning = true;
-        String cmd = null;
         private String pid;
         private FileOutputStream out = null;
-        SimpleDateFormat sdf;
 
         LogDumper(String pid, String dir) {
             sdf = new SimpleDateFormat("MM-dd", Locale.CHINA);

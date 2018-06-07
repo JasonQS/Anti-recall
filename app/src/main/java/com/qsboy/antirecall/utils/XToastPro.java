@@ -26,14 +26,13 @@ import com.qsboy.antirecall.ui.App;
 
 public class XToastPro {
     private static String TAG = "X-Toast-Pro";
+    private static LinearLayout ll;
     private WindowManager.LayoutParams params;
     private Context context;
     private WindowManager wm;
     private int duration = 2500;
     private int top;
     private int bottom;
-
-    private static LinearLayout ll;
     private FrameLayout item;
 
     private XToastPro(Context context) {
