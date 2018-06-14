@@ -1,5 +1,9 @@
 # Anti-recall v5.1
 
+### demo
+
+<img src=https://github.com/JasonQS/Anti-recall/blob/master/demo/demo_v5.1.gif width=300px>
+
 ### 开始使用
 1. 点击检查权限按钮查看软件是否能正常运行
   - 如果已经打开了辅助功能/通知监听开关而检测不成功, 请尝试重新打开开关 或者试试重启
@@ -49,5 +53,6 @@
 
 ### 功能介绍
 
+[ ](http://cdn.qsboy.com/anti-recall/demo/demo_v5.1.gif)
 
 ###### 爱你所爱 行你所行 听从你心 无问西东
