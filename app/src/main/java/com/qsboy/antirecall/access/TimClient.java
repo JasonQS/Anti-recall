@@ -203,7 +203,7 @@ public class TimClient extends Client {
         else if ("".equals(subName))
             // 两人聊天时 没有subName
             subName = title;
-        Log.d(TAG, "parser: " + title + " - " + subName + " : " + message);
+        Log.v(TAG, "parser: " + title + " - " + subName + " : " + message);
     }
 
 }

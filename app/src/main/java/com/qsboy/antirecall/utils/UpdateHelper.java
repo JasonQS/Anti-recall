@@ -21,8 +21,8 @@ import java.io.File;
 public class UpdateHelper {
 
     private final String REQUEST_URL = "https://anti-recall.qsboy.com/version.json";
-    public String TAG = "Check Update";
-    Entry entry = new Entry();
+    private String TAG = "Check Update";
+    private Entry entry = new Entry();
     private Activity activity;
     private CheckUpdateListener checkUpdateListener;
 
@@ -41,7 +41,7 @@ public class UpdateHelper {
                     @Override
                     public UIData onRequestVersionSuccess(String result) {
                         entry = new Gson().fromJson(result, Entry.class);
-                        Log.i(TAG, "onRequestVersionSuccess: " + entry);
+                        Log.d(TAG, "onRequestVersionSuccess: " + entry);
 
                         boolean needUpdate = needUpdate(entry.versionCode);
                         if (checkUpdateListener != null)
@@ -77,7 +77,8 @@ public class UpdateHelper {
             e.printStackTrace();
         }
         boolean needUpdate = versionCode > localVersion;
-        Log.d(TAG, "local version versionCode : " + localVersion);
+        Log.d(TAG, "local version code : " + localVersion);
+        Log.d(TAG, "server version code : " + versionCode);
         Log.d(TAG, "need update?    " + needUpdate);
 
         return needUpdate;

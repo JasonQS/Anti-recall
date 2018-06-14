@@ -13,6 +13,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -20,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +40,7 @@ import com.qsboy.antirecall.access.MainService;
 import com.qsboy.antirecall.utils.CheckAuthority;
 import com.qsboy.antirecall.utils.UpdateHelper;
 
+import java.io.File;
 import java.util.Date;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
@@ -47,6 +51,8 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
     String TAG = "SettingsFragment";
     Handler handler = new Handler();
+    long clickTime = new Date().getTime();
+    int clicks = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,6 +77,8 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
         btnOverlays.setOnClickListener(v -> SettingsCompat.manageDrawOverlays(getActivity()));
 
+        // TODO: 14/06/2018 外部文件读写权限检查
+        // TODO: 14/06/2018 通知拦截功能检查
         // 检查权限
         CircularProgressButton btnCheckPermission = view.findViewById(R.id.btn_check_permission);
         btnCheckPermission.setOnClickListener(v -> {
@@ -99,7 +107,8 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
         // 设置
         ((MySwitchCompat) view.findViewById(R.id.switch_show_all_qq_messages))
-                .setAttr(App.class, "isShowAllQQMessages");
+                .setAttr(App.class, "isShowAllQQMessages")
+                .setOnCheckedChangeListener((compoundButton, b) -> App.layoutHeight = -1);
         ((MySwitchCompat) view.findViewById(R.id.switch_we_chat_auto_login))
                 .setAttr(App.class, "isWeChatAutoLogin");
         ((MySwitchCompat) view.findViewById(R.id.switch_swipe_remove_on))
@@ -159,6 +168,30 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
             e.printStackTrace();
         }
 
+        view.findViewById(R.id.copyright).setOnClickListener(v -> {
+            long clickTime = new Date().getTime();
+            if (clickTime - this.clickTime > 1000)
+                clicks = 1;
+            else
+                clicks++;
+            this.clickTime = clickTime;
+            if (clicks == 5) {
+                File file = new File(getActivity().getExternalFilesDir("logs"), "Anti-recall-06-14.log");
+                Log.i(TAG, "onCreateView: file: " + file);
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Uri uri = FileProvider.getUriForFile(getActivity(), "com.qsboy.provider", file.getParentFile());
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setDataAndType(uri, "*/*");
+                } else {
+                    intent.setDataAndType(Uri.fromFile(file), "*/*");
+                }
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -188,7 +221,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     }
 
     private boolean isAccessibilityServiceWork() {
-        Log.w(TAG, "isAccessibilityServiceWork: time: " + (new Date().getTime() - App.timeClickedCheckPermissionButton));
+        Log.w(TAG, "isAccessibilityServiceWork: clickTime: " + (new Date().getTime() - App.timeClickedCheckPermissionButton));
         return (new Date().getTime() - App.timeClickedCheckPermissionButton) < 5000;
     }
 

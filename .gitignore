@@ -34,6 +34,7 @@ local.properties
 
 # Gradle cache #
 .gradle
+gradle.properties
 
 # OSX files #
 .DS_Store

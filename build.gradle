@@ -12,7 +12,7 @@ buildscript {
         maven { url "https://maven.google.com" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.1.3'
     }
 }
 

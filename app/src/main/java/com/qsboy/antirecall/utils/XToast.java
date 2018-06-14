@@ -31,7 +31,6 @@ public class XToast {
     private Context context;
     private WindowManager wm;
     private View view;
-    // TODO: 持续时间设置
     private int duration = 2500;
     private int y = 100;
     private Handler handler;

@@ -6,6 +6,6 @@
 
 <paths>
     <external-files-path
-        name="hello"
-        path="apk" />
+        name="/storage/emulated/0/Android/data/com.qsboy.antirecall/files/"
+        path="./" />
 </paths>

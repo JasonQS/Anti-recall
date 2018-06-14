@@ -56,7 +56,7 @@ public class QQClient extends Client {
             // 正常是13
             // 有其他消息是14
             // 非好友是10
-            Log.i(TAG, "init: root.childCount: " + root.getChildCount());
+            Log.d(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
 //        NodesInfo.show(root, TAG);
@@ -187,7 +187,7 @@ public class QQClient extends Client {
         else if ("".equals(subName))
             // 两人聊天时 没有subName
             subName = title;
-        Log.d(TAG, "parser: " + title + " - " + subName + " : " + message);
+        Log.v(TAG, "parser: " + title + " - " + subName + " : " + message);
     }
 
 

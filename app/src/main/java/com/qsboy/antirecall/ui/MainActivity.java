@@ -45,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 记录log
-        LogcatHelper.getInstance().start();
-        Date in = new Date();
+        LogcatHelper.getInstance(this).start();
 
         // 检查更新
         if (!App.isCheckUpdateOnlyOnWiFi || isWifi())
@@ -56,15 +55,16 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar);
-//        collapsingToolbarLayout.setExpandedTitleColor(Color.parseColor("#009F90AF"));
-//        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
 
-        initTabBar();
         App.deviceHeight = getWindowManager().getDefaultDisplay().getHeight();
+    }
 
-        Date out = new Date();
-        Log.d(TAG, "onCreateTime: " + (out.getTime() - in.getTime()));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
+        fragmentList.clear();
+        initTabBar();
     }
 
     private void initTabBar() {
@@ -125,19 +125,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.toolbar, menu);
+//        getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_service) {
             Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             startActivity(intent);
@@ -145,13 +140,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume");
-        fragmentList.clear();
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.ui.App;
 
 import static android.content.Context.KEYGUARD_SERVICE;
 
@@ -25,6 +26,13 @@ public class WXClient {
     private String title;
     private String name;
     private String message;
+
+    public static int WeChatAutoLoginTimes;
+
+    public static void autoLoginFlagEnable() {
+        if (App.isWeChatAutoLogin)
+            WeChatAutoLoginTimes = 10;
+    }
 
     public WXClient(Context context) {
         this.context = context;
@@ -51,6 +59,12 @@ public class WXClient {
 
         Log.w(TAG, "onNotification: " + title + " - " + name + " : " + message);
         dao.addMessage(title, name, message);
+
+        if (isPCApplyLogin()) {
+            wakeUpAndUnlock();
+            autoLoginFlagEnable();
+        }
+
     }
 
     public boolean isPCApplyLogin() {

@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -66,7 +68,6 @@ public class ImageHelper {
      * @param time 图片的创建时间
      * @return 是否找到了图片
      */
-    // TODO: 28/04/2018 加一个网络状态参数 是wifi的话 误差就小一点 不是误差就大一点
     public static String[] searchImageFile(Context context, long time, String client) {
         Log.i(TAG, "searchImageFile: time: " + time + " client: " + client);
         String path = getPath(client);
@@ -74,6 +75,10 @@ public class ImageHelper {
         final File f = new File(path);
         Date start = new Date();
         final long mTime = time / 1000 * 1000;
+        int threshold;
+        if (isWifi(context))
+            threshold = 10000;
+        else threshold = 100000;
 
         FilenameFilter filter = (file, name) -> {
             File f1 = new File(file + File.separator + name);
@@ -81,7 +86,7 @@ public class ImageHelper {
             long modifiedTime = f1.lastModified();
 //                Log.v(TAG, "accept: time: " + modifiedTime);
             long diff = modifiedTime - mTime;
-            return diff < 10000 && diff >= 0;
+            return diff < threshold && diff >= 0;
         };
 
         File[] files = f.listFiles(filter);
@@ -102,6 +107,13 @@ public class ImageHelper {
         Date end = new Date();
         Log.d(TAG, "searchImageFile: searching time: " + (end.getTime() - start.getTime()) + " mm");
         return saveBitmap(context, files, time);
+    }
+
+    public static boolean isWifi(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkINfo = cm.getActiveNetworkInfo();
+        return networkINfo != null && networkINfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
     @NonNull

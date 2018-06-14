@@ -23,7 +23,6 @@ public class MainService extends AccessibilityService {
     final String pkgQQ = "com.tencent.mobileqq";
     final String pkgWX = "com.tencent.mm";
     final String pkgThis = "com.qsboy.antirecall";
-    WXAutoLogin autoLogin;
     private String TAG = "Main Service";
     private AccessibilityNodeInfo root;
     private String packageName;
@@ -31,7 +30,6 @@ public class MainService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         try {
-            // TODO: 加一段 服务运行时间段 记录第一次成功启动服务到最后一次收到 event
             if (event.getPackageName() == null) {
                 Log.d(TAG, "onAccessibilityEvent: package name is null, return");
                 return;
@@ -48,9 +46,8 @@ public class MainService extends AccessibilityService {
             }
 
             int eventType = event.getEventType();
-            Log.v(TAG, AccessibilityEvent.eventTypeToString(eventType));
-            // TODO: 判断各种手机型号 小米华为/oppo vivo
             if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                Log.v(TAG, AccessibilityEvent.eventTypeToString(eventType));
             }
 
             switch (eventType) {
@@ -58,7 +55,8 @@ public class MainService extends AccessibilityService {
                     onNotification(event);
                     break;
                 case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
-                    autoLogin.autoLoginWX();
+                case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+                    autoLoginWX();
                     onContentChanged(event);
                     break;
                 case AccessibilityEvent.TYPE_VIEW_CLICKED:
@@ -79,10 +77,13 @@ public class MainService extends AccessibilityService {
         // 只需在改变类型为文字时执行添加操作
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
         // TODO: 有些机型需要所有types
-        if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) {
-            Log.v(TAG, "onContentChanged: content change type: " + event.getContentChangeTypes());
-            return;
-        }
+        if (App.isTypeText) {
+            if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) {
+                Log.v(TAG, "onContentChanged: content change type: " + event.getContentChangeTypes());
+                return;
+            }
+        } else if (event.getContentChangeTypes() == AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+            App.isTypeText = true;
 
         switch (packageName) {
             case pkgTim:
@@ -120,9 +121,9 @@ public class MainService extends AccessibilityService {
     private void onNotification(AccessibilityEvent event) {
         List<CharSequence> texts = event.getText();
         if (texts.isEmpty()) {
-            NodesInfo.show(root, TAG);
-            //微信的登录通知的 text 是 null
-            autoLogin.flagEnable();
+            // 微信的登录通知的 text 是 null
+            // 现在转为Notification Listener来判定了
+            // App.autoLoginFlagEnable();
             return;
         }
         Log.i(TAG, "onNotification: " + packageName + " | " + texts);
@@ -142,7 +143,6 @@ public class MainService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.e(TAG, "onServiceConnected");
-        autoLogin = new WXAutoLogin();
     }
 
     @Override
@@ -154,35 +154,36 @@ public class MainService extends AccessibilityService {
      * 在检测到空通知体的时候 enable flag
      * 在之后的10次 onContentChange 都去检查微信登录
      */
-    private class WXAutoLogin {
-        private int time = 0;
-
-        public void flagEnable() {
-            if (App.isWeChatAutoLogin)
-                time = 10;
-        }
-
-        private void autoLoginWX() {
-            while (time > 0) {
-                time--;
-                Log.v(TAG, "autoLoginWX");
-                if (root.getChildCount() != 1)
-                    return;
-                AccessibilityNodeInfo node = root.getChild(0);
-                if (node.getChildCount() != 5)
-                    return;
-                //不直接判断字符串是因为多语言适应
-                AccessibilityNodeInfo loginBtn = node.getChild(3);
-                if (!loginBtn.isClickable())
-                    return;
-                if (!node.getChild(0).isClickable())
-                    return;
-                if (!node.getChild(4).isClickable())
-                    return;
-                loginBtn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                Log.w(TAG, "autoLoginWX: Perform Click");
-                time = 0;
+    private void autoLoginWX() {
+        while (WXClient.WeChatAutoLoginTimes > 0) {
+            WXClient.WeChatAutoLoginTimes--;
+            Log.v(TAG, "autoLoginWX");
+            if (root.getChildCount() != 1) {
+                Log.v(TAG, "autoLoginWX: 1");
+                return;
             }
+            AccessibilityNodeInfo node = root.getChild(0);
+            if (node.getChildCount() != 5) {
+                Log.v(TAG, "autoLoginWX: 2");
+                return;
+            }
+            //不直接判断字符串是因为多语言适应
+            AccessibilityNodeInfo loginBtn = node.getChild(3);
+            if (!loginBtn.isClickable()) {
+                Log.v(TAG, "autoLoginWX: 3");
+                return;
+            }
+            if (!node.getChild(0).isClickable()) {
+                Log.v(TAG, "autoLoginWX: 4");
+                return;
+            }
+            if (!node.getChild(4).isClickable()) {
+                Log.v(TAG, "autoLoginWX: 5");
+                return;
+            }
+            loginBtn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            Log.w(TAG, "autoLoginWX: Perform Click");
+            WXClient.WeChatAutoLoginTimes = 0;
         }
     }
 }

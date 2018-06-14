@@ -33,9 +33,7 @@ import java.util.List;
 
 import static com.qsboy.antirecall.db.DBHelper.Table_Recalled_Messages;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class QQFragment extends Fragment {
 
     String TAG = "QQFragment";
@@ -57,19 +55,21 @@ public class QQFragment extends Fragment {
         max = dao.getMaxID(Table_Recalled_Messages);
         handler = new Handler();
 
+        // TODO: 11/06/2018 recyclerView data 加载, 数据库查询优化
         recyclerViewRecalled = view.findViewById(R.id.main_recycler_view_recall);
         recyclerViewAll = view.findViewById(R.id.main_recycler_view_all);
         adapterRecalled = new MessageAdapter(dao, null, getActivity(), App.THEME_BLUE);
         adapterAll = new MessageAdapter(dao, null, getActivity(), App.THEME_RED);
         adjuster = view.findViewById(R.id.adjuster);
 
-        initList(recyclerViewRecalled, adapterRecalled, prepareRecalledData());
+        View emptyViewRecalled = inflater.inflate(R.layout.empty_view_recalled, container, false);
+        View emptyViewAll = inflater.inflate(R.layout.empty_view_all, container, false);
+        initList(recyclerViewRecalled, emptyViewRecalled, adapterRecalled, prepareRecalledData());
         if (App.isShowAllQQMessages) {
-            initList(recyclerViewAll, adapterAll, prepareAllData());
+            initList(recyclerViewAll, emptyViewAll, adapterAll, prepareAllData());
             initAdjuster(view);
         } else {
             setRecyclerViewRecalledHeight(App.layoutHeight);
-            App.layoutHeight = -1;
             initAdjuster(view);
             adjuster.setVisibility(View.GONE);
         }
@@ -134,8 +134,11 @@ public class QQFragment extends Fragment {
         if (App.layoutHeight != -1)
             return;
         App.layoutHeight = relativeLayout.getHeight();
-        setRecyclerViewAllHeight(App.layoutHeight / 2);
-        setRecyclerViewRecalledHeight(App.layoutHeight / 2);
+        if (App.isShowAllQQMessages) {
+            setRecyclerViewAllHeight(App.layoutHeight / 2);
+            setRecyclerViewRecalledHeight(App.layoutHeight / 2);
+        } else
+            setRecyclerViewAllHeight(App.layoutHeight);
         App.adjusterY = App.adjusterOriginalY = adjuster.getY();
     }
 
@@ -143,7 +146,6 @@ public class QQFragment extends Fragment {
         ViewGroup.LayoutParams params = recyclerViewAll.getLayoutParams();
         params.height = height;
         App.recyclerViewAllHeight = height;
-//        App.recyclerViewRecalledHeight = App.layoutHeight - height;
         recyclerViewAll.setLayoutParams(params);
     }
 
@@ -151,34 +153,12 @@ public class QQFragment extends Fragment {
         ViewGroup.LayoutParams params = recyclerViewRecalled.getLayoutParams();
         params.height = height;
         App.recyclerViewRecalledHeight = height;
-//        App.recyclerViewAllHeight = App.layoutHeight - height;
         recyclerViewRecalled.setLayoutParams(params);
     }
 
-    private void initList(RecyclerView recyclerView, MessageAdapter adapter, List<Messages> messages) {
+    private void initList(RecyclerView recyclerView, View emptyView, MessageAdapter adapter, List<Messages> messages) {
         if (messages != null && messages.size() != 0)
             adapter.addData(messages);
-
-//        adapter.setPreLoadNumber(4);
-//        adapter.setEnableLoadMore(true);
-//        adapter.setOnLoadMoreListener(() -> {
-//            int cursor = max + 1 - adapter.getData().size();
-//            Log.i(TAG, "initList: cursor: " + cursor);
-//            Log.v(TAG, "convert: OnLoadMore");
-//            Messages data;
-//            while (true) {
-//                cursor--;
-//                if (cursor <= 0) {
-//                    adapter.loadMoreEnd();
-//                    return;
-//                }
-//                if ((data = dao.queryRecallById(cursor)) != null)
-//                    break;
-//            }
-//            adapter.addData(data);
-//            adapter.loadMoreComplete();
-//        }, recyclerView);
-
         if (App.isSwipeRemoveOn)
             adapter.enableSwipeItem();
         else
@@ -216,43 +196,14 @@ public class QQFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        adapter.setEmptyView(emptyView);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
     }
 
-    //    // TODO: 24/04/2018 refresh
-//    public void refresh() {
-//        if (adapter == null)
-//            return;
-//        if (recyclerView == null)
-//            return;
-//        List<Messages> messages = prepareRecalledData();
-//        if (messages != null && messages.size() != 0)
-//            if (adapter.getData().size() != messages.size()) {
-//                adapter.getData().clear();
-//                adapter.addData(messages);
-//            }
-//        adapter.notifyDataSetChanged();
-//        recyclerView.setAdapter(adapter);
-//    }
-//
     public List<Messages> prepareRecalledData() {
-//        List<Messages> list = new ArrayList<>();
-//        Messages messages;
-//        int[] cursor = new int[]{2, 1};
-//        cursor[0] = max + 1 - adapter.getData().size();
-//        for (int i = 0; i < 2; i++) {
-//            while (true) {
-//                cursor[0]--;
-//                if (cursor[0] <= 0)
-//                    return list;
-//                if ((messages = dao.queryRecallById(cursor[0])) != null)
-//                    break;
-//            }
-//            adapter.addData(messages);
-//        }
-//        return list;
         return dao.queryAllRecalls();
     }
 

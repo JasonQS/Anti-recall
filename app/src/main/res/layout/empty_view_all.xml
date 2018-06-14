@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
+  ~ anti-recall.qsboy.com
+  ~ All Rights Reserved
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_margin="@dimen/margin_default"
+        android:textColor="@color/gray_dark"
+        android:text="所有消息将会显示在这里"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
+
+</RelativeLayout>

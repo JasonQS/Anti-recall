@@ -6,6 +6,7 @@
 
 package com.qsboy.antirecall.utils;
 
+import android.content.Context;
 import android.os.Environment;
 
 import java.io.BufferedReader;
@@ -27,14 +28,14 @@ public class LogcatHelper {
     private int pid;
 
 
-    private LogcatHelper() {
-        init();
+    private LogcatHelper(Context context) {
+        init(context);
         pid = android.os.Process.myPid();
     }
 
-    public static LogcatHelper getInstance() {
+    public static LogcatHelper getInstance(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = new LogcatHelper();
+            INSTANCE = new LogcatHelper(context);
         }
         return INSTANCE;
     }
@@ -42,9 +43,10 @@ public class LogcatHelper {
     /**
      * 初始化目录
      */
-    private void init() {
+    private void init(Context context) {
         // 优先保存到SD卡中
-        PATH_LOGCAT = Environment.getExternalStorageDirectory() + File.separator + "Anti-recall";
+//        PATH_LOGCAT = Environment.getExternalStorageDirectory() + File.separator + "Anti-recall";
+        PATH_LOGCAT = context.getExternalFilesDir("logs") + File.separator;
 
         File file = new File(PATH_LOGCAT);
         if (!file.exists()) {

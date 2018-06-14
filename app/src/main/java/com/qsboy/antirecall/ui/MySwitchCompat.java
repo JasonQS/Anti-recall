@@ -28,7 +28,7 @@ public class MySwitchCompat extends SwitchCompat {
     }
 
     // 利用反射把属性保存在application里
-    public void setAttr(Class app, String booleanFieldName) {
+    public MySwitchCompat setAttr(Class app, String booleanFieldName) {
         try {
             Field field = app.getDeclaredField(booleanFieldName);
             setChecked(field.getBoolean(app));
@@ -42,5 +42,6 @@ public class MySwitchCompat extends SwitchCompat {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+        return this;
     }
 }

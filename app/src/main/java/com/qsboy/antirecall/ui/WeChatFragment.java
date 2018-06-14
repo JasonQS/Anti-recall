@@ -29,20 +29,16 @@ import java.util.List;
 
 import static com.qsboy.antirecall.db.DBHelper.Table_Recalled_Messages;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class WeChatFragment extends Fragment {
 
     String TAG = "WeChatFragment";
-    //    RecyclerView recyclerView;
     RecyclerView recyclerView;
     MessageAdapter adapter;
 
     ImageView adjuster;
     Dao dao;
     int max;
-    int[] cursor = new int[]{0, 1};
     private OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
 
         @Override
@@ -91,9 +87,6 @@ public class WeChatFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
-
         if (App.isSwipeRemoveOn)
             adapter.enableSwipeItem();
         else
@@ -101,6 +94,11 @@ public class WeChatFragment extends Fragment {
 
         adapter.enableSwipeItem();
         adapter.setOnItemSwipeListener(onItemSwipeListener);
+
+        adapter.setEmptyView(R.layout.empty_view_all, container);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         return view;
     }
@@ -111,19 +109,4 @@ public class WeChatFragment extends Fragment {
         return list;
     }
 
-    // TODO: 24/04/2018 refresh
-    public void refresh() {
-        if (adapter == null)
-            return;
-        if (recyclerView == null)
-            return;
-        List<Messages> messages = adapter.prepareData();
-        if (messages != null && messages.size() != 0)
-            if (adapter.getData().size() != messages.size()) {
-                adapter.getData().clear();
-                adapter.addData(messages);
-            }
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
-    }
 }
