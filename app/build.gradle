@@ -11,9 +11,9 @@ android {
     defaultConfig {
         applicationId "com.qsboy.antirecall"
         minSdkVersion 19
-        targetSdkVersion 23
-        versionCode 7
-        versionName 'v5.1.1'
+        targetSdkVersion 27
+        versionCode 8
+        versionName 'v5.1.2'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -54,7 +54,6 @@ dependencies {
     implementation 'com.zzhoujay.richtext:richtext:3.0.0'
     // check update
     implementation 'com.allenliu.versionchecklib:library:2.0.5'
-
     // implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     // gson
     implementation 'com.google.code.gson:gson:2.8.5'
@@ -65,4 +64,5 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/*')
 }
