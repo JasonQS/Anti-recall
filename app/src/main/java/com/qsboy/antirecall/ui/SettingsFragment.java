@@ -7,7 +7,6 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -39,7 +38,6 @@ import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.access.MainService;
-import com.qsboy.antirecall.alipay.Pay;
 import com.qsboy.antirecall.utils.CheckAuthority;
 import com.qsboy.antirecall.utils.UpdateHelper;
 
@@ -216,7 +214,6 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
         view.findViewById(R.id.btn_donate).setOnClickListener(v -> {
             Log.i(TAG, "onCreateView: onclick");
-            new Pay(getActivity()).payV2();
         });
 
         return view;
