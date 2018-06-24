@@ -13,7 +13,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 8
-        versionName 'v5.1.2'
+        versionName 'v5.1.2-alipay'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -65,4 +65,5 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/*')
+    implementation files('libs/alipaySdk-20180601.jar')
 }
