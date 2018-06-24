@@ -23,11 +23,11 @@ import com.qsboy.antirecall.utils.XToastPro;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qsboy.antirecall.ui.App.addedMessage;
 import static com.qsboy.antirecall.utils.ImageHelper.searchImageFile;
 
 public abstract class Client {
 
-    static String added = "";
     AccessibilityNodeInfo titleNode;
     AccessibilityNodeInfo chatGroupViewNode;
     AccessibilityNodeInfo redPegNode;
@@ -164,10 +164,11 @@ public abstract class Client {
         addMsg(false);
     }
 
+    // TODO: 23/06/2018 撤回的地方名字太长会用...表示 需要模糊搜索
     // TODO: 如果有 qq 表情的话(非常规 ascii) 把它转义成 斜杠+描述 的形式
     public void addMsg(boolean force) {
         String temp = title + " - " + subName + " : " + message;
-        if (added.equals(temp))
+        if (addedMessage.equals(temp))
             return;
         // 不添加"撤回了一条消息"
         if (RECALL.equals(message))
@@ -179,9 +180,8 @@ public abstract class Client {
                 return;
             }
         }
-        added = temp;
-        Log.e(TAG, "Add message: " + added);
-        dao.addMessage(title, subName, message);
+        addedMessage = temp;
+        Log.e(TAG, "Add Msg: " + addedMessage + " " + dao.addMessage(title, subName, message));
     }
 
     private class Recalls {
@@ -263,8 +263,11 @@ public abstract class Client {
             int prevPos = -1;
             int nextPos = -1;
             int distance = unknownRecalls + 5;
-            for (Integer p : prevList) {
-                for (Integer n : nextList) {
+            // 先找新消息
+            for (int i = prevList.size() - 1; i >= 0; i--) {
+                Integer p = prevList.get(i);
+                for (int i1 = nextList.size() - 1; i1 >= 0; i1--) {
+                    Integer n = nextList.get(i1);
                     if (n - p == unknownRecalls + 1) {
                         // 如果上下文的距离刚好就是撤回的数量 那就直接拿来找
                         distance = n - p;
@@ -273,13 +276,15 @@ public abstract class Client {
                         break;
                     } else
                         // 如果上下文之间漏加了或者多加了 那就取最近的一对
-                        if (n - p < distance) {
+                        if (n - p < distance && n - p > 2) {
                             // 找到距离最近的
                             distance = n - p;
                             prevPos = p;
                             nextPos = n;
                         }
                 }
+                if (nextPos - prevPos == unknownRecalls + 1)
+                    break;
             }
             Log.i(TAG, "findRecallByContext: [ " + prevPos + " - " + nextPos + " ]");
 
@@ -291,6 +296,8 @@ public abstract class Client {
                 SparseArray<Messages> map = new SparseArray<>();
                 for (int i = 0, j = 0, k = 0; k < 10; k++) {
 //                    Log.d(TAG, "findRecallByContext: [" + i + " " + j + "] - " + " [" + (prevPos + i) + " " + (nextPos - j) + "] - " + subName);
+                    if (prevPos + i >= nextPos || nextPos - j <= prevPos)
+                        break;
                     Messages msgPrev = findNext(prevPos + i, entries.get(topPos + i + 1).subName);
                     Messages msgNext = findPrev(nextPos - j, entries.get(botPos - j - 1).subName);
                     Log.i(TAG, "findRecallByContext: \n" +
@@ -354,7 +361,10 @@ public abstract class Client {
                 }
                 if ((messages = dao.queryById(title, prevPos)) == null)
                     continue;
-                if (!messages.getSubName().equals(subName))
+                if (subName.endsWith("...")) {
+                    if (!subName.contains(messages.getSubName().substring(0, messages.getSubName().length() - 4)))
+                        continue;
+                } else if (!messages.getSubName().equals(subName))
                     continue;
                 break;
             }
@@ -386,7 +396,10 @@ public abstract class Client {
                 if ((messages = dao.queryById(title, nextPos)) == null)
                     continue;
                 // 判断撤回人名字是否一致
-                if (!messages.getSubName().equals(subName))
+                if (subName.endsWith("...")) {
+                    if (!subName.contains(messages.getSubName().substring(0, messages.getSubName().length() - 4)))
+                        continue;
+                } else if (!messages.getSubName().equals(subName))
                     continue;
                 // 找到了
                 break;

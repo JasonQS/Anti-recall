@@ -12,7 +12,8 @@ import android.content.Context;
 
 public class App extends Application {
 
-    public static final int LaunchDelayTime = 1000;
+    public static final int LaunchDelayTime = 750;
+    public static String addedMessage = "";
 
     public static final int THEME_RED = 1;
     public static final int THEME_GREEN = 2;

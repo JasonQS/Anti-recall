@@ -6,8 +6,6 @@ log_wx
 alipay/
 libs/
 
-*.properties
-
 # Java compiled classes #
 *.class
 

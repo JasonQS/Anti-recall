@@ -7,6 +7,7 @@
 package com.qsboy.antirecall.ui;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -192,6 +194,24 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
                 }
                 startActivity(intent);
             }
+//            public static void shareFile(Context context, Uri uri) {
+            // File file = new File("\sdcard\android123.cwj"); //附件文件地址
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            builder.detectFileUriExposure();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra("subject", ""); //
+            intent.putExtra("body", ""); // 正文
+//                intent.putExtra(Intent.EXTRA_STREAM, uri); // 添加附件，附件为file对象
+//                if (uri.toString().endsWith(".gz")) {
+//                    intent.setType("application/x-gzip"); // 如果是gz使用gzip的mime
+//                } else if (uri.toString().endsWith(".txt")) {
+//                    intent.setType("text/plain"); // 纯文本则用text/plain的mime
+//                } else {
+            intent.setType("application/octet-stream"); // 其他的均使用流当做二进制数据来发送
+//                }
+            startActivity(intent); // 调用系统的mail客户端进行发送
+//            }
         });
 
         view.findViewById(R.id.btn_donate).setOnClickListener(v -> {

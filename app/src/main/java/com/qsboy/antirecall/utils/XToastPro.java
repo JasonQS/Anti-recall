@@ -57,10 +57,8 @@ public class XToastPro {
 
     public static XToastPro build(Context context, String text) {
         XToastPro toast = new XToastPro(context);
-        if (ll == null) {
-            Log.e(TAG, "build: is null");
+        if (ll == null)
             ll = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.toast_pro, null);
-        } else Log.w(TAG, "build: not null");
         FrameLayout item = (FrameLayout) LayoutInflater.from(context).inflate(R.layout.toast_pro_item, null);
         ImageView iv = item.findViewById(R.id.toast_iv);
         TextView tv = item.findViewById(R.id.toast_tv);

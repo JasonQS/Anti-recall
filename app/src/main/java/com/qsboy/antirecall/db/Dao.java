@@ -87,7 +87,9 @@ public class Dao {
         if (!cursor.moveToFirst()) {
             return 0;
         }
-        return cursor.getInt(0);
+        int maxID = cursor.getInt(0);
+        Log.i(TAG, "getMaxID: " + maxID);
+        return maxID;
     }
 
     /**
@@ -95,11 +97,11 @@ public class Dao {
      * @param subName 群昵称
      * @param message 消息记录
      */
-    public void addMessage(String name, String subName, String message) {
-        this.addMessage(name, subName, message, new Date().getTime());
+    public long addMessage(String name, String subName, String message) {
+        return this.addMessage(name, subName, message, new Date().getTime());
     }
 
-    public void addMessage(String name, String subName, String message, long time) {
+    public long addMessage(String name, String subName, String message, long time) {
         if (subName == null || subName.equals(""))
             subName = name;
         createTableIfNotExists(name);
@@ -107,7 +109,7 @@ public class Dao {
         values.put(Column_SubName, subName);
         values.put(Column_Message, message);
         values.put(Column_Time, time);
-        db.insert(getSafeName(name), null, values);
+        return db.insert(getSafeName(name), null, values);
     }
 
     public void addRecall(Messages messages) {

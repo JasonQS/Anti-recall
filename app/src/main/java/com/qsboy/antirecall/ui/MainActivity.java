@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> fragmentList = new ArrayList<>();
 
     // TODO: 03/06/2018 顶部加filter
+    // TODO: 20/06/2018 请求白名单
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,4 +168,9 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "prepareDataForTest: tvTime: " + (out.getTime() - in.getTime()));
     }
 
+    private void addData() {
+        Dao dao = Dao.getInstance(this, Dao.DB_NAME_QQ);
+        dao.addMessage("编程团老年人水群", "ryuujo", " ", Calendar.getInstance().getTime().getTime());
+
+    }
 }
