@@ -362,7 +362,7 @@ public abstract class Client {
                 if ((messages = dao.queryById(title, prevPos)) == null)
                     continue;
                 if (subName.endsWith("...")) {
-                    if (!subName.contains(messages.getSubName().substring(0, messages.getSubName().length() - 4)))
+                    if (!messages.getSubName().contains(subName.substring(0, subName.length() - 4)))
                         continue;
                 } else if (!messages.getSubName().equals(subName))
                     continue;
