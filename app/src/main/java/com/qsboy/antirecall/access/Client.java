@@ -164,7 +164,7 @@ public abstract class Client {
         addMsg(false);
     }
 
-    // TODO: 23/06/2018 撤回的地方名字太长会用...表示 需要模糊搜索
+    // TODO: 25/06/2018 在有其他消息时 本地对话的消息截不到
     // TODO: 如果有 qq 表情的话(非常规 ascii) 把它转义成 斜杠+描述 的形式
     public void addMsg(boolean force) {
         String temp = title + " - " + subName + " : " + message;
@@ -362,7 +362,7 @@ public abstract class Client {
                 if ((messages = dao.queryById(title, prevPos)) == null)
                     continue;
                 if (subName.endsWith("...")) {
-                    if (!subName.contains(messages.getSubName().substring(0, messages.getSubName().length() - 4)))
+                    if (!messages.getSubName().contains(subName.substring(0, subName.lastIndexOf("..."))))
                         continue;
                 } else if (!messages.getSubName().equals(subName))
                     continue;
@@ -397,7 +397,7 @@ public abstract class Client {
                     continue;
                 // 判断撤回人名字是否一致
                 if (subName.endsWith("...")) {
-                    if (!subName.contains(messages.getSubName().substring(0, messages.getSubName().length() - 4)))
+                    if (!messages.getSubName().contains(subName.substring(0, subName.lastIndexOf("..."))))
                         continue;
                 } else if (!messages.getSubName().equals(subName))
                     continue;

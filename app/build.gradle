@@ -65,5 +65,4 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/*')
-    implementation files('libs/alipaySdk-20180601.jar')
 }
