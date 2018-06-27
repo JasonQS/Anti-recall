@@ -164,6 +164,8 @@ public abstract class Client {
         addMsg(false);
     }
 
+    // TODO: 27/06/2018 根据整屏内容添加新消息 根据整屏内容查找撤回
+    // TODO: 27/06/2018 点击之后就应该有 - 透明度慢慢变大的progress bar
     // TODO: 25/06/2018 在有其他消息时 本地对话的消息截不到
     // TODO: 如果有 qq 表情的话(非常规 ascii) 把它转义成 斜杠+描述 的形式
     public void addMsg(boolean force) {
