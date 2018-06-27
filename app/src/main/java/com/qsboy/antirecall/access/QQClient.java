@@ -33,6 +33,7 @@ public class QQClient extends Client {
         client = "QQ";
     }
 
+    // TODO: 28/06/2018 目前无法找到管理员撤回群员的消息
 
     /**
      * 好友：
