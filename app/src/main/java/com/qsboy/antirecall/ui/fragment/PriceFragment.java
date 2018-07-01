@@ -4,36 +4,42 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui;
+package com.qsboy.antirecall.ui.fragment;
 
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 import com.qsboy.antirecall.R;
+import com.qsboy.antirecall.ui.activyty.MainActivity;
+import com.qsboy.antirecall.ui.adapter.PaicePagerAdapter;
 
-/**
- * A simple {@link Fragment} subclass.
- */
+
 public class PriceFragment extends Fragment {
 
-
-    public PriceFragment() {
-        // Required empty public constructor
-    }
-
+    // TODO: 28/06/2018 这一页单独分开来成为"我的" 并在下面统计截获次数等使用情况
+    // TODO: 28/06/2018 聊天分布
+    Toolbar toolbar;
+    String TAG = "Price Fragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_price, container, false);
+        View view = inflater.inflate(R.layout.fragment_price, container, false);
+
+        MainActivity activity = (MainActivity) getActivity();
+        toolbar = activity.findViewById(R.id.toolbar);
+        toolbar.setTitle("选择套餐");
+        activity.setSupportActionBar(toolbar);
+
+        return view;
     }
 
     @Override
@@ -41,15 +47,14 @@ public class PriceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final HorizontalInfiniteCycleViewPager horizontalInfiniteCycleViewPager = view.findViewById(R.id.horizontalInfiniteCycleViewPager);
-        horizontalInfiniteCycleViewPager.setAdapter(new HorizontalPagerAdapter(getContext(), false));
+        horizontalInfiniteCycleViewPager.setAdapter(new PaicePagerAdapter(getActivity()));
 
-//        horizontalInfiniteCycleViewPager.setScrollDuration(400);
-//        horizontalInfiniteCycleViewPager.setPageDuration(1000);
+        horizontalInfiniteCycleViewPager.setScrollDuration(1000);
 //        horizontalInfiniteCycleViewPager.setInterpolator(
 //                AnimationUtils.loadInterpolator(getContext(), android.R.anim.overshoot_interpolator)
 //        );
 //        horizontalInfiniteCycleViewPager.setMediumScaled(false);
-//        horizontalInfiniteCycleViewPager.setMaxPageScale(0.8F);
+        horizontalInfiniteCycleViewPager.setMaxPageScale(0.8F);
 //        horizontalInfiniteCycleViewPager.setMinPageScale(0.5F);
 //        horizontalInfiniteCycleViewPager.setCenterPageScaleOffset(30.0F);
 //        horizontalInfiniteCycleViewPager.setMinPageScaleOffset(5.0F);
@@ -59,5 +64,11 @@ public class PriceFragment extends Fragment {
 //                horizontalInfiniteCycleViewPager.getRealItem() + 1
 //        );
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        toolbar.setTitle(R.string.app_name);
     }
 }

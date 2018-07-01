@@ -39,7 +39,7 @@
     <!-- alipay -->
 
     <application
-        android:name=".ui.App"
+        android:name=".ui.activyty.App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -50,7 +50,7 @@
         tools:replace="android:allowBackup">
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.activyty.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.qsboy.antirecall.ui.LaunchActivity">
+        <activity android:name="com.qsboy.antirecall.ui.activyty.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui;
+package com.qsboy.antirecall.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -22,6 +22,8 @@ import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
+import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.widget.MyFoldingCell;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -59,6 +61,96 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
         RecyclerView recyclerView = helper.getView(R.id.cell_recycler_view);
         MultiMessagesAdapter adapter = new MultiMessagesAdapter(null, context, theme);
 
+        init(helper, item);
+
+        int[] top = {item.getId()};
+        int[] bot = {item.getId()};
+        int max = dao.getMaxID(item.getName());
+        adapter.addData(item);
+        for (int i = 0; i < 3; i++) {
+            while (true) {
+                top[0]--;
+                if (top[0] <= 0) {
+                    break;
+                }
+                if ((data = dao.queryById(item.getName(), top[0])) != null) {
+                    adapter.addData(0, data);
+                    Log.i(TAG, "convert: top   : " + data.getId() + " message: " + data.getMessage());
+                    break;
+                }
+            }
+            while (true) {
+                bot[0]++;
+                if (bot[0] > max) {
+                    break;
+                }
+                if ((data = dao.queryById(item.getName(), bot[0])) != null) {
+                    adapter.addData(data);
+                    Log.i(TAG, "convert: bottom: " + data.getId() + " message: " + data.getMessage());
+                    break;
+                }
+            }
+        }
+
+
+        adapter.setUpFetchEnable(true);
+        adapter.setEnableLoadMore(true);
+//        adapter.setStartUpFetchPosition(3);
+//        adapter.setPreLoadNumber(3);
+        adapter.setOnDateChangeListener(date -> helper.setText(R.id.cell_title_date, formatDate(date)));
+        adapter.setUpFetchListener(() -> recyclerView.post(() -> {
+            Log.v(TAG, "convert: UpFetch");
+            while (true) {
+                top[0]--;
+                if (top[0] <= 0) {
+                    adapter.setUpFetchEnable(false);
+                    return;
+                }
+                if ((data = dao.queryById(item.getName(), top[0])) != null)
+                    break;
+            }
+            adapter.addData(0, data);
+            adapter.setUpFetching(false);
+        }));
+        //刚载入时会同时出发多次 load more 第二位是锁
+        adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
+            Log.v(TAG, "convert: OnLoadMore");
+
+            while (true) {
+                bot[0]++;
+                if (bot[0] > max) {
+                    adapter.loadMoreEnd();
+                    return;
+                }
+                if ((data = dao.queryById(item.getName(), bot[0])) != null)
+                    break;
+            }
+            adapter.addData(data);
+            adapter.loadMoreComplete();
+        }), recyclerView);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setAdapter(adapter);
+
+        initSwipe(recyclerView, adapter);
+
+        fc.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    down = new Date().getTime();
+                    fc.getParent().requestDisallowInterceptTouchEvent(true);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    long downTime = new Date().getTime() - down;
+                    if (downTime < 200)
+                        fc.toggle(false);
+                    break;
+            }
+            return fc.isUnfolded();
+        });
+    }
+
+    private void init(BaseViewHolder helper, Messages item) {
         helper.setText(R.id.cell_title_fold, item.getName());
         helper.setText(R.id.cell_title_unfold, item.getName());
         helper.setText(R.id.cell_name, item.getSubName());
@@ -86,58 +178,9 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
                 break;
 
         }
-        int[] top = {item.getId()};
-        int[] bot = {item.getId(), 1};
-        int max = dao.getMaxID(item.getName());
-        adapter.addData(item);
-        adapter.setStartUpFetchPosition(3);
-        adapter.setUpFetchEnable(true);
-        adapter.setPreLoadNumber(4);
-        adapter.setEnableLoadMore(true);
-        adapter.setOnDateChangeListener(date -> helper.setText(R.id.cell_title_date, formatDate(date)));
-        adapter.setUpFetchListener(() -> recyclerView.post(() -> {
-            Log.v(TAG, "convert: UpFetch");
-            while (true) {
-                top[0]--;
-                if (top[0] <= 0) {
-                    adapter.setUpFetchEnable(false);
-                    return;
-                }
-                if ((data = dao.queryById(item.getName(), top[0])) != null)
-                    break;
-            }
-            adapter.addData(0, data);
-            adapter.setUpFetching(false);
-        }));
-        //刚载入时会同时出发多次 load more 第二位是锁
-        adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
-            Log.v(TAG, "convert: OnLoadMore");
-            if (bot[1] == 0)
-                try {
-                    Log.i(TAG, "convert: load more wait");
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            bot[1] = 0;
+    }
 
-            while (true) {
-                bot[0]++;
-                if (bot[0] > max) {
-                    adapter.loadMoreEnd();
-                    return;
-                }
-                if ((data = dao.queryById(item.getName(), bot[0])) != null)
-                    break;
-            }
-            adapter.addData(data);
-            adapter.loadMoreComplete();
-            bot[1] = 1;
-        }), recyclerView);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(adapter);
-
+    private void initSwipe(RecyclerView recyclerView, MultiMessagesAdapter adapter) {
         // 滑动删除
         ItemDragAndSwipeCallback itemDragAndSwipeCallback = new ItemDragAndSwipeCallback(adapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemDragAndSwipeCallback);
@@ -167,21 +210,6 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
             @Override
             public void onItemSwipeMoving(Canvas canvas, RecyclerView.ViewHolder viewHolder, float dX, float dY, boolean isCurrentlyActive) {
             }
-        });
-
-        fc.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    down = new Date().getTime();
-                    fc.getParent().requestDisallowInterceptTouchEvent(true);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    long downTime = new Date().getTime() - down;
-                    if (downTime < 200)
-                        fc.toggle(false);
-                    break;
-            }
-            return fc.isUnfolded();
         });
     }
 

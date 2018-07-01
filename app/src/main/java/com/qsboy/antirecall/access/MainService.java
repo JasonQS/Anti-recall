@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.antirecall.ui.App;
+import com.qsboy.antirecall.ui.activyty.App;
 import com.qsboy.antirecall.utils.NodesInfo;
 
 import java.util.Date;

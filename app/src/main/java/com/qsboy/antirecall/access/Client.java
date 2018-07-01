@@ -15,7 +15,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.ui.App;
+import com.qsboy.antirecall.ui.activyty.App;
 import com.qsboy.antirecall.utils.NodesInfo;
 import com.qsboy.antirecall.utils.XToast;
 import com.qsboy.antirecall.utils.XToastPro;
@@ -23,7 +23,7 @@ import com.qsboy.antirecall.utils.XToastPro;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.qsboy.antirecall.ui.App.addedMessage;
+import static com.qsboy.antirecall.ui.activyty.App.addedMessage;
 import static com.qsboy.antirecall.utils.ImageHelper.searchImageFile;
 
 public abstract class Client {

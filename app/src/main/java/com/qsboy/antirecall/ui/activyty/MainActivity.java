@@ -4,14 +4,13 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui;
+package com.qsboy.antirecall.ui.activyty;
 
+import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,6 +23,10 @@ import android.view.MenuItem;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
+import com.qsboy.antirecall.ui.fragment.HelpFragment;
+import com.qsboy.antirecall.ui.fragment.QQFragment;
+import com.qsboy.antirecall.ui.fragment.SettingsFragment;
+import com.qsboy.antirecall.ui.fragment.WeChatFragment;
 import com.qsboy.antirecall.utils.LogcatHelper;
 import com.qsboy.antirecall.utils.UpdateHelper;
 
@@ -36,8 +39,9 @@ import devlight.io.library.ntb.NavigationTabBar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String TAG = "Main Activity";
-    private List<Fragment> fragmentList = new ArrayList<>();
+    final String TAG = "Main Activity";
+    List<Fragment> fragmentList = new ArrayList<>();
+    Toolbar toolbar;
 
     // TODO: 03/06/2018 顶部加filter
     // TODO: 20/06/2018 请求白名单
@@ -52,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
         if (!App.isCheckUpdateOnlyOnWiFi || isWifi())
             new UpdateHelper(this).checkUpdate();
 
-        setContentView(R.layout.activity_horizontal_coordinator_ntb);
+        setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         App.deviceHeight = getWindowManager().getDefaultDisplay().getHeight();
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        NavigationTabBar navigationTabBar = findViewById(R.id.ntb_horizontal);
+        NavigationTabBar navigationTabBar = findViewById(R.id.ntb);
         navigationTabBar.show();
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(new NavigationTabBar.Model.Builder(
@@ -126,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.toolbar, menu);
+        getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
     }
 
@@ -134,10 +138,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_service) {
-            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            startActivity(intent);
-            return true;
+        if (id == R.id.action_help) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.activity_main, new HelpFragment())
+                    .addToBackStack("help")
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
         }
 
         return super.onOptionsItemSelected(item);

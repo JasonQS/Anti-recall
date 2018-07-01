@@ -9,7 +9,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.qsboy.antirecall.ui.SettingsFragment"
+    android:id="@+id/fragment_settings"
+    tools:context="com.qsboy.antirecall.ui.fragment.SettingsFragment"
     tools:ignore="HardcodedText">
 
     <LinearLayout
@@ -20,93 +21,6 @@
         android:paddingBottom="20dp"
         android:paddingTop="20dp"
         tools:background="@android:color/white">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:background="@android:color/white"
-            android:orientation="vertical"
-            android:theme="@style/SettingsTheme">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="我的"
-                android:textColor="@color/colorAccent"
-                android:textStyle="bold" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="账户类型" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="普通用户" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="到期时间" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="2018-1-1" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="登录/注册" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="退出账号" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="成为会员" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -125,7 +39,7 @@
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold" />
 
-            <com.qsboy.antirecall.ui.MySwitchCompat
+            <com.qsboy.antirecall.ui.widget.MySwitchCompat
                 android:id="@+id/switch_we_chat_auto_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -134,7 +48,7 @@
                 android:text="微信自动登录"
                 android:textColor="@color/text_color_message" />
 
-            <com.qsboy.antirecall.ui.MySwitchCompat
+            <com.qsboy.antirecall.ui.widget.MySwitchCompat
                 android:id="@+id/switch_show_all_qq_messages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -143,7 +57,7 @@
                 android:text="显示所有QQ内容"
                 android:textColor="@color/text_color_message" />
 
-            <com.qsboy.antirecall.ui.MySwitchCompat
+            <com.qsboy.antirecall.ui.widget.MySwitchCompat
                 android:id="@+id/switch_swipe_remove_on"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -258,7 +172,7 @@
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold" />
 
-            <com.qsboy.antirecall.ui.MySwitchCompat
+            <com.qsboy.antirecall.ui.widget.MySwitchCompat
                 android:id="@+id/switch_check_update_only_on_wifi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
