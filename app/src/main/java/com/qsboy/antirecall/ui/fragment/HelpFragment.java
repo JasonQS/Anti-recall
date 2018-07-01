@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui;
+package com.qsboy.antirecall.ui.fragment;
 
 
 import android.os.Bundle;
@@ -18,10 +18,10 @@ import com.qsboy.antirecall.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SubscribeFragment extends Fragment {
+public class HelpFragment extends Fragment {
 
 
-    public SubscribeFragment() {
+    public HelpFragment() {
         // Required empty public constructor
     }
 
@@ -30,7 +30,7 @@ public class SubscribeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_subscribe, container, false);
+        return inflater.inflate(R.layout.fragment_help, container, false);
     }
 
 }

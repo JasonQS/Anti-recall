@@ -20,7 +20,7 @@ import java.io.File;
 
 public class UpdateHelper {
 
-    private final String REQUEST_URL = "https://anti-recall.qsboy.com/version.json";
+    private final String REQUEST_URL = "http://anti-recall.qsboy.com/version.json";
     private String TAG = "Check Update";
     private Entry entry = new Entry();
     private Activity activity;

@@ -4,8 +4,9 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui;
+package com.qsboy.antirecall.ui.fragment;
 
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,6 +28,9 @@ import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +42,8 @@ import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.access.MainService;
+import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.widget.MySwitchCompat;
 import com.qsboy.antirecall.utils.CheckAuthority;
 import com.qsboy.antirecall.utils.UpdateHelper;
 
@@ -57,8 +63,63 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+
         ScrollView view = (ScrollView) inflater.inflate(R.layout.fragment_settings, container, false);
 
+        initPermissionCheck(view);
+
+        initSettings(view);
+
+        initBottomNavigationBar(view);
+
+        initAbout(view);
+
+
+        // TODO: 2018/7/1 删去捐助
+//        view.findViewById(R.id.btn_donate).setOnClickListener(v -> {
+//            Log.i(TAG, "onCreateView: onclick");
+//            new Pay(getActivity()).pay();
+//        });
+
+        return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.toolbar_settings, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_my)
+            if (getFragmentManager() != null)
+                getFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.activity_main, new MyFragment())
+                        .addToBackStack("my")
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .commit();
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void initSettings(ScrollView view) {
+        // 设置
+        ((MySwitchCompat) view.findViewById(R.id.switch_show_all_qq_messages))
+                .setAttr(App.class, "isShowAllQQMessages")
+                .setOnCheckedChangeListener((compoundButton, b) -> App.layoutHeight = -1);
+        ((MySwitchCompat) view.findViewById(R.id.switch_we_chat_auto_login))
+                .setAttr(App.class, "isWeChatAutoLogin");
+        ((MySwitchCompat) view.findViewById(R.id.switch_swipe_remove_on))
+                .setAttr(App.class, "isSwipeRemoveOn");
+        ((MySwitchCompat) view.findViewById(R.id.switch_check_update_only_on_wifi))
+                .setAttr(App.class, "isCheckUpdateOnlyOnWiFi");
+    }
+
+    private void initPermissionCheck(ScrollView view) {
+        // TODO: 28/06/2018 跳转跟到权限检查里去
         // 跳转
         View btnAccessibilityService = view.findViewById(R.id.btn_navigate_accessibility_service);
         View btnNotificationListener = view.findViewById(R.id.btn_navigate_notification_listener);
@@ -105,21 +166,12 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
             handler.postDelayed(btnCheckPermission::revertAnimation, 5000);
         });
+    }
 
-        // 设置
-        ((MySwitchCompat) view.findViewById(R.id.switch_show_all_qq_messages))
-                .setAttr(App.class, "isShowAllQQMessages")
-                .setOnCheckedChangeListener((compoundButton, b) -> App.layoutHeight = -1);
-        ((MySwitchCompat) view.findViewById(R.id.switch_we_chat_auto_login))
-                .setAttr(App.class, "isWeChatAutoLogin");
-        ((MySwitchCompat) view.findViewById(R.id.switch_swipe_remove_on))
-                .setAttr(App.class, "isSwipeRemoveOn");
-        ((MySwitchCompat) view.findViewById(R.id.switch_check_update_only_on_wifi))
-                .setAttr(App.class, "isCheckUpdateOnlyOnWiFi");
-
+    private void initBottomNavigationBar(ScrollView view) {
         // 底部navigation bar的show hide
         view.setOnTouchListener((v, event) -> {
-            NavigationTabBar navigationTabBar = getActivity().findViewById(R.id.ntb_horizontal);
+            NavigationTabBar navigationTabBar = getActivity().findViewById(R.id.ntb);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
                     if (event.getHistorySize() < 1)
@@ -133,7 +185,9 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
             }
             return false;
         });
+    }
 
+    private void initAbout(ScrollView view) {
         // 关于
 
         View btnCheckUpdate = view.findViewById(R.id.btn_check_update);
@@ -211,12 +265,6 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
             startActivity(intent); // 调用系统的mail客户端进行发送
 //            }
         });
-
-        view.findViewById(R.id.btn_donate).setOnClickListener(v -> {
-            Log.i(TAG, "onCreateView: onclick");
-        });
-
-        return view;
     }
 
     private boolean checkFloatingPermission() {

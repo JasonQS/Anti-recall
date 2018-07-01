@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui;
+package com.qsboy.antirecall.ui.activyty;
 
 import android.app.Application;
 import android.content.Context;
@@ -12,22 +12,34 @@ import android.content.Context;
 
 public class App extends Application {
 
-    public static final int LaunchDelayTime = 750;
+    // launch页停留时间
+    public static final int LaunchDelayTime = 500;
+
+    // 会员手机号
+    public static String phone = "";
+    public static boolean isLoggedin = false;
+
+
     public static String addedMessage = "";
 
+    // 用于配置列表颜色
     public static final int THEME_RED = 1;
     public static final int THEME_GREEN = 2;
     public static final int THEME_BLUE = 3;
 
+    // 有的机型可以针对性的过滤非CONTENT_CHANGE_TYPE_TEXT的事件
     public static boolean isTypeText = false;
 
+    // 设置
     public static boolean isShowAllQQMessages = true;
     public static boolean isWeChatAutoLogin = true;
     public static boolean isSwipeRemoveOn = true;
     public static boolean isCheckUpdateOnlyOnWiFi = false;
 
+    // 检查权限按钮的点击时间
     public static long timeClickedCheckPermissionButton = 0;
 
+    // 用于调整两个RecyclerView高度
     public static int layoutHeight = -1;
     public static int deviceHeight;
     public static int recyclerViewAllHeight;

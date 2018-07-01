@@ -375,10 +375,8 @@ public class Dao {
         db.delete(Table_Recalled_Messages, selection, selectionArgs);
     }
 
-    public void deleteTable(int id, String name) {
-        String selection = Column_ID + " = ?";
-        String[] selectionArgs = {String.valueOf(id)};
-        db.delete(getSafeName(name), selection, selectionArgs);
+    public void deleteTable(String name) {
+        db.execSQL("DROP TABLE " + getSafeName(name));
     }
 
     public void deleteAll() {

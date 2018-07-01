@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui;
+package com.qsboy.antirecall.ui.fragment;
 
 
 import android.graphics.Canvas;
@@ -28,6 +28,8 @@ import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
+import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.adapter.MessageAdapter;
 
 import java.util.List;
 
@@ -120,8 +122,6 @@ public class QQFragment extends Fragment {
                         setRecyclerViewRecalledHeight(v2);
                         adjuster.setY(App.adjusterY = event.getRawY() + difAdjuster);
 
-                        Log.i(TAG, "adjusterY: " + App.adjusterY);
-
                         break;
                 }
 
@@ -182,8 +182,9 @@ public class QQFragment extends Fragment {
                     return;
                 }
                 Messages msg = data.get(pos);
-                dao.deleteRecall(msg.getRecalledID());
                 Log.w(TAG, "onItemSwiped: " + pos + " - " + msg.getName());
+                dao.deleteTable(msg.getName());
+
             }
 
             @Override

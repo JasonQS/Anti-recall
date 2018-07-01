@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright © 2016 - 2018 by GitHub.com/JasonQS
   ~ anti-recall.qsboy.com
   ~ All Rights Reserved
@@ -9,8 +8,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_help"
-        app:showAsAction="always"
-        android:title="帮助" />
+        android:id="@+id/action_my"
+        android:title="我的"
+        app:showAsAction="always" />
 
 </menu>

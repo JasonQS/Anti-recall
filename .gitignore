@@ -3,16 +3,9 @@ log_tim
 log_qq
 log_wx
 
-# Java compiled classes #
-*.class
-
 # Release Files #
-release/
+releases/
 *.apk
-*.ap_
-
-# db files
-db/
 
 # IDEA Project files #
 *.iws
@@ -39,8 +32,3 @@ gradle.properties
 # OSX files #
 .DS_Store
 
-# NDK #
-obj/
-
-# files for the dex VM #
-*.dex

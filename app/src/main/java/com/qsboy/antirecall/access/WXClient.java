@@ -12,7 +12,7 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import com.qsboy.antirecall.db.Dao;
-import com.qsboy.antirecall.ui.App;
+import com.qsboy.antirecall.ui.activyty.App;
 
 import static android.content.Context.KEYGUARD_SERVICE;
 
