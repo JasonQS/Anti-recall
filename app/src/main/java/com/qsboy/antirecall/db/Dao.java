@@ -88,7 +88,7 @@ public class Dao {
             return 0;
         }
         int maxID = cursor.getInt(0);
-        Log.i(TAG, "getMaxID: " + maxID);
+        Log.d(TAG, "getMaxID: " + maxID);
         return maxID;
     }
 

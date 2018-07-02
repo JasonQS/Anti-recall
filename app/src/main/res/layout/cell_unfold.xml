@@ -34,8 +34,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:textSize="@dimen/text_size_title_date"
-            android:paddingEnd="@dimen/margin_three_quarter"
-            android:paddingStart="@dimen/margin_three_quarter"
+            android:paddingEnd="@dimen/margin_12"
+            android:paddingStart="@dimen/margin_12"
             android:text="@string/title_date"
             android:textColor="@color/text_color_title_date" />
     </RelativeLayout>

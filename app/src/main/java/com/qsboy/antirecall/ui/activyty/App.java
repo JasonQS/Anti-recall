@@ -27,6 +27,11 @@ public class App extends Application {
     public static final int THEME_GREEN = 2;
     public static final int THEME_BLUE = 3;
 
+    public static final String pkgTim = "com.tencent.tim";
+    public static final String pkgQQ = "com.tencent.mobileqq";
+    public static final String pkgWX = "com.tencent.mm";
+    public static final String pkgThis = "com.qsboy.antirecall";
+
     // 有的机型可以针对性的过滤非CONTENT_CHANGE_TYPE_TEXT的事件
     public static boolean isTypeText = false;
 
@@ -37,7 +42,8 @@ public class App extends Application {
     public static boolean isCheckUpdateOnlyOnWiFi = false;
 
     // 检查权限按钮的点击时间
-    public static long timeClickedCheckPermissionButton = 0;
+    public static long timeCheckAccessibilityServiceIsWorking = 0;
+    public static long timeCheckNotificationListenerServiceIsWorking = 0;
 
     // 用于调整两个RecyclerView高度
     public static int layoutHeight = -1;
@@ -46,6 +52,8 @@ public class App extends Application {
     public static int recyclerViewRecalledHeight;
     public static float adjusterY;
     public static float adjusterOriginalY;
+
+    public static int activityPageIndex = 2;
 
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;

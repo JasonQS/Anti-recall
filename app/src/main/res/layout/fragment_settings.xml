@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="@android:color/white"
-            android:dividerPadding="@dimen/margin_default"
+            android:dividerPadding="@dimen/margin_16"
             android:orientation="vertical"
             android:showDividers="middle"
             android:theme="@style/SettingsTheme">
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:padding="@dimen/margin_default"
+                android:padding="@dimen/margin_16"
                 android:text="微信自动登录"
                 android:textColor="@color/text_color_message" />
 
@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:padding="@dimen/margin_default"
+                android:padding="@dimen/margin_16"
                 android:text="显示所有QQ内容"
                 android:textColor="@color/text_color_message" />
 
@@ -62,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:padding="@dimen/margin_default"
+                android:padding="@dimen/margin_16"
                 android:text="打开侧滑删除"
                 android:textColor="@color/text_color_message" />
 
@@ -177,7 +177,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
-                android:padding="@dimen/margin_default"
+                android:padding="@dimen/margin_16"
                 android:text="只在WiFi下检查更新"
                 android:textColor="@color/text_color_message" />
 
@@ -218,27 +218,6 @@
                     android:text="已是最新版" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/btn_donate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:text="捐助" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="@dimen/margin_default"
-                    android:padding="0dp"
-                    app:srcCompat="@drawable/ic_alipay" />
-            </RelativeLayout>
-
         </LinearLayout>
 
         <LinearLayout
@@ -246,7 +225,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/margin_default"
+            android:padding="@dimen/margin_16"
             android:showDividers="none">
 
             <TextView

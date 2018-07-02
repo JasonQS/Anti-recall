@@ -67,39 +67,14 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
         int[] bot = {item.getId()};
         int max = dao.getMaxID(item.getName());
         adapter.addData(item);
-        for (int i = 0; i < 3; i++) {
-            while (true) {
-                top[0]--;
-                if (top[0] <= 0) {
-                    break;
-                }
-                if ((data = dao.queryById(item.getName(), top[0])) != null) {
-                    adapter.addData(0, data);
-                    Log.i(TAG, "convert: top   : " + data.getId() + " message: " + data.getMessage());
-                    break;
-                }
-            }
-            while (true) {
-                bot[0]++;
-                if (bot[0] > max) {
-                    break;
-                }
-                if ((data = dao.queryById(item.getName(), bot[0])) != null) {
-                    adapter.addData(data);
-                    Log.i(TAG, "convert: bottom: " + data.getId() + " message: " + data.getMessage());
-                    break;
-                }
-            }
-        }
-
 
         adapter.setUpFetchEnable(true);
         adapter.setEnableLoadMore(true);
 //        adapter.setStartUpFetchPosition(3);
 //        adapter.setPreLoadNumber(3);
         adapter.setOnDateChangeListener(date -> helper.setText(R.id.cell_title_date, formatDate(date)));
+
         adapter.setUpFetchListener(() -> recyclerView.post(() -> {
-            Log.v(TAG, "convert: UpFetch");
             while (true) {
                 top[0]--;
                 if (top[0] <= 0) {
@@ -112,10 +87,8 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
             adapter.addData(0, data);
             adapter.setUpFetching(false);
         }));
-        //刚载入时会同时出发多次 load more 第二位是锁
-        adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
-            Log.v(TAG, "convert: OnLoadMore");
 
+        adapter.setOnLoadMoreListener(() -> recyclerView.post(() -> {
             while (true) {
                 bot[0]++;
                 if (bot[0] > max) {

@@ -13,12 +13,15 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import com.qsboy.antirecall.ui.activyty.App;
+
+import java.util.Date;
+
+import static com.qsboy.antirecall.ui.activyty.App.pkgThis;
+import static com.qsboy.antirecall.ui.activyty.App.pkgWX;
 
 public class NotificationListener extends NotificationListenerService {
 
-    final String pkgTim = "com.tencent.tim";
-    final String pkgQQ = "com.tencent.mobileqq";
-    final String pkgWX = "com.tencent.mm";
     String TAG = "NotificationListener";
     private String packageName;
     private String title;
@@ -43,6 +46,10 @@ public class NotificationListener extends NotificationListenerService {
         switch (packageName) {
             case pkgWX:
                 new WXClient(getApplicationContext()).onNotification(title, text);
+                break;
+            case pkgThis:
+                App.timeCheckNotificationListenerServiceIsWorking = new Date().getTime();
+                Log.i(TAG, "onNotificationPosted: time: " + App.timeCheckNotificationListenerServiceIsWorking);
                 break;
         }
     }

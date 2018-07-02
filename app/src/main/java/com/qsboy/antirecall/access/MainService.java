@@ -17,12 +17,14 @@ import com.qsboy.antirecall.utils.NodesInfo;
 import java.util.Date;
 import java.util.List;
 
+import static com.qsboy.antirecall.ui.activyty.App.pkgQQ;
+import static com.qsboy.antirecall.ui.activyty.App.pkgThis;
+import static com.qsboy.antirecall.ui.activyty.App.pkgTim;
+import static com.qsboy.antirecall.ui.activyty.App.pkgWX;
+
+
 public class MainService extends AccessibilityService {
 
-    final String pkgTim = "com.tencent.tim";
-    final String pkgQQ = "com.tencent.mobileqq";
-    final String pkgWX = "com.tencent.mm";
-    final String pkgThis = "com.qsboy.antirecall";
     private String TAG = "Main Service";
     private AccessibilityNodeInfo root;
     private String packageName;
@@ -76,7 +78,6 @@ public class MainService extends AccessibilityService {
         }
         // 只需在改变类型为文字时执行添加操作
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
-        // TODO: 有些机型需要所有types
         if (App.isTypeText) {
             if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) {
                 Log.v(TAG, "onContentChanged: content change type: " + event.getContentChangeTypes());
@@ -113,7 +114,7 @@ public class MainService extends AccessibilityService {
                 NodesInfo.show(root, TAG);
                 break;
             case pkgThis:
-                App.timeClickedCheckPermissionButton = new Date().getTime();
+                App.timeCheckAccessibilityServiceIsWorking = new Date().getTime();
                 break;
         }
     }

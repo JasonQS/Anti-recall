@@ -25,8 +25,8 @@
             android:layout_weight="2"
             android:gravity="center"
             android:minHeight="@dimen/height_content_fold"
-            android:paddingEnd="@dimen/margin_half"
-            android:paddingStart="@dimen/margin_half"
+            android:paddingEnd="@dimen/margin_8"
+            android:paddingStart="@dimen/margin_8"
             android:text="@string/name"
             android:textColor="@color/text_color_name"
             android:textSize="@dimen/text_size_name" />
@@ -36,7 +36,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
-            android:padding="@dimen/margin_half">
+            android:padding="@dimen/margin_8">
 
             <TextView
                 android:id="@+id/cell_message_text"
@@ -60,8 +60,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:paddingEnd="@dimen/margin_half"
-            android:paddingStart="@dimen/margin_half"
+            android:paddingEnd="@dimen/margin_8"
+            android:paddingStart="@dimen/margin_8"
             android:text="@string/time"
             android:textColor="@color/text_color_time"
             android:textSize="@dimen/text_size_time" />

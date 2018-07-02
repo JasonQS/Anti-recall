@@ -6,10 +6,10 @@
 
 <resources>
 
-    <dimen name="margin_default">16dp</dimen>
-    <dimen name="margin_three_quarter">12dp</dimen>
-    <dimen name="margin_half">8dp</dimen>
-    <dimen name="margin_quarter">4dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="margin_12">12dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_4">4dp</dimen>
 
     <dimen name="height_title">32dp</dimen>
     <dimen name="height_content_fold">48dp</dimen>
