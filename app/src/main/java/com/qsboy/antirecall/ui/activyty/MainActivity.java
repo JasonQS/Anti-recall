@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         if (!App.isCheckUpdateOnlyOnWiFi || isWifi())
             new UpdateHelper(this).checkUpdate();
 
+//        prepareDataForTest();
+
         setContentView(R.layout.activity_main);
 
         toolbar = findViewById(R.id.toolbar);
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public Fragment getItem(int position) {
+                App.activityPageIndex = position;
                 return fragmentList.get(position);
             }
         });
@@ -111,9 +114,10 @@ public class MainActivity extends AppCompatActivity {
                 .build());
 
         navigationTabBar.setModels(models);
-        navigationTabBar.setViewPager(viewPager, 0);
+        navigationTabBar.setViewPager(viewPager, App.activityPageIndex);
         navigationTabBar.setBehaviorEnabled(true);
 
+//        navigationTabBar.setModelIndex(App.activityPageIndex+1);
     }
 
     public boolean isWifi() {
@@ -168,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 calendar.add(Calendar.MINUTE, 3);
                 calendar.add(Calendar.SECOND, 3);
             }
-            dao.addRecall(i, "Jason", "qs", String.valueOf(i - 1), calendar.getTime().getTime(), null, null, null, null, null);
+            dao.addRecall(i - 1, "Jason", "qs", String.valueOf(i - 1), calendar.getTime().getTime(), null, null, null, null, null);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
         Date out = new Date();

@@ -10,7 +10,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_margin="@dimen/margin_default"
+        android:layout_margin="@dimen/margin_16"
         android:textColor="@color/gray_dark"
         android:text="撤回的消息将会显示在这里"
         android:layout_height="120dp"

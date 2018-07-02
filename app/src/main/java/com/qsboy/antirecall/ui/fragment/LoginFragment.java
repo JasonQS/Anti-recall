@@ -145,7 +145,7 @@ public class LoginFragment extends Fragment {
                 return map;
             }
         };
-        RequestQueue queue = Volley.newRequestQueue(Objects.requireNonNull(getContext()));
+        RequestQueue queue = Volley.newRequestQueue(getContext());
         queue.add(request);
     }
 
