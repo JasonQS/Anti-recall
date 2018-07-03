@@ -10,6 +10,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.qsboy.antirecall.utils.NodesInfo;
+
 import java.util.List;
 
 public class TimClient extends Client {
@@ -23,6 +25,12 @@ public class TimClient extends Client {
     final String IdGrayBar = "com.tencent.tim:id/graybar";
     final String IdInput = "com.tencent.tim:id/input";
     final String IdSend = "com.tencent.tim:id/fun_btn";
+    final String IdItem = "com.tencent.tim:id/name";
+
+    final String relativeLayout = "android.widget.RelativeLayout";
+    final String linearLayout = "android.widget.LinearLayout";
+    final String textView = "android.widget.TextView";
+
     String TAG = "Tim";
 
     public TimClient(Context context) {
@@ -118,6 +126,7 @@ public class TimClient extends Client {
         message = "";
         isRecalledMsg = false;
         int childCount = group.getChildCount();
+        NodesInfo.show(group, TAG, "d");
 
         for (int j = 0; j < childCount; j++) {
             AccessibilityNodeInfo child = group.getChild(j);
@@ -127,7 +136,17 @@ public class TimClient extends Client {
             }
             String nodeId = child.getViewIdResourceName();
             if (nodeId == null) {
-                Log.d(TAG, "init: node ID is null, continue");
+                // 可能是签到或者分享底下的一段描述
+                if (textView.equals(child.getClassName() + ""))
+                    if (child.getText() != null) {
+                        String s = child.getText().toString();
+                        if ("签到".equals(s)) {
+                            message = "[签到]" + message;
+                        } else {
+                            message = s + " 的分享";
+                        }
+                        Log.d(TAG, "init: node ID is null, continue");
+                    }
                 continue;
             }
             switch (nodeId) {
@@ -138,25 +157,40 @@ public class TimClient extends Client {
                 case IdChatItem:
                     switch (child.getClassName() + "") {
                         // TODO: 16/04/2018 签到
-                        case "android.widget.RelativeLayout":
+                        case relativeLayout:
                             if (child.getChildCount() != 0) {
-                                if (child.getContentDescription() != null) {
-                                    redPegNode = child;
-                                    message = "红包";
-                                    // TODO: 红包或者是分享
-                                    Log.v(TAG, "content_layout: 红包");
+                                CharSequence description = child.getContentDescription();
+                                if (description != null) {
+                                    // 红包
+                                    String desc = description.toString();
+                                    int index = desc.lastIndexOf("，点击查看详情");
+                                    if (index > -1) {
+                                        redPegNode = child;
+                                        message = "[QQ红包]" + desc.substring(0, index);
+                                        Log.v(TAG, "content_layout: 红包");
+                                    }
+                                } else {
+                                    for (int i = 0; i < child.getChildCount(); i++) {
+                                        AccessibilityNodeInfo childChild = child.getChild(i);
+                                        if (textView.equals(childChild.getClassName() + ""))
+                                            if (childChild.getViewIdResourceName() != null)
+                                                if (IdItem.equals(childChild.getViewIdResourceName()))
+                                                    if (childChild.getText() != null)
+                                                        message = childChild.getText().toString();
+                                    }
+                                    // 签到或者是分享
                                 }
                             } else {
                                 message = "[图片]";
                                 Log.v(TAG, "content_layout: 图片");
                             }
                             break;
-                        case "android.widget.LinearLayout": {
+                        case linearLayout: {
                             if (child.getChildCount() == 2) {
                                 AccessibilityNodeInfo child1 = child.getChild(0);
                                 AccessibilityNodeInfo child2 = child.getChild(1);
-                                if (child1 != null && "android.widget.TextView".contentEquals(child1.getClassName())) {
-                                    if (child2 != null && "android.widget.TextView".contentEquals(child2.getClassName())) {
+                                if (child1 != null && textView.contentEquals(child1.getClassName())) {
+                                    if (child2 != null && textView.contentEquals(child2.getClassName())) {
                                         message = child2.getText() + "";
                                     }
                                 }
@@ -164,7 +198,7 @@ public class TimClient extends Client {
                             Log.v(TAG, "content_layout: 回复消息");
                         }
                         break;
-                        case "android.widget.TextView": {
+                        case textView: {
                             message = child.getText() + "";
                             Log.v(TAG, "content_layout: 普通文本");
                         }

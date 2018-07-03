@@ -10,6 +10,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.qsboy.antirecall.utils.NodesInfo;
+
 import java.util.List;
 
 public class QQClient extends Client {
@@ -56,7 +58,7 @@ public class QQClient extends Client {
             // 正常是13
             // 有其他消息是14
             // 非好友是10
-            Log.d(TAG, "init: root.childCount: " + root.getChildCount());
+            Log.v(TAG, "init: root.childCount: " + root.getChildCount());
             return false;
         }
 //        NodesInfo.show(root, TAG);
@@ -109,6 +111,8 @@ public class QQClient extends Client {
         subName = "";
         message = "";
         isRecalledMsg = false;
+        NodesInfo.show(group, TAG, "i");
+
         for (int j = 0; j < group.getChildCount(); j++) {
             AccessibilityNodeInfo child = group.getChild(j);
             if (child == null) {

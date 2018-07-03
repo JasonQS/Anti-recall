@@ -18,6 +18,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.LogPrinter;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -89,8 +90,23 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public Fragment getItem(int position) {
-                App.activityPageIndex = position;
                 return fragmentList.get(position);
+            }
+        });
+
+        // 保存页面位置
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                App.activityPageIndex = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
             }
         });
 
@@ -116,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
         navigationTabBar.setModels(models);
         navigationTabBar.setViewPager(viewPager, App.activityPageIndex);
         navigationTabBar.setBehaviorEnabled(true);
-
-//        navigationTabBar.setModelIndex(App.activityPageIndex+1);
     }
 
     public boolean isWifi() {
