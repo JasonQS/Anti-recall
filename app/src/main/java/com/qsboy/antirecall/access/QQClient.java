@@ -112,7 +112,6 @@ public class QQClient extends Client {
         subName = "";
         message = "";
         isRecalledMsg = false;
-        NodesInfo.show(group, TAG, "i");
 
         for (int j = 0; j < group.getChildCount(); j++) {
             AccessibilityNodeInfo child = group.getChild(j);

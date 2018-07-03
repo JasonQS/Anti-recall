@@ -22,6 +22,7 @@ import android.util.LogPrinter;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.blankj.ALog;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.ui.fragment.HelpFragment;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             new UpdateHelper(this).checkUpdate();
 
 //        prepareDataForTest();
-
+        ALog.Config config = ALog.init(this);
         setContentView(R.layout.activity_main);
 
         toolbar = findViewById(R.id.toolbar);

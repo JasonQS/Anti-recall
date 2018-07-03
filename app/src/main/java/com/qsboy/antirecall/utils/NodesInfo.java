@@ -14,37 +14,34 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class NodesInfo {
 
     private static int padding = 10;
-
-    static String border = getBorder();
+    private static StringBuilder builder;
 
     public static void show(AccessibilityNodeInfo node, String TAG) {
-        log(border);
-        iter(node, TAG, 0, "v");
-        log(border);
+        builder = new StringBuilder("");
+        Log.v(TAG, "<----------------" + "\n" + iter(node, 0) + "\n" + "---------------->");
+        Log.v(TAG, "\t\n---------------->");
     }
 
     public static void show(AccessibilityNodeInfo node, String TAG, String level) {
-        log(level, TAG, border);
-        iter(node, TAG, 0, level);
-        log(level, TAG, border);
+        builder = new StringBuilder("");
+        log(level, TAG, "<----------------\n" + iter(node, 0) + "\n\n---------------->");
+        log(level, TAG, "\t\n---------------->");
     }
 
-    private static String getBorder() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("\t");
-        for (int i = 0; i < padding; i++)
-            builder.append("--------");
-        builder.append("--------");
-        return builder.toString();
-    }
-
-    private static void iter(AccessibilityNodeInfo node, String TAG, int num, String level) {
-        if (node == null) return;
+    private static String iter(AccessibilityNodeInfo node, int num) {
+        if (node == null)
+            return "";
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            log(level, TAG, "\n\t" + addPadding(num) + i + addPadding(num, padding) + print(node.getChild(i)));
-            iter(node.getChild(i), TAG, num + 1, level);
+            builder
+                    .append("\n\t")
+                    .append(addPadding(num))
+                    .append(i)
+                    .append(addPadding(num, padding))
+                    .append(getLog(node.getChild(i)));
+            iter(node.getChild(i), num + 1);
         }
+        return builder.toString();
     }
 
     @NonNull
@@ -65,7 +62,7 @@ public class NodesInfo {
         return builder.toString();
     }
 
-    private static String print(AccessibilityNodeInfo nodeInfo) {
+    private static String getLog(AccessibilityNodeInfo nodeInfo) {
 
         if (nodeInfo == null)
             return "";
@@ -80,16 +77,16 @@ public class NodesInfo {
         nodeInfo.getBoundsInScreen(rect);
         String viewId = nodeInfo.getViewIdResourceName();
 
-        return "| " +
-                "text: " + text + " \t" +
-                "description: " + description + " \t" +
-                "ID: " + viewId + " \t" +
-                "class: " + className + " \t" +
-                "location: " + rect + " \t" +
-                "focusable: " + focusable + " \t" +
-                "clickable: " + clickable + " \t" +
-                "package: " + packageName + " \t" +
-                '\n';
+        return "| "
+                + "text: " + text + " \t"
+                + "description: " + description + " \t"
+                + "ID: " + viewId + " \t"
+                + "class: " + className + " \t"
+                + "location: " + rect + " \t"
+                + "focusable: " + focusable + " \t"
+                + "clickable: " + clickable + " \t"
+                + "package: " + packageName + " \t"
+                ;
 
     }
 
