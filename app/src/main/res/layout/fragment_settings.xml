@@ -173,6 +173,7 @@
                 android:textStyle="bold" />
 
             <com.qsboy.antirecall.ui.widget.MySwitchCompat
+                android:visibility="gone"
                 android:id="@+id/switch_check_update_only_on_wifi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

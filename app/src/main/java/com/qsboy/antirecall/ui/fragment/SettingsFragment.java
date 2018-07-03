@@ -305,7 +305,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     public boolean isAccessibilityServiceSettingEnabled() {
         if (getContext() == null)
             return false;
-        final String service = getContext().getPackageName() + "/" + MainService.class.getCanonicalName();  //这里改成自己的class
+        final String service = getContext().getPackageName() + "/" + MainService.class.getCanonicalName();
         int accessibilityEnabled = Settings.Secure.getInt(getContext().getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 0);
         if (accessibilityEnabled != 1)
             return false;
