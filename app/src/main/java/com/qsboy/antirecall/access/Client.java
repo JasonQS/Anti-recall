@@ -90,7 +90,7 @@ public abstract class Client {
         if (group == null)
             return;
         parser(group);
-        NodesInfo.show(root, TAG, "i");
+        NodesInfo.show(root, TAG, "d");
 
         addMsg(false);
 

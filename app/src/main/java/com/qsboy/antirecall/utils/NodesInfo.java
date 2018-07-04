@@ -14,34 +14,28 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class NodesInfo {
 
     private static int padding = 10;
-    private static StringBuilder builder;
 
     public static void show(AccessibilityNodeInfo node, String TAG) {
-        builder = new StringBuilder("");
-        Log.v(TAG, "<----------------" + "\n" + iter(node, 0) + "\n" + "---------------->");
-        Log.v(TAG, "\t\n---------------->");
+        log("<--------------------------------");
+        iter(node, TAG, 0, "v");
+        log("-------------------------------->");
     }
 
     public static void show(AccessibilityNodeInfo node, String TAG, String level) {
-        builder = new StringBuilder("");
-        log(level, TAG, "<----------------\n" + iter(node, 0) + "\n\n---------------->");
-        log(level, TAG, "\t\n---------------->");
+        log(level, TAG, "<--------------------------------");
+        log(level, TAG, "      ");
+        iter(node, "", 0, level);
+        log(level, TAG, "  ");
+        log(level, TAG, "-------------------------------->");
     }
 
-    private static String iter(AccessibilityNodeInfo node, int num) {
-        if (node == null)
-            return "";
+    private static void iter(AccessibilityNodeInfo node, String TAG, int num, String level) {
+        if (node == null) return;
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            builder
-                    .append("\n\t")
-                    .append(addPadding(num))
-                    .append(i)
-                    .append(addPadding(num, padding))
-                    .append(getLog(node.getChild(i)));
-            iter(node.getChild(i), num + 1);
+            log(level, TAG, addPadding(num) + i + addPadding(num, padding) + print(node.getChild(i)));
+            iter(node.getChild(i), TAG, num + 1, level);
         }
-        return builder.toString();
     }
 
     @NonNull
@@ -62,7 +56,7 @@ public class NodesInfo {
         return builder.toString();
     }
 
-    private static String getLog(AccessibilityNodeInfo nodeInfo) {
+    private static String print(AccessibilityNodeInfo nodeInfo) {
 
         if (nodeInfo == null)
             return "";
@@ -80,12 +74,12 @@ public class NodesInfo {
         return "| "
                 + "text: " + text + " \t"
                 + "description: " + description + " \t"
-                + "ID: " + viewId + " \t"
-                + "class: " + className + " \t"
-                + "location: " + rect + " \t"
+                + String.format("%-40s", "ID: " + viewId) + " \t"
+                + String.format("%-40s", "class: " + className) + " \t"
+                + String.format("%-30s", "location: " + rect) + " \t"
                 + "focusable: " + focusable + " \t"
                 + "clickable: " + clickable + " \t"
-                + "package: " + packageName + " \t"
+                + String.format("%-30s", "package: " + packageName) + " \t"
                 ;
 
     }

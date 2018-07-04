@@ -78,6 +78,8 @@ public class MainService extends AccessibilityService {
         }
         // 只需在改变类型为文字时执行添加操作
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
+        Log.w(TAG, "onContentChanged: TYPE: " + event.getContentChangeTypes());
+        Log.i(TAG, "onContentChanged: TEXT: " + event.getText());
         if (App.isTypeText) {
             if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) {
                 Log.v(TAG, "onContentChanged: content change type: " + event.getContentChangeTypes());

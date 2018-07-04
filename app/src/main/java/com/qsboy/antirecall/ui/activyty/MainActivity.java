@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
             new UpdateHelper(this).checkUpdate();
 
 //        prepareDataForTest();
-        ALog.Config config = ALog.init(this);
         setContentView(R.layout.activity_main);
 
         toolbar = findViewById(R.id.toolbar);
