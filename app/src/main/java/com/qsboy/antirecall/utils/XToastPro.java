@@ -82,6 +82,7 @@ public class XToastPro {
     public XToastPro setPosition(int top, int bottom) {
         this.top = top;
         this.bottom = bottom;
+        Log.w(TAG, "setPosition: top: " + top + " bottom " + bottom);
         return this;
     }
 

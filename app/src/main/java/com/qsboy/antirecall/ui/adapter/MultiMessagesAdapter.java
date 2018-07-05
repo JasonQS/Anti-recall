@@ -43,7 +43,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
 
     @Override
     protected void convert(BaseViewHolder helper, Messages item) {
-        Log.v(TAG, "convert: " + item.getMessage() + " id: " + item.getId());
+        Log.v(TAG, "convert: " + item.getText() + " id: " + item.getId());
         helper.setText(R.id.cell_name, item.getSubName());
         helper.setText(R.id.cell_time, sdfSec.format(item.getTime()));
         formatTime(item.getTime());
@@ -53,7 +53,7 @@ public class MultiMessagesAdapter extends BaseItemDraggableAdapter<Messages, Bas
             helper.setText(R.id.cell_message_text, "");
         } else {
             helper.setImageBitmap(R.id.cell_message_image, null);
-            helper.setText(R.id.cell_message_text, item.getMessage());
+            helper.setText(R.id.cell_message_text, item.getText());
         }
         switch (theme) {
             case App.THEME_BLUE:

@@ -16,9 +16,9 @@ public class NodesInfo {
     private static int padding = 10;
 
     public static void show(AccessibilityNodeInfo node, String TAG) {
-        log("<--------------------------------");
+        log("v", TAG, "<--------------------------------");
         iter(node, TAG, 0, "v");
-        log("-------------------------------->");
+        log("v", TAG, "-------------------------------->");
     }
 
     public static void show(AccessibilityNodeInfo node, String TAG, String level) {
@@ -82,10 +82,6 @@ public class NodesInfo {
                 + String.format("%-30s", "package: " + packageName) + " \t"
                 ;
 
-    }
-
-    private static void log(String msg) {
-        Log.v("NodesInfo", msg);
     }
 
     private static void log(String level, String TAG, String msg) {

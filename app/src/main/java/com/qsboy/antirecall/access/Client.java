@@ -16,7 +16,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
 import com.qsboy.antirecall.ui.activyty.App;
-import com.qsboy.antirecall.utils.NodesInfo;
 import com.qsboy.antirecall.utils.XToast;
 import com.qsboy.antirecall.utils.XToastPro;
 
@@ -67,6 +66,10 @@ public abstract class Client {
     }
 
     public void onContentChanged(AccessibilityNodeInfo root) {
+        if (root == null) {
+            Log.d(TAG, "onContentChanged: root is null, return");
+            return;
+        }
         if (!init(root))
             return;
         if (isOtherMsg) {
@@ -75,8 +78,8 @@ public abstract class Client {
         }
 
         AccessibilityNodeInfo group;
-        int index = chatGroupViewNode.getChildCount() - 2;
         // 如果屏幕内有大于1条消息的话 根据上下两条消息查重
+        int index = chatGroupViewNode.getChildCount() - 2;
         if (index > 0) {
             group = chatGroupViewNode.getChild(index);
             if (group == null)
@@ -90,7 +93,7 @@ public abstract class Client {
         if (group == null)
             return;
         parser(group);
-        NodesInfo.show(root, TAG, "d");
+//        NodesInfo.show(root, TAG, "d");
 
         addMsg(false);
 
@@ -197,22 +200,26 @@ public abstract class Client {
 
         void findRecalls(AccessibilityNodeInfo root, AccessibilityEvent event) {
             // TODO: 通知栏收到的表情 聊天框收到的表情 乱码 根据 utf 位置判断
+            if (root == null) {
+                Log.d(TAG, "findRecalls: root is null, return");
+                return;
+            }
             if (event.getSource() == null) {
-                Log.d(TAG, "onAccessibilityEvent: event.getSource() is null, return");
+                Log.d(TAG, "findRecalls: event.getSource() is null, return");
                 return;
             }
             CharSequence cs = event.getSource().getText();
-            if (cs == null)
-                return;
             String string = cs + "";
             // 点击的是撤回消息
-            if (!string.contains(RECALL))
+            if (!string.contains(RECALL)) {
+                Log.d(TAG, "findRecalls: not RECALL");
                 return;
+            }
 
-            if (!init(root))
+            if (!init(root)) {
+                Log.d(TAG, "findRecalls: init failed");
                 return;
-
-            NodesInfo.show(root, TAG);
+            }
 
 //            initContext(event);
             entries = initContextList(event);
@@ -422,12 +429,12 @@ public abstract class Client {
                 notFound();
                 return;
             }
-            Log.e(TAG, "addRecall: " + messages.getMessage());
-            if ("[图片]".equals(messages.getMessage())) {
+            Log.e(TAG, "addRecall: " + messages.getText());
+            if ("[图片]".equals(messages.getText())) {
                 messages.setImages(searchImageFile(context, messages.getTime(), client));
                 XToastPro.build(context, messages.getSubName() + ": [图片]" + messages.getImage()).setPosition(top, bottom).show();
             } else {
-                XToastPro.build(context, messages.getSubName() + ": " + messages.getMessage()).setPosition(top, bottom).show();
+                XToastPro.build(context, messages.getSubName() + ": " + messages.getText()).setPosition(top, bottom).show();
             }
             if (dao.existRecall(messages))
                 return;

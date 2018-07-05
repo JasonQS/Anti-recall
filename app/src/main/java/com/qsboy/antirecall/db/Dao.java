@@ -113,7 +113,7 @@ public class Dao {
     }
 
     public void addRecall(Messages messages) {
-        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getMessage(), messages.getTime(), messages.getImages());
+        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getText(), messages.getTime(), messages.getImages());
     }
 
     public void addRecall(int originalID, String name, String subName, String message, long time, String images) {
@@ -131,7 +131,7 @@ public class Dao {
     }
 
     public void addRecall(Messages messages, String nextMessage, String prevMessage, String nextSubName, String prevSubName) {
-        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getMessage(), messages.getTime(), messages.getImages(),
+        this.addRecall(messages.getId(), messages.getName(), messages.getSubName(), messages.getText(), messages.getTime(), messages.getImages(),
                 prevSubName, prevMessage, nextSubName, nextMessage);
     }
 
@@ -357,7 +357,7 @@ public class Dao {
                         messages.getId()),
                         messages.getName(),
                         messages.getSubName(),
-                        messages.getMessage(),
+                        messages.getText(),
                         String.valueOf(messages.getTime())},
                 null, null, null);
         return cursor.moveToFirst();

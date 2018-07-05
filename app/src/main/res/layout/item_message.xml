@@ -31,7 +31,7 @@
             android:textColor="@color/text_color_name"
             android:textSize="@dimen/text_size_name" />
 
-        <!--message-->
+        <!--text-->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -44,7 +44,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:minHeight="@dimen/height_content_fold"
-                android:text="@string/message"
+                android:text="@string/text"
                 android:textColor="@color/text_color_message"
                 android:textSize="@dimen/text_size_message" />
 

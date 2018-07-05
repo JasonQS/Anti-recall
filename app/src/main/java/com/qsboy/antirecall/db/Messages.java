@@ -12,7 +12,7 @@ public class Messages {
     private int recalledID;
     private String name;
     private String subName;
-    private String message;
+    private String text;
     private String pkgName;
     private long time;
     private String images;
@@ -21,26 +21,26 @@ public class Messages {
 
     }
 
-    public Messages(int id, String name, String subName, String message) {
+    public Messages(int id, String name, String subName, String text) {
         this.id = id;
         this.name = name;
         this.subName = subName;
-        this.message = message;
+        this.text = text;
     }
 
-    public Messages(int id, String name, String subName, String message, long time) {
-        this(id, name, subName, message);
+    public Messages(int id, String name, String subName, String text, long time) {
+        this(id, name, subName, text);
         this.time = time;
     }
 
-    public Messages(int id, boolean isWX, String name, String subName, String message, long time, String images) {
-        this(id, name, subName, message, time);
+    public Messages(int id, boolean isWX, String name, String subName, String text, long time, String images) {
+        this(id, name, subName, text, time);
         this.images = images;
     }
 
     @Override
     public String toString() {
-        return id + "\t" + name + "\t" + subName + "\t" + message + "\t" + time + "\n";
+        return id + "\t" + name + "\t" + subName + "\t" + text + "\t" + time + "\n";
     }
 
     public int getId() {
@@ -82,12 +82,12 @@ public class Messages {
         return this;
     }
 
-    public String getMessage() {
-        return message;
+    public String getText() {
+        return text;
     }
 
-    public Messages setMessage(String message) {
-        this.message = message;
+    public Messages setText(String text) {
+        this.text = text;
         return this;
     }
 

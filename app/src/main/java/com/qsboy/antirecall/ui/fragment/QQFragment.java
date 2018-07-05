@@ -16,6 +16,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,8 @@ public class QQFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_messages, container, false);
 
+        setHasOptionsMenu(true);
+
         dao = Dao.getInstance(getContext(), Dao.DB_NAME_QQ);
         max = dao.getMaxID(Table_Recalled_Messages);
         handler = new Handler();
@@ -77,6 +81,11 @@ public class QQFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar, menu);
     }
 
     private void initAdjuster(View view) {

@@ -25,8 +25,8 @@ import static com.qsboy.antirecall.ui.activyty.App.pkgWX;
 
 public class MainService extends AccessibilityService {
 
+
     private String TAG = "Main Service";
-    private AccessibilityNodeInfo root;
     private String packageName;
 
     @Override
@@ -41,11 +41,8 @@ public class MainService extends AccessibilityService {
 //        if (!(packageName.equals(pkgTim) || packageName.equals(pkgQQ) || packageName.equals(pkgWX)))
 //            return;
 
-            root = getRootInActiveWindow();
-            if (root == null) {
-                Log.d(TAG, "onAccessibilityEvent: root is null, return");
-                return;
-            }
+//            NodesInfo.show(event.getSource(), TAG, "d");
+//            NodesInfo.show(root, TAG, "d");
 
             int eventType = event.getEventType();
             if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
@@ -72,44 +69,44 @@ public class MainService extends AccessibilityService {
     }
 
     private void onContentChanged(AccessibilityEvent event) {
-        if (root == null) {
-            Log.d(TAG, "onContentChanged: root is null, return");
-            return;
-        }
         // 只需在改变类型为文字时执行添加操作
         // 大部分change type为 CONTENT_CHANGE_TYPE_SUBTREE
-        Log.w(TAG, "onContentChanged: TYPE: " + event.getContentChangeTypes());
-        Log.i(TAG, "onContentChanged: TEXT: " + event.getText());
-        if (App.isTypeText) {
-            if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) {
-                Log.v(TAG, "onContentChanged: content change type: " + event.getContentChangeTypes());
-                return;
-            }
-        } else if (event.getContentChangeTypes() == AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
-            App.isTypeText = true;
+//        Log.w(TAG, "onContentChanged: TYPE: " + event.getContentChangeTypes());
+//        if (App.isTypeText) {
+//            if (event.getContentChangeTypes() != AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) {
+//                Log.v(TAG, "onContentChanged: content change type: " + event.getContentChangeTypes());
+//                return;
+//            }
+//        } else if (event.getContentChangeTypes() == AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+//            App.isTypeText = true;
+        // 只有在一整条消息变动时才进入逻辑, 不然会引入很多无关事件
+        if (event.getSource().getChildCount() == 0)
+            return;
+        Log.i(TAG, "onContentChanged: TEXT: " + event.getContentChangeTypes() + " " + event.getText());
 
         switch (packageName) {
             case pkgTim:
-                new TimClient(this).onContentChanged(root);
+                new TimClient(this).onContentChanged(getRootInActiveWindow());
                 break;
             case pkgQQ:
-                new QQClient(this).onContentChanged(root);
+                new QQClient(this).onContentChanged(getRootInActiveWindow());
                 break;
         }
     }
 
     private void onClick(AccessibilityEvent event) {
         Log.i(TAG, "onClick " + event.getText());
-//        NodesInfo.show(root, "d");
         if (event.getSource() == null) {
             Log.i(TAG, "onClick: event.getSource() is null, return");
             return;
         }
+        AccessibilityNodeInfo root = getRootInActiveWindow();
         switch (packageName) {
             case pkgTim:
                 new TimClient(this).findRecalls(root, event);
                 break;
             case pkgQQ:
+                NodesInfo.show(root, TAG);
                 new QQClient(this).findRecalls(root, event);
                 break;
             case pkgWX:
@@ -158,7 +155,13 @@ public class MainService extends AccessibilityService {
      * 在之后的10次 onContentChange 都去检查微信登录
      */
     private void autoLoginWX() {
+        // TODO: 2018/7/5 查看微信登录时的 event.getSource()
         while (WXClient.WeChatAutoLoginTimes > 0) {
+            AccessibilityNodeInfo root = getRootInActiveWindow();
+            if (root == null) {
+                Log.d(TAG, "autoLoginWX: root is null, return");
+                return;
+            }
             WXClient.WeChatAutoLoginTimes--;
             Log.v(TAG, "autoLoginWX");
             if (root.getChildCount() != 1) {

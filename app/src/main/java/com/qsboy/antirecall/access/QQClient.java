@@ -26,8 +26,6 @@ public class QQClient extends Client {
     final String IdInput = "com.tencent.mobileqq:id/input";
     final String IdSend = "com.tencent.mobileqq:id/fun_btn";
     String TAG = "QQ";
-    int headIconPos;
-    int messagePos;
 
     public QQClient(Context context) {
         super(context);
@@ -60,31 +58,32 @@ public class QQClient extends Client {
             // 有其他消息是14
             // 非好友是10
             Log.v(TAG, "init: root.childCount: " + root.getChildCount());
+            NodesInfo.show(root, TAG);
             return false;
         }
-//        NodesInfo.show(root, TAG);
-        List<AccessibilityNodeInfo> titleList;
-        List<AccessibilityNodeInfo> inputList;
-        List<AccessibilityNodeInfo> sendList;
 
+//        List<AccessibilityNodeInfo> inputList;
+//        List<AccessibilityNodeInfo> sendList;
+//        inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
+//        sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
+//        if (inputList.size() == 0) {
+//            Log.d(TAG, "init: input is null, return");
+//            return false;
+//        }
+//        if (sendList.size() == 0) {
+//            Log.d(TAG, "init: send button is null, return");
+//            return false;
+//        }
+//        inputNode = inputList.get(0);
+//        sendBtnNode = sendList.get(0);
+
+        List<AccessibilityNodeInfo> titleList;
         titleList = root.findAccessibilityNodeInfosByViewId(IdTitle);
-        inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
-        sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
         if (titleList.size() == 0) {
             Log.d(TAG, "init: title is null, return");
             return false;
         }
-        if (inputList.size() == 0) {
-            Log.d(TAG, "init: input is null, return");
-            return false;
-        }
-        if (sendList.size() == 0) {
-            Log.d(TAG, "init: send button is null, return");
-            return false;
-        }
         titleNode = titleList.get(0);
-        inputNode = inputList.get(0);
-        sendBtnNode = sendList.get(0);
         if (titleNode.getText() == null) {
             Log.d(TAG, "init: name is null，return");
             return false;
@@ -109,6 +108,8 @@ public class QQClient extends Client {
     protected void parser(AccessibilityNodeInfo group) {
         if (group.getChildCount() == 0)
             return;
+        int headIconPos = 0;
+        int messagePos = 0;
         subName = "";
         message = "";
         isRecalledMsg = false;
@@ -170,19 +171,21 @@ public class QQClient extends Client {
                     subName = child.getText() + "";
                     break;
                 case IdGrayBar:
-                    if (!child.isClickable() && !child.isFocusable()) {
                         message = child.getText() + "";
+                    Log.w(TAG, "parser: message: " + message);
                         int indexOfRecall = message.indexOf(RECALL);
                         if (indexOfRecall >= 0) {
                             isRecalledMsg = true;
                             subName = message.substring(0, indexOfRecall);
-                            message = message.substring(indexOfRecall);
+                            message = RECALL;
                             if ("对方".equals(subName))
                                 subName = title;
                             else if ("你".equals(subName))
                                 subName = "我";
+                            Log.v(TAG, "content_layout: 灰底文本");
                         }
-                    }
+                    Log.w(TAG, "parser: " + indexOfRecall + " " + RECALL + " " + message);
+                    break;
             }
         }
         if (messagePos < headIconPos)

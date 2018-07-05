@@ -65,29 +65,30 @@ public class TimClient extends Client {
             return false;
         }
 
+//        List<AccessibilityNodeInfo> inputList;
+//        List<AccessibilityNodeInfo> sendList;
+
+//        inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
+//        sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
+
+//        if (inputList.size() == 0) {
+//            Log.d(TAG, "init: input is null, return");
+//            return false;
+//        }
+//        if (sendList.size() == 0) {
+//            Log.d(TAG, "init: send button is null, return");
+//            return false;
+//        }
+//        inputNode = inputList.get(0);
+//        sendBtnNode = sendList.get(0);
+
         List<AccessibilityNodeInfo> titleList;
-        List<AccessibilityNodeInfo> inputList;
-        List<AccessibilityNodeInfo> sendList;
-
         titleList = root.findAccessibilityNodeInfosByViewId(IdTitle);
-        inputList = root.findAccessibilityNodeInfosByViewId(IdInput);
-        sendList = root.findAccessibilityNodeInfosByViewId(IdSend);
-
         if (titleList.size() == 0) {
             Log.d(TAG, "init: title is null, return");
             return false;
         }
-        if (inputList.size() == 0) {
-            Log.d(TAG, "init: input is null, return");
-            return false;
-        }
-        if (sendList.size() == 0) {
-            Log.d(TAG, "init: send button is null, return");
-            return false;
-        }
         titleNode = titleList.get(0);
-        inputNode = inputList.get(0);
-        sendBtnNode = sendList.get(0);
         if (titleNode.getText() == null) {
             Log.d(TAG, "init: name is null，return");
             return false;
@@ -131,7 +132,7 @@ public class TimClient extends Client {
         for (int j = 0; j < childCount; j++) {
             AccessibilityNodeInfo child = group.getChild(j);
             if (child == null) {
-                Log.d(TAG, "init: child is null, continue");
+                Log.d(TAG, "parser: child is null, continue");
                 continue;
             }
             String nodeId = child.getViewIdResourceName();
@@ -145,7 +146,7 @@ public class TimClient extends Client {
                         } else {
                             message = s + " 的分享";
                         }
-                        Log.d(TAG, "init: node ID is null, continue");
+                        Log.d(TAG, "parser: node ID is null, continue");
                     }
                 continue;
             }
@@ -221,14 +222,14 @@ public class TimClient extends Client {
                         if (indexOfRecall >= 0) {
                             isRecalledMsg = true;
                             subName = message.substring(0, indexOfRecall);
-                            message = message.substring(indexOfRecall);
+                            message = RECALL;
                             if ("对方".equals(subName))
                                 subName = title;
                             else if ("你".equals(subName))
                                 subName = "我";
                         }
                     }
-
+                    break;
             }
         }
         if (messagePos < headIconPos)

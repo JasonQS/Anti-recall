@@ -56,7 +56,7 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
 
     @Override
     protected void convert(BaseViewHolder helper, Messages item) {
-        Log.v(TAG, "convert: " + item.getMessage() + " id: " + item.getId());
+        Log.v(TAG, "convert: " + item.getText() + " id: " + item.getId());
         MyFoldingCell fc = helper.getView(R.id.folding_cell);
         RecyclerView recyclerView = helper.getView(R.id.cell_recycler_view);
         MultiMessagesAdapter adapter = new MultiMessagesAdapter(null, context, theme);
@@ -128,7 +128,7 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
         helper.setText(R.id.cell_title_unfold, item.getName());
         helper.setText(R.id.cell_name, item.getSubName());
         helper.setText(R.id.cell_time, formatTime(item.getTime()));
-        helper.setText(R.id.cell_message_text, item.getMessage());
+        helper.setText(R.id.cell_message_text, item.getText());
 
         switch (theme) {
             case App.THEME_BLUE:
@@ -176,7 +176,7 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
                     return;
                 }
                 Messages msg = data.get(pos);
-                Log.i(TAG, "onItemSwiped: " + pos + " - " + msg.getName() + ": " + msg.getMessage());
+                Log.i(TAG, "onItemSwiped: " + pos + " - " + msg.getName() + ": " + msg.getText());
                 dao.deleteMessage(msg.getName(), msg.getId());
             }
 
