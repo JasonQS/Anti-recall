@@ -27,11 +27,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.ui.activyty.App;
-import com.qsboy.antirecall.ui.activyty.MainActivity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class LoginFragment extends Fragment {
 

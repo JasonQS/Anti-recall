@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.ui.activyty.MainActivity;
 import com.qsboy.antirecall.ui.adapter.PaicePagerAdapter;
 
 
