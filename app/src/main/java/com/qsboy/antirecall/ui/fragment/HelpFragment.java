@@ -37,7 +37,7 @@ public class HelpFragment extends Fragment {
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         // TODO: 2018/7/5 上线时删去
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         webView.loadUrl("http://anti-recall.qsboy.com");
 //        webView.loadUrl("https://github.com/JasonQS/Anti-recall/blob/master/README.md");
