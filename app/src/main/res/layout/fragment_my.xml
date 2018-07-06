@@ -38,6 +38,7 @@
                 android:text="账户类型" />
 
             <TextView
+                android:id="@+id/userType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -89,6 +90,7 @@
                 android:text="到期时间" />
 
             <TextView
+                android:id="@+id/subscribe_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

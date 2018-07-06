@@ -82,7 +82,6 @@ public class MainService extends AccessibilityService {
         // 只有在一整条消息变动时才进入逻辑, 不然会引入很多无关事件
         if (event.getSource().getChildCount() == 0)
             return;
-        Log.i(TAG, "onContentChanged: TEXT: " + event.getContentChangeTypes() + " " + event.getText());
 
         switch (packageName) {
             case pkgTim:

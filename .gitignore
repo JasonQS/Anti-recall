@@ -3,9 +3,13 @@ log_tim
 log_qq
 log_wx
 
+alipay/
+libs/
+
 # Release Files #
 releases/
 *.apk
+
 
 # IDEA Project files #
 *.iws
@@ -31,4 +35,3 @@ gradle.properties
 
 # OSX files #
 .DS_Store
-

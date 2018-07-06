@@ -12,7 +12,7 @@
     <TextView
         android:layout_margin="@dimen/margin_16"
         android:textColor="@color/gray_dark"
-        android:text="所有消息将会显示在这里"
+        android:text="所有被收录的消息将会显示在这里"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content" />
 

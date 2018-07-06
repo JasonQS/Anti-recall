@@ -4,10 +4,25 @@
   ~ All Rights Reserved
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray_light"
     tools:context=".ui.fragment.HelpFragment">
 
-</FrameLayout>
+    <WebView
+        android:id="@+id/web_help"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </WebView>
+
+    <TextView
+        android:visibility="gone"
+        android:text="@string/help_md"
+        android:id="@+id/help_md"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="@color/black" />
+</RelativeLayout>

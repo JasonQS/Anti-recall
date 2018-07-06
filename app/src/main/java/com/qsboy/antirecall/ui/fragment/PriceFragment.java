@@ -13,12 +13,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.ui.adapter.PaicePagerAdapter;
+import com.qsboy.antirecall.ui.activyty.MainActivity;
+import com.qsboy.antirecall.ui.adapter.PricePagerAdapter;
 
 
 public class PriceFragment extends Fragment {
@@ -33,6 +36,8 @@ public class PriceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_price, container, false);
 
+        setHasOptionsMenu(true);
+
         MainActivity activity = (MainActivity) getActivity();
         toolbar = activity.findViewById(R.id.toolbar);
         toolbar.setTitle("选择套餐");
@@ -46,7 +51,7 @@ public class PriceFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final HorizontalInfiniteCycleViewPager horizontalInfiniteCycleViewPager = view.findViewById(R.id.horizontalInfiniteCycleViewPager);
-        horizontalInfiniteCycleViewPager.setAdapter(new PaicePagerAdapter(getActivity()));
+        horizontalInfiniteCycleViewPager.setAdapter(new PricePagerAdapter(getActivity()));
 
         horizontalInfiniteCycleViewPager.setScrollDuration(1000);
 //        horizontalInfiniteCycleViewPager.setInterpolator(
@@ -63,6 +68,11 @@ public class PriceFragment extends Fragment {
 //                horizontalInfiniteCycleViewPager.getRealItem() + 1
 //        );
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
     }
 
     @Override

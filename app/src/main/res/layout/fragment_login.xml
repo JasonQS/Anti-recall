@@ -47,7 +47,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:background="@drawable/bg_btn_pay"
-                android:text="发送短信"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -68,7 +67,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:background="@drawable/bg_btn_pay"
-                android:text="验证"
                 android:textSize="12sp" />
         </LinearLayout>
 

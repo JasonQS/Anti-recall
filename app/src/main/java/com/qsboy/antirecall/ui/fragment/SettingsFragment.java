@@ -86,7 +86,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        menu.clear();
-        inflater.inflate(R.menu.toolbar_settings, menu);
+//        inflater.inflate(R.menu.toolbar_settings, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

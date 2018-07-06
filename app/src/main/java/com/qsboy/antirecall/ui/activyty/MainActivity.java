@@ -18,11 +18,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.LogPrinter;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.blankj.ALog;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.ui.fragment.HelpFragment;
@@ -159,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_help) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.activity_main, new HelpFragment())
+                    .add(android.R.id.content, new HelpFragment())
+//                    .add(R.id.activity_main, new HelpFragment())
                     .addToBackStack("help")
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();

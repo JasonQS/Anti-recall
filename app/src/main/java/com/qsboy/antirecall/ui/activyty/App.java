@@ -9,6 +9,8 @@ package com.qsboy.antirecall.ui.activyty;
 import android.app.Application;
 import android.content.Context;
 
+import java.util.Date;
+
 
 public class App extends Application {
 
@@ -54,6 +56,15 @@ public class App extends Application {
     public static float adjusterOriginalY;
 
     public static int activityPageIndex = 2;
+
+    public static class User {
+        public static String phone;
+
+        public static Integer userType = 1;
+
+        public static Date subscribeTime = new Date();
+
+    }
 
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;

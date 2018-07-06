@@ -55,8 +55,6 @@ public class QQFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_messages, container, false);
 
-        setHasOptionsMenu(true);
-
         dao = Dao.getInstance(getContext(), Dao.DB_NAME_QQ);
         max = dao.getMaxID(Table_Recalled_Messages);
         handler = new Handler();
@@ -81,11 +79,6 @@ public class QQFragment extends Fragment {
         }
 
         return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar, menu);
     }
 
     private void initAdjuster(View view) {

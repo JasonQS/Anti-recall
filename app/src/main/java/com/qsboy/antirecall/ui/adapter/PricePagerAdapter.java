@@ -18,10 +18,7 @@ import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.pay.Pay;
 
 
-/**
- * Created by GIGAMOLE on 7/27/16.
- */
-public class PaicePagerAdapter extends PagerAdapter {
+public class PricePagerAdapter extends PagerAdapter {
 
     private Activity activity;
     private LayoutInflater mLayoutInflater;
@@ -100,7 +97,7 @@ public class PaicePagerAdapter extends PagerAdapter {
         }
     }
 
-    public PaicePagerAdapter(Activity activity) {
+    public PricePagerAdapter(Activity activity) {
         this.activity = activity;
         mLayoutInflater = LayoutInflater.from(activity);
     }
