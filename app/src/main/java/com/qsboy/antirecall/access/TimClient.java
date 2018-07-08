@@ -127,7 +127,6 @@ public class TimClient extends Client {
         message = "";
         isRecalledMsg = false;
         int childCount = group.getChildCount();
-        NodesInfo.show(group, TAG, "d");
 
         for (int j = 0; j < childCount; j++) {
             AccessibilityNodeInfo child = group.getChild(j);

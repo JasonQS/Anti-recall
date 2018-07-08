@@ -24,7 +24,7 @@ public class NodesInfo {
     public static void show(AccessibilityNodeInfo node, String TAG, String level) {
         log(level, TAG, "<--------------------------------");
         log(level, TAG, "      ");
-        iter(node, "", 0, level);
+        iter(node, TAG, 0, level);
         log(level, TAG, "  ");
         log(level, TAG, "-------------------------------->");
     }
@@ -33,7 +33,8 @@ public class NodesInfo {
         if (node == null) return;
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            log(level, TAG, addPadding(num) + i + addPadding(num, padding) + print(node.getChild(i)));
+            String print = print(node.getChild(i));
+            log(level, TAG, "   \t" + addPadding(num) + i + addPadding(num, padding) + print);
             iter(node.getChild(i), TAG, num + 1, level);
         }
     }
@@ -63,8 +64,8 @@ public class NodesInfo {
 
         CharSequence text = nodeInfo.getText();
         CharSequence description = nodeInfo.getContentDescription();
-        CharSequence packageName = nodeInfo.getPackageName();
         CharSequence className = nodeInfo.getClassName();
+        CharSequence packageName = nodeInfo.getPackageName();
         boolean focusable = nodeInfo.isFocusable();
         boolean clickable = nodeInfo.isClickable();
         Rect rect = new Rect();
@@ -77,9 +78,9 @@ public class NodesInfo {
                 + String.format("%-40s", "ID: " + viewId) + " \t"
                 + String.format("%-40s", "class: " + className) + " \t"
                 + String.format("%-30s", "location: " + rect) + " \t"
-                + "focusable: " + focusable + " \t"
-                + "clickable: " + clickable + " \t"
-                + String.format("%-30s", "package: " + packageName) + " \t"
+//                + "focusable: " + focusable + " \t"
+//                + "clickable: " + clickable + " \t"
+//                + String.format("%-30s", "package: " + packageName) + " \t"
                 ;
 
     }
@@ -101,6 +102,9 @@ public class NodesInfo {
             case "e":
                 Log.e(TAG, msg);
                 break;
+            default:
+                throw new Error();
         }
     }
+
 }

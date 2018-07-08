@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(android.R.id.content, new HelpFragment())
-//                    .add(R.id.activity_main, new HelpFragment())
                     .addToBackStack("help")
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();

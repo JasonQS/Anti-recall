@@ -7,6 +7,7 @@
 package com.qsboy.antirecall.access;
 
 import android.accessibilityservice.AccessibilityService;
+import android.os.Handler;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -46,8 +47,9 @@ public class MainService extends AccessibilityService {
 
             int eventType = event.getEventType();
             if (eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                Log.w(TAG, AccessibilityEvent.eventTypeToString(eventType));
+            } else
                 Log.v(TAG, AccessibilityEvent.eventTypeToString(eventType));
-            }
 
             switch (eventType) {
                 case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
@@ -80,8 +82,10 @@ public class MainService extends AccessibilityService {
 //        } else if (event.getContentChangeTypes() == AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
 //            App.isTypeText = true;
         // 只有在一整条消息变动时才进入逻辑, 不然会引入很多无关事件
-        if (event.getSource().getChildCount() == 0)
+        AccessibilityNodeInfo source = event.getSource();
+        if (source.getChildCount() == 0)
             return;
+        new Handler().post(() -> NodesInfo.show(source, TAG, "d"));
 
         switch (packageName) {
             case pkgTim:

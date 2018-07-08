@@ -3,11 +3,10 @@ log_tim
 log_qq
 log_wx
 
-alipay/
 libs/
 
 # Release Files #
-releases/
+release/
 *.apk
 
 
@@ -19,12 +18,7 @@ releases/
 captures/
 
 # Build directory #
-target/
 build/
-
-# Generated files #
-bin/
-gen/
 
 # Local props file #
 local.properties

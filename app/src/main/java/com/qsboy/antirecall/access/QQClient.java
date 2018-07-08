@@ -57,7 +57,6 @@ public class QQClient extends Client {
             // 有其他消息是14
             // 非好友是10
             Log.v(TAG, "init: root.childCount: " + root.getChildCount());
-            NodesInfo.show(root, TAG);
             return false;
         }
 

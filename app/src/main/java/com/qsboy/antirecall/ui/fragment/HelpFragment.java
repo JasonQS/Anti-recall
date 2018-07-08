@@ -29,7 +29,6 @@ public class HelpFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         WebView webView = new WebView(getContext());
-//        View view = inflater.inflate(R.layout.fragment_help, container, false);
 
         webView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
@@ -40,7 +39,6 @@ public class HelpFragment extends Fragment {
 //        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         webView.loadUrl("http://anti-recall.qsboy.com");
-//        webView.loadUrl("https://github.com/JasonQS/Anti-recall/blob/master/README.md");
 
         webView.setOnTouchListener((v, event) -> {
             webView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
