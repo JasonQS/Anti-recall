@@ -35,8 +35,12 @@ public class NotificationListener extends NotificationListenerService {
         Bundle extras = sbn.getNotification().extras;
 
         packageName = sbn.getPackageName();
-        title = (String) extras.get(Notification.EXTRA_TITLE);
-        text = (String) extras.get(Notification.EXTRA_TEXT);
+        Object oTitle = extras.get(Notification.EXTRA_TITLE);
+        Object oText = extras.get(Notification.EXTRA_TEXT);
+        if (oTitle == null || oText == null)
+            return;
+        title = oTitle.toString();
+        text = oText.toString();
 
         Log.d(TAG, "Notification - : " +
                 " \npackageName: " + packageName +

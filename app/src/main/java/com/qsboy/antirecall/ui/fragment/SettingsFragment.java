@@ -145,7 +145,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
                     accessibilityServiceSettingEnabled,
                     v1 -> jumpToAccessSetting()), 500);
 
-            handler.postDelayed(() -> addView(llPermission, "辅助功能正常工作",
+            handler.postDelayed(() -> addView(llPermission, "辅助功能正常工作" + (isAccessibilityServiceWork() ? "" : " (请尝试重新打开开关)"),
                     isAccessibilityServiceWork(),
                     v1 -> jumpToAccessSetting()), 1500);
 
