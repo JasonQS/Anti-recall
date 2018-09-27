@@ -13,7 +13,7 @@ import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.activity.App;
 import com.qsboy.antirecall.utils.ImageHelper;
 
 import java.text.SimpleDateFormat;

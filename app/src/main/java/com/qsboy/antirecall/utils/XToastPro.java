@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.activity.App;
 
 public class XToastPro {
     private static String TAG = "X-Toast-Pro";

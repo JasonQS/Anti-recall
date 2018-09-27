@@ -11,7 +11,7 @@
     android:background="@android:color/white"
     android:fitsSystemWindows="false"
     android:theme="@style/LaunchTheme"
-    tools:context="com.qsboy.antirecall.ui.activyty.LaunchActivity">
+    tools:context="com.qsboy.antirecall.ui.activity.LaunchActivity">
 
     <ImageView
         android:layout_centerInParent="true"

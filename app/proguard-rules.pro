@@ -11,7 +11,7 @@
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
 
--keep class com.qsboy.antirecall.ui.App{ public <fields>;}
+-keep class com.qsboy.antirecall.ui.activity.App{ public <fields>;}
 
 -keep class com.chad.library.adapter.** {*;}
 -keep public class * extends com.chad.library.adapter.base.BaseQuickAdapter

@@ -13,12 +13,12 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
-import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.activity.App;
 
 import java.util.Date;
 
-import static com.qsboy.antirecall.ui.activyty.App.pkgThis;
-import static com.qsboy.antirecall.ui.activyty.App.pkgWX;
+import static com.qsboy.antirecall.ui.activity.App.pkgThis;
+import static com.qsboy.antirecall.ui.activity.App.pkgWX;
 
 public class NotificationListener extends NotificationListenerService {
 

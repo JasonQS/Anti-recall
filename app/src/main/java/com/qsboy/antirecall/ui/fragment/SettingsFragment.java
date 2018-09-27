@@ -47,7 +47,7 @@ import android.widget.Toast;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.access.MainService;
-import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.activity.App;
 import com.qsboy.antirecall.ui.widget.MySwitchCompat;
 import com.qsboy.antirecall.utils.CheckAuthority;
 import com.qsboy.antirecall.utils.UpdateHelper;
@@ -145,20 +145,20 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
                     accessibilityServiceSettingEnabled,
                     v1 -> jumpToAccessSetting()), 500);
 
-            handler.postDelayed(() -> addView(llPermission, "辅助功能正常工作" + (isAccessibilityServiceWork() ? "" : " (请尝试重新打开开关)"),
+            handler.postDelayed(() -> addView(llPermission, "辅助功能正常工作" + (accessibilityServiceSettingEnabled && !isAccessibilityServiceWork() ? " (请尝试重新打开开关)" : ""),
                     isAccessibilityServiceWork(),
                     v1 -> jumpToAccessSetting()), 1500);
 
             boolean notificationListenerSettingEnabled = isNotificationListenerSettingEnabled();
             handler.postDelayed(() -> {
-                addView(llPermission, "通知监听服务",
+                addView(llPermission, "通知监听服务开启",
                         notificationListenerSettingEnabled,
                         v1 -> jumpToNotificationListenerSetting());
                 if (notificationListenerSettingEnabled)
                     sendNotification();
             }, 1000);
 
-            handler.postDelayed(() -> addView(llPermission, "通知监听服务正常工作",
+            handler.postDelayed(() -> addView(llPermission, "通知监听服务正常工作" + (notificationListenerSettingEnabled && !isNotificationListenerWork() ? " (请尝试重新打开开关)" : ""),
                     isNotificationListenerWork(),
                     v1 -> jumpToNotificationListenerSetting()), 2000);
 
@@ -346,7 +346,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     }
 
     private boolean isNotificationListenerWork() {
-        Log.w(TAG, "isNotificationListenerWork: clickTime: " + (new Date().getTime() - App.timeCheckNotificationListenerServiceIsWorking));
+        Log.d(TAG, "isNotificationListenerWork: clickTime: " + (new Date().getTime() - App.timeCheckNotificationListenerServiceIsWorking));
 
         FragmentActivity activity = getActivity();
         if (activity == null)

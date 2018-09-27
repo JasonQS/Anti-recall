@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.qsboy.antirecall.R;
-import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.activity.App;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

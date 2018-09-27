@@ -15,14 +15,15 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.qsboy.antirecall.db.Dao;
 import com.qsboy.antirecall.db.Messages;
-import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.activity.App;
 import com.qsboy.antirecall.utils.XToast;
 import com.qsboy.antirecall.utils.XToastPro;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.qsboy.antirecall.ui.activyty.App.addedMessage;
+import static com.qsboy.antirecall.access.FaceMap.replaceFace;
+import static com.qsboy.antirecall.ui.activity.App.addedMessage;
 import static com.qsboy.antirecall.utils.ImageHelper.searchImageFile;
 
 public abstract class Client {
@@ -189,6 +190,7 @@ public abstract class Client {
         }
         addedMessage = temp;
         Log.e(TAG, "Add Msg: " + addedMessage + " " + dao.addMessage(title, subName, message));
+        Log.e(TAG, "Add Msg: " + replaceFace(message));
     }
 
     private class Recalls {

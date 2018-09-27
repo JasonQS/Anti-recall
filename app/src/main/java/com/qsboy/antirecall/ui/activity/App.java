@@ -4,7 +4,7 @@
  * All Rights Reserved
  */
 
-package com.qsboy.antirecall.ui.activyty;
+package com.qsboy.antirecall.ui.activity;
 
 import android.app.Application;
 import android.content.Context;

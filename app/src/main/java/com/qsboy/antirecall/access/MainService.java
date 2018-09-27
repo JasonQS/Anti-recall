@@ -12,16 +12,16 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.qsboy.antirecall.ui.activyty.App;
+import com.qsboy.antirecall.ui.activity.App;
 import com.qsboy.antirecall.utils.NodesInfo;
 
 import java.util.Date;
 import java.util.List;
 
-import static com.qsboy.antirecall.ui.activyty.App.pkgQQ;
-import static com.qsboy.antirecall.ui.activyty.App.pkgThis;
-import static com.qsboy.antirecall.ui.activyty.App.pkgTim;
-import static com.qsboy.antirecall.ui.activyty.App.pkgWX;
+import static com.qsboy.antirecall.ui.activity.App.pkgQQ;
+import static com.qsboy.antirecall.ui.activity.App.pkgThis;
+import static com.qsboy.antirecall.ui.activity.App.pkgTim;
+import static com.qsboy.antirecall.ui.activity.App.pkgWX;
 
 
 public class MainService extends AccessibilityService {
