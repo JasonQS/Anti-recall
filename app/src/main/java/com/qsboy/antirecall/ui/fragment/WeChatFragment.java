@@ -111,6 +111,7 @@ public class WeChatFragment extends Fragment {
 
     public List<Messages> prepareAllData() {
         List<Messages> list = dao.queryAllTheLastMessage(dao.queryAllTables());
+        Log.i(TAG, "prepareAllData: tables: " + dao.queryAllTables());
         Log.d(TAG, "prepareAllData: list: " + list);
         return list;
     }

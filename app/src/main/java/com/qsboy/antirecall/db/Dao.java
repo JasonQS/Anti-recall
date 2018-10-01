@@ -38,8 +38,8 @@ public class Dao {
     private static String TAG = "Dao";
     private static Dao instanceQQ = null;
     private static Dao instanceWeChat = null;
-    private static Cursor cursor;
-    private static SQLiteDatabase db;
+    private Cursor cursor;
+    private SQLiteDatabase db;
     private HashMap<String, Boolean> existTables = new HashMap<>();
 
     private Dao(DBHelper dbHelper) {
@@ -59,7 +59,7 @@ public class Dao {
                 instanceWeChat = new Dao(new DBHelper(context, DB_NAME_WE_CHAT, null, 6));
             return instanceWeChat;
         }
-        return new Dao(new DBHelper(context, DB_NAME_QQ, null, 1));
+        return null;
     }
 
     private void closeCursor() {
@@ -374,8 +374,9 @@ public class Dao {
                         messages.getText(),
                         String.valueOf(messages.getTime())},
                 null, null, null);
+        boolean b = cursor.moveToFirst();
         closeCursor();
-        return cursor.moveToFirst();
+        return b;
     }
 
     public void deleteMessage(String name, int id) {

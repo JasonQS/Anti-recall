@@ -189,8 +189,7 @@ public abstract class Client {
             }
         }
         addedMessage = temp;
-        Log.e(TAG, "Add Msg: " + addedMessage + " " + dao.addMessage(title, subName, message));
-        Log.e(TAG, "Add Msg: " + replaceFace(message));
+        Log.e(TAG, "Add Msg: " + addedMessage + " " + dao.addMessage(title, subName, replaceFace(message)));
     }
 
     private class Recalls {
