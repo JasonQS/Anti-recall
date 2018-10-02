@@ -20,7 +20,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Animation;
 
 import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.db.Dao;
@@ -43,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = "Main Activity";
     List<Fragment> fragmentList = new ArrayList<>();
     Toolbar toolbar;
-    NavigationTabBar navigationTabBar;
-    ViewPager viewPager;
 
     // TODO: 03/06/2018 顶部加filter
     // TODO: 20/06/2018 请求白名单
@@ -77,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabBar() {
-        viewPager = findViewById(R.id.vp_horizontal_ntb);
+        ViewPager viewPager = findViewById(R.id.vp_horizontal_ntb);
         if (fragmentList.size() < 3) {
             fragmentList.add(new QQFragment());
             fragmentList.add(new WeChatFragment());
@@ -95,23 +92,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        // 保存页面位置
-//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                App.activityPageIndex = position;
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//            }
-//        });
+        // 保存页面位置
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
-        navigationTabBar = findViewById(R.id.ntb);
+            @Override
+            public void onPageSelected(int position) {
+                App.activityPageIndex = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        NavigationTabBar navigationTabBar = findViewById(R.id.ntb);
         navigationTabBar.show();
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(new NavigationTabBar.Model.Builder(
