@@ -102,7 +102,16 @@ public class MessageAdapter extends BaseItemDraggableAdapter<Messages, BaseViewH
             adapter.loadMoreComplete();
         }), recyclerView);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context) {
+            @Override
+            public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                try {
+                    super.onLayoutChildren(recycler, state);
+                } catch (Exception ignored) {
+
+                }
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         initSwipe(recyclerView, adapter);

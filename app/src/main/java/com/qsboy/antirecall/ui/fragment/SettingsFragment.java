@@ -6,6 +6,7 @@
 
 package com.qsboy.antirecall.ui.fragment;
 
+import android.Manifest;
 import android.app.FragmentTransaction;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -24,11 +25,13 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,7 +53,6 @@ import com.qsboy.antirecall.R;
 import com.qsboy.antirecall.access.MainService;
 import com.qsboy.antirecall.ui.activity.App;
 import com.qsboy.antirecall.ui.widget.MySwitchCompat;
-import com.qsboy.antirecall.utils.CheckAuthority;
 import com.qsboy.antirecall.utils.UpdateHelper;
 
 import java.io.File;
@@ -117,7 +120,6 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     }
 
     private void initPermissionCheck(ScrollView view) {
-        // TODO: 28/06/2018 跳转跟到权限检查里去
         // 跳转
         View btnAccessibilityService = view.findViewById(R.id.btn_navigate_accessibility_service);
         View btnNotificationListener = view.findViewById(R.id.btn_navigate_notification_listener);
@@ -129,8 +131,6 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
         btnOverlays.setOnClickListener(v -> SettingsCompat.manageDrawOverlays(getActivity()));
 
-        // TODO: 14/06/2018 外部文件读写权限检查
-        // TODO: 14/06/2018 通知拦截功能检查
         // 检查权限
         CircularProgressButton btnCheckPermission = view.findViewById(R.id.btn_check_permission);
         btnCheckPermission.setOnClickListener(v -> {
@@ -141,33 +141,43 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
             llPermission.addView((View) btnCheckPermission.getParent());
 
             boolean accessibilityServiceSettingEnabled = isAccessibilityServiceSettingEnabled();
-            handler.postDelayed(() -> addView(llPermission, "辅助功能权限授予",
-                    accessibilityServiceSettingEnabled,
-                    v1 -> jumpToAccessSetting()), 500);
-
-            handler.postDelayed(() -> addView(llPermission, "辅助功能正常工作" + (accessibilityServiceSettingEnabled && !isAccessibilityServiceWork() ? " (请尝试重新打开开关)" : ""),
-                    isAccessibilityServiceWork(),
-                    v1 -> jumpToAccessSetting()), 1500);
-
+//            handler.postDelayed(() -> addView(llPermission, "辅助功能权限授予",
+//                    accessibilityServiceSettingEnabled,
+//                    v1 -> jumpToAccessSetting()), 500);
+//
             boolean notificationListenerSettingEnabled = isNotificationListenerSettingEnabled();
+//            handler.postDelayed(() -> {
+//                addView(llPermission, "通知监听服务开启",
+//                        notificationListenerSettingEnabled,
+//                        v1 -> jumpToNotificationListenerSetting());
+//                if (notificationListenerSettingEnabled)
+//                    sendNotification();
+//            }, 1000);
+
             handler.postDelayed(() -> {
-                addView(llPermission, "通知监听服务开启",
-                        notificationListenerSettingEnabled,
-                        v1 -> jumpToNotificationListenerSetting());
+                addView(llPermission, "辅助功能正常工作",
+                        accessibilityServiceSettingEnabled && !isAccessibilityServiceWork() ? " --请尝试重新打开开关" : null,
+                        isAccessibilityServiceWork(),
+                        v1 -> jumpToAccessSetting());
                 if (notificationListenerSettingEnabled)
                     sendNotification();
-            }, 1000);
+            }, 500);
 
-            handler.postDelayed(() -> addView(llPermission, "通知监听服务正常工作" + (notificationListenerSettingEnabled && !isNotificationListenerWork() ? " (请尝试重新打开开关)" : ""),
+            handler.postDelayed(() -> addView(llPermission, "通知监听服务正常工作",
+                    notificationListenerSettingEnabled && !isNotificationListenerWork() ? " --请尝试重新打开开关" : null,
                     isNotificationListenerWork(),
-                    v1 -> jumpToNotificationListenerSetting()), 2000);
+                    v1 -> jumpToNotificationListenerSetting()), 1000);
 
-            handler.postDelayed(() -> addView(llPermission, "悬浮窗权限",
+            handler.postDelayed(() -> addView(llPermission, "悬浮窗权限", null,
                     checkFloatingPermission(),
-                    v1 -> SettingsCompat.manageDrawOverlays(getActivity())), 2500);
+                    v1 -> SettingsCompat.manageDrawOverlays(getActivity())), 1500);
+
+            handler.postDelayed(() -> addView(llPermission, "外部文件访问权限", null,
+                    checkWriteExternalStoragePermission(),
+                    v1 -> requestWriteExternalStorage()), 2000);
 
             handler.postDelayed(() -> {
-                if (checkFloatingPermission() && accessibilityServiceSettingEnabled &&
+                if (checkFloatingPermission() && checkWriteExternalStoragePermission() && accessibilityServiceSettingEnabled &&
                         isAccessibilityServiceWork() && notificationListenerSettingEnabled && isNotificationListenerWork())
                     btnCheckPermission.doneLoadingAnimation(
                             getResources().getColor(R.color.colorCorrect),
@@ -175,7 +185,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
                 else btnCheckPermission.doneLoadingAnimation(
                         getResources().getColor(R.color.colorError),
                         getBitmap(R.drawable.ic_cancel));
-            }, 3000);
+            }, 2500);
 
             handler.postDelayed(btnCheckPermission::revertAnimation, 5000);
         });
@@ -191,6 +201,103 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void requestWriteExternalStorage() {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+    }
+
+    private boolean checkFloatingPermission() {
+//        XToast.build(getContext(),"hello").show();
+//        return Settings.canDrawOverlays(getContext());
+        return SettingsCompat.canDrawOverlays(getContext());
+//        return new CheckAuthority(getContext()).checkAlertWindowPermission();
+    }
+
+    private boolean checkWriteExternalStoragePermission() {
+        return (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    public boolean isAccessibilityServiceSettingEnabled() {
+        if (getContext() == null)
+            return false;
+        final String service = getContext().getPackageName() + "/" + MainService.class.getCanonicalName();
+        int accessibilityEnabled = Settings.Secure.getInt(getContext().getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 0);
+        if (accessibilityEnabled != 1)
+            return false;
+        TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
+        String settingValue = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+
+        mStringColonSplitter.setString(settingValue);
+        while (mStringColonSplitter.hasNext()) {
+            String accessibilityService = mStringColonSplitter.next();
+            if (accessibilityService.equalsIgnoreCase(service)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isAccessibilityServiceWork() {
+        Log.w(TAG, "isAccessibilityServiceWork: clickTime: " + (new Date().getTime() - App.timeCheckAccessibilityServiceIsWorking));
+        return (new Date().getTime() - App.timeCheckAccessibilityServiceIsWorking) < 5000;
+    }
+
+    private boolean isNotificationListenerSettingEnabled() {
+        if (getContext() == null)
+            return false;
+        String notificationEnabled = Settings.Secure.getString(getContext().getContentResolver(), "enabled_notification_listeners");
+        if (TextUtils.isEmpty(notificationEnabled))
+            return false;
+        for (String name : notificationEnabled.split(":")) {
+            ComponentName cn = ComponentName.unflattenFromString(name);
+            if (cn != null) {
+                if (TextUtils.equals(getContext().getPackageName(), cn.getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isNotificationListenerWork() {
+        Log.d(TAG, "isNotificationListenerWork: clickTime: " + (new Date().getTime() - App.timeCheckNotificationListenerServiceIsWorking));
+
+        FragmentActivity activity = getActivity();
+        if (activity == null)
+            return false;
+        NotificationManager manager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager == null)
+            return false;
+        manager.cancel(12);
+
+        return (new Date().getTime() - App.timeCheckNotificationListenerServiceIsWorking) < 5000;
+    }
+
+    private void sendNotification() {
+        FragmentActivity activity = getActivity();
+        if (activity == null)
+            return;
+        NotificationManager manager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager == null)
+            return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("1", "1", NotificationManager.IMPORTANCE_DEFAULT);
+            manager.createNotificationChannel(channel);
+        }
+
+        Notification notification = new NotificationCompat.Builder(activity, "1")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("title")
+                .setContentText("test")
+                .setDefaults(Notification.FLAG_ONLY_ALERT_ONCE)
+                .build();
+
+        manager.notify(12, notification);
     }
 
     private void initBottomNavigationBar(ScrollView view) {
@@ -214,7 +321,6 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
     private void initAbout(ScrollView view) {
         // 关于
-
         View btnCheckUpdate = view.findViewById(R.id.btn_check_update);
         TextView tvLocalVersion = view.findViewById(R.id.tv_local_version);
         TextView tvRemoteVersion = view.findViewById(R.id.tv_remote_version);
@@ -298,111 +404,43 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
         });
     }
 
-    private boolean checkFloatingPermission() {
-        return new CheckAuthority(getContext()).checkAlertWindowPermission();
-    }
-
-    public boolean isAccessibilityServiceSettingEnabled() {
-        if (getContext() == null)
-            return false;
-        final String service = getContext().getPackageName() + "/" + MainService.class.getCanonicalName();
-        int accessibilityEnabled = Settings.Secure.getInt(getContext().getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 0);
-        if (accessibilityEnabled != 1)
-            return false;
-        TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
-        String settingValue = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-
-        mStringColonSplitter.setString(settingValue);
-        while (mStringColonSplitter.hasNext()) {
-            String accessibilityService = mStringColonSplitter.next();
-            if (accessibilityService.equalsIgnoreCase(service)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean isAccessibilityServiceWork() {
-        Log.w(TAG, "isAccessibilityServiceWork: clickTime: " + (new Date().getTime() - App.timeCheckAccessibilityServiceIsWorking));
-        return (new Date().getTime() - App.timeCheckAccessibilityServiceIsWorking) < 5000;
-    }
-
-    private boolean isNotificationListenerSettingEnabled() {
-        if (getContext() == null)
-            return false;
-        String notificationEnabled = Settings.Secure.getString(getContext().getContentResolver(), "enabled_notification_listeners");
-        if (TextUtils.isEmpty(notificationEnabled))
-            return false;
-        for (String name : notificationEnabled.split(":")) {
-            ComponentName cn = ComponentName.unflattenFromString(name);
-            if (cn != null) {
-                if (TextUtils.equals(getContext().getPackageName(), cn.getPackageName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isNotificationListenerWork() {
-        Log.d(TAG, "isNotificationListenerWork: clickTime: " + (new Date().getTime() - App.timeCheckNotificationListenerServiceIsWorking));
-
-        FragmentActivity activity = getActivity();
-        if (activity == null)
-            return false;
-        NotificationManager manager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (manager == null)
-            return false;
-        manager.cancel(12);
-
-        return (new Date().getTime() - App.timeCheckNotificationListenerServiceIsWorking) < 5000;
-    }
-
-    private void sendNotification() {
-        FragmentActivity activity = getActivity();
-        if (activity == null)
-            return;
-        NotificationManager manager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (manager == null)
-            return;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("1", "1", NotificationManager.IMPORTANCE_DEFAULT);
-            manager.createNotificationChannel(channel);
-        }
-
-        Notification notification = new NotificationCompat.Builder(activity, "1")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("title")
-                .setContentText("test")
-                .setDefaults(Notification.FLAG_ONLY_ALERT_ONCE)
-                .build();
-//        notification.defaults = ;
-        manager.notify(12, notification);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 0: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    Toast.makeText(getContext(), "该权限能查看撤回的图片", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+        }
     }
 
-    private void addView(ViewGroup mainView, String content, boolean isChecked, View.OnClickListener onClickListener) {
+    private void addView(ViewGroup mainView, String content, String hint, boolean isChecked, View.OnClickListener onClickListener) {
 
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.item_check_permission, mainView, false);
-        TextView tvPermission = view.findViewById(R.id.tv_permission);
+        LinearLayout llPermissioin = view.findViewById(R.id.ll_permission);
+        TextView tvPermission = view.findViewById(R.id.tv_permission_content);
         ImageView ivChecked = view.findViewById(R.id.iv_checked);
         ImageView ivFix = view.findViewById(R.id.iv_fix);
 
         tvPermission.setText(content);
+        if (hint != null) {
+            TextView tvPermissionHint = new TextView(getContext());
+            tvPermissionHint.setText(hint);
+            llPermissioin.addView(tvPermissionHint);
+        }
         if (isChecked) {
             ivChecked.setImageResource(R.drawable.ic_accept);
-            ivChecked.setColorFilter(0xCC00FF00);
+            ivChecked.setColorFilter(0xCC22DD22);
             ivFix.setVisibility(View.GONE);
         } else {
             ivChecked.setImageResource(R.drawable.ic_cancel);
-            ivChecked.setColorFilter(0xAAFF0000);
+            ivChecked.setColorFilter(0xAADD2222);
         }
 
         if (!isChecked)

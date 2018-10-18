@@ -10,8 +10,10 @@
     <color name="colorPrimaryDark">#2E6099</color>
     <color name="colorPrimaryLight">#2176d9</color>
     <color name="colorAccent">#4099ff</color>
-    <color name="colorCorrect">#40ffa6</color>
-    <color name="colorError">#a640ff</color>
+    <color name="colorCorrect">#60df86</color>
+    <!--<color name="colorCorrect">#40ffa6</color>-->
+    <color name="colorError">#8660df</color>
+    <!--<color name="colorError">#a640ff</color>-->
 
 
     <color name="colorWX">#86d987</color>

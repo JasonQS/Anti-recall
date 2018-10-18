@@ -158,14 +158,13 @@ public class MainService extends AccessibilityService {
      * 在之后的10次 onContentChange 都去检查微信登录
      */
     private void autoLoginWX() {
-        // TODO: 2018/7/5 查看微信登录时的 event.getSource()
-        while (WXClient.WeChatAutoLoginTimes > 0) {
+        while (App.WeChatAutoLoginTimes > 0) {
             AccessibilityNodeInfo root = getRootInActiveWindow();
             if (root == null) {
                 Log.d(TAG, "autoLoginWX: root is null, return");
                 return;
             }
-            WXClient.WeChatAutoLoginTimes--;
+            App.WeChatAutoLoginTimes--;
             Log.v(TAG, "autoLoginWX");
             if (root.getChildCount() != 1) {
                 Log.v(TAG, "autoLoginWX: 1");
@@ -192,7 +191,7 @@ public class MainService extends AccessibilityService {
             }
             loginBtn.performAction(AccessibilityNodeInfo.ACTION_CLICK);
             Log.w(TAG, "autoLoginWX: Perform Click");
-            WXClient.WeChatAutoLoginTimes = 0;
+            App.WeChatAutoLoginTimes = 0;
         }
     }
 }

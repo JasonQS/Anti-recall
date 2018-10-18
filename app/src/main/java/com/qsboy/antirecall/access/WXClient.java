@@ -27,11 +27,9 @@ public class WXClient {
     private String name;
     private String message;
 
-    public static int WeChatAutoLoginTimes;
-
     public static void autoLoginFlagEnable() {
         if (App.isWeChatAutoLogin)
-            WeChatAutoLoginTimes = 10;
+            App.WeChatAutoLoginTimes = 10;
     }
 
     public WXClient(Context context) {
