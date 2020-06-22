@@ -8,7 +8,7 @@
 
 ## 最新软件 
 
-https://anti-recall.qsboy.com/
+https://anti-recall.com/
 
 ### 新功能
 
