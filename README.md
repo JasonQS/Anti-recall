@@ -1,13 +1,13 @@
-官网 https://anti-recall.com/
+## 官网 https://anti-recall.com/
 
 ## 效果展示
 
 
-### 查看微信撤回消息
+### 点击查看微信撤回消息
 
 <img src="https://anti-recall.com/src/demo/demo-dark-wx-1080.gif" alt="Anti-recall 防撤回神器 查看微信撤回消息 微信防撤回微信" width="360"/>
 
-### 查看QQ撤回消息
+### 点击查看QQ撤回消息
 
 <img src="https://anti-recall.com/src/demo/demo-dark-qq-1080.gif" alt="Anti-recall 防撤回神器 查看QQ撤回消息 QQ防撤回QQ" width="360"/>
 
@@ -39,19 +39,11 @@
 
 同时因为开始商用, 固不再开源, 敬请谅解
 
-## 最新软件 
-
-https://anti-recall.com/
-
 ### 闭源后的新功能
 
-能记录微信聊天界面消息
-
-能记录微信主界面消息
-
-能自定义通知提醒
-
-能查看QQ图片
-
-能查看闪照
+能记录微信聊天界面消息  
+能记录微信主界面消息  
+能自定义通知提醒  
+能查看QQ图片  
+能查看闪照  
 
