@@ -17,7 +17,8 @@
 
 ### 查看所有收录的消息
 
-<img src="https://user-images.githubusercontent.com/18590665/219353429-6aeac4cf-9747-4d16-8271-579992038154.gif" alt="Anti-recall 防撤回神器 查看所有收录的消息" width="360"/>
+<!-- <img src="https://user-images.githubusercontent.com/18590665/219353429-6aeac4cf-9747-4d16-8271-579992038154.gif" alt="Anti-recall 防撤回神器 查看所有收录的消息" width="360"/> -->
+<img src="https://user-images.githubusercontent.com/18590665/219357654-aeb67acf-c1e8-479d-a913-b6f2c5dc46b4.gif" alt="Anti-recall 防撤回神器 查看所有收录的消息" width="360"/>
 
 ### 查看撤回的图片
 
