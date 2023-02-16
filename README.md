@@ -1,24 +1,30 @@
 ### 查看微信撤回消息
-<img src="src/demo/demo-dark-wx-1080.gif"
-     alt="Anti-recall 防撤回神器 查看微信撤回消息 微信防撤回微信" width="360px">
+
+<img src="src/demo/demo-dark-wx-1080.gif" alt="Anti-recall 防撤回神器 查看微信撤回消息 微信防撤回微信" width="360px">
+
 ### 查看QQ撤回消息
-<img src="src/demo/demo-dark-qq-1080.gif"
-     alt="Anti-recall 防撤回神器 查看QQ撤回消息 QQ防撤回QQ" width="360px">
+
+<img src="src/demo/demo-dark-qq-1080.gif" alt="Anti-recall 防撤回神器 查看QQ撤回消息 QQ防撤回QQ" width="360px">
+
 ### 通知栏显示撤回消息
-<img src="src/demo/demo-dark-wx-notification-1080.gif"
-     alt="Anti-recall 防撤回神器 通知栏显示撤回消息" width="360px">
+
+<img src="src/demo/demo-dark-wx-notification-1080.gif" alt="Anti-recall 防撤回神器 通知栏显示撤回消息" width="360px">
+
 ### 查看所有收录的消息
-<img src="src/demo/demo-dark-app-content-compressed.gif"
-     alt="Anti-recall 防撤回神器 查看所有收录的消息" width="360px">
+
+<img src="src/demo/demo-dark-app-content-compressed.gif" alt="Anti-recall 防撤回神器 查看所有收录的消息" width="360px">
+
 ### 查看撤回的图片
-<img src="src/demo/demo-show-image.gif"
-     alt="Anti-recall 防撤回神器 查看撤回的图片" width="360px">
+
+<img src="src/demo/demo-show-image.gif" alt="Anti-recall 防撤回神器 查看撤回的图片" width="360px">
+
 ### 查看闪照
-<img src="src/demo/demo-show-flash-photo.gif"
-     alt="Anti-recall 防撤回神器 查看闪照" width="360px">
+
+<img src="src/demo/demo-show-flash-photo.gif" alt="Anti-recall 防撤回神器 查看闪照" width="360px">
+
 ### 收录消息     
-<img src="src/demo/demo-dark-chat-monitor.gif"
-     alt="Anti-recall 防撤回神器" width="360px">
+
+<img src="src/demo/demo-dark-chat-monitor.gif" alt="Anti-recall 防撤回神器" width="360px">
 
 ## 本软件在 `v5.2.0` 后不再开源
 
